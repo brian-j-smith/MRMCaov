@@ -12,6 +12,7 @@ importFrom(utils, head)
 
 export(
   DeLong,
+  jackknife,
   mrmc,
   roc,
   roc_auc
