@@ -4,6 +4,11 @@ unbiased <- function() {
   structure(
     function(formula, data) {
       vars <- extract_vars(formula)
+      
+      if (vars["metric"] != "roc_auc") {
+        stop("response metric must be 'roc_auc' for unbiased covariance method")
+      }
+      
       observed <- data[[vars["observed"]]]
       df <- data.frame(
         group = interaction(data[[vars["tests"]]], data[[vars["readers"]]]),

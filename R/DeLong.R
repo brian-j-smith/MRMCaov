@@ -9,6 +9,11 @@ DeLong <- function() {
   structure(
     function(formula, data) {
       vars <- extract_vars(formula)
+      
+      if (vars["metric"] != "roc_auc") {
+        stop("response metric must be 'roc_auc' for DeLong covariance method")
+      }
+      
       observed <- data[[vars["observed"]]]
       predicted <- data[[vars["predicted"]]]
       groups <- interaction(data[[vars["tests"]]], data[[vars["readers"]]],
