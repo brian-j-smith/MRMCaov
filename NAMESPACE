@@ -15,7 +15,8 @@ export(
   jackknife,
   mrmc,
   roc,
-  roc_auc
+  roc_auc,
+  unbiased
 )
 
 
