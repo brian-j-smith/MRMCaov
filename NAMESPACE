@@ -6,7 +6,7 @@ importFrom(gtools, combinations)
 importFrom(magrittr, "%>%")
 importFrom(methods, is)
 importFrom(ROCR, performance)
-importFrom(stats, aov, coef, pf, pt, reformulate, qt, update, vcov)
+importFrom(stats, aov, coef, pf, pt, reformulate, qt, terms, update, vcov)
 importFrom(utils, head)
 
 
@@ -25,4 +25,3 @@ S3method(plot, mrmc)
 S3method(print, mrmc)
 S3method(print, summary.mrmc)
 S3method(summary, mrmc)
-S3method(summary, mrmc_tests)

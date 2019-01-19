@@ -4,7 +4,8 @@
 \alias{mrmc}
 \title{Multi-Reader Multi-Case ROC Analysis}
 \usage{
-mrmc(formula, cases, data, method = DeLong)
+mrmc(formula, cases, data, method = jackknife, fixed = NULL,
+  design = 1)
 }
 \arguments{
 \item{formula}{formula defining the response metric and variables on the left
@@ -21,6 +22,13 @@ variables.}
 \item{method}{function, function call, or character string naming the
 \code{\link[mrROC:cov_methods]{method}} to use in calculating performance
 metric covariances.}
+
+\item{fixed}{formula whose right hand side specifies one of the reader or
+case variables as being a fixed factor in the analysis, or \code{NULL} if
+both are random.}
+
+\item{design}{one of the following study designs: 1 = factorial, 2 = cases
+nested within readers, or 3 = cases nested within tests.}
 }
 \description{
 Estimation and comparison of ROC performance metrics for multi-reader
