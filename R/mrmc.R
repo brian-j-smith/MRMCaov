@@ -29,7 +29,7 @@
 #' summary(est)
 #' plot(est)
 #' 
-mrmc <- function(formula, cases, data, method = DeLong, fixed = NULL,
+mrmc <- function(formula, cases, data, method = jackknife, fixed = NULL,
                  design = 1) {
   formula <- update(formula, ~ .^2)
   vars <- extract_vars(formula)
