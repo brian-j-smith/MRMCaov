@@ -20,7 +20,7 @@ extract_vars <- function(formula) {
 
 get_method <- function(x) {
   if (is(x, "character")) x <- get(x, mode = "function")
-  if (is(x, "function")) x <- x()
+  if (!is(x, "cov_method")) x <- x()
   if (!is(x, "cov_method")) stop("invalid covariance method")
   x
 }

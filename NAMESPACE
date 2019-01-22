@@ -6,7 +6,8 @@ importFrom(gtools, combinations)
 importFrom(magrittr, "%>%")
 importFrom(methods, is)
 importFrom(ROCR, performance)
-importFrom(stats, aov, coef, pf, pt, reformulate, qt, terms, update, vcov)
+importFrom(stats, aov, coef, pf, pt, reformulate, qt, reshape, terms, update,
+           vcov)
 importFrom(utils, head)
 
 

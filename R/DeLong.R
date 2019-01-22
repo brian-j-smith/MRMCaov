@@ -7,7 +7,7 @@
 #' 
 DeLong <- function() {
   structure(
-    function(formula, data) {
+    function(formula, data, ...) {
       vars <- extract_vars(formula)
       
       if (vars["metric"] != "roc_auc") {

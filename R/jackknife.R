@@ -2,7 +2,7 @@
 #' 
 jackknife <- function() {
   structure(
-    function(formula, data) {
+    function(formula, data, ...) {
       vars <- extract_vars(formula)
       cases <- data[["(cases)"]]
       groups <- interaction(data[[vars["tests"]]], data[[vars["readers"]]])
