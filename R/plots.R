@@ -34,7 +34,7 @@ plot.roc <- function(x, ...) {
   }
   
   ggplot(df, aes_perf) +
-    geom_step() +
+    geom_path() +
     coord_fixed() +
     labs(x = "False Positive Rate", y = "True Positive Rate",
          color = group_name)
