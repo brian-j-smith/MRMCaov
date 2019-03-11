@@ -11,7 +11,7 @@ mrmc(formula, cases, data, method = jackknife, fixed = NULL,
 \item{formula}{formula defining the response metric and variables on the left
 hand side and the test and reader variables on the right hand side.
 The response should be expressed in terms of a package-supplied performance
-\code{\link[mrROC:metrics]{metric}}.  Test and reader variables should be specified in that
+\code{\link[=metrics]{metric}}.  Test and reader variables should be specified in that
 order and separated by the \code{+} operator.}
 
 \item{cases}{variable containing the case identifiers.}
@@ -20,7 +20,7 @@ order and separated by the \code{+} operator.}
 variables.}
 
 \item{method}{function, function call, or character string naming the
-\code{\link[mrROC:cov_methods]{method}} to use in calculating performance
+\code{\link[=cov_methods]{method}} to use in calculating performance
 metric covariances.}
 
 \item{fixed}{formula whose right hand side specifies one of the reader or
