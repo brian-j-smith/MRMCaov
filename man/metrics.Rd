@@ -2,9 +2,12 @@
 % Please edit documentation in R/metrics.R
 \name{metrics}
 \alias{metrics}
+\alias{proproc_auc}
 \alias{roc_auc}
 \title{Performance Metrics}
 \usage{
+proproc_auc(observed, predicted)
+
 roc_auc(observed, predicted)
 }
 \arguments{

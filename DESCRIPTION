@@ -3,13 +3,18 @@ Type: Package
 Title: Multi-Reader Multi-Case Analysis of Variance
 Version: 0.1.0
 Date: 2018-03-10
-Authors@R: person("Brian J", "Smith",
-                  email = "brian-j-smith@uiowa.edu",
-                  role = c("aut", "cre"))
-Author: Brian J Smith [aut, cre]
+Authors@R: c(person("Brian J", "Smith",
+                    email = "brian-j-smith@uiowa.edu",
+                    role = c("aut", "cre")),
+             person("Lorenzo L", "Pesce",
+                    email = "lorenzo.pesce@northwestern.edu",
+                    role = "ctb"))
+Author: Brian J Smith [aut, cre],
+  Lorenzo L Pesce [ctb]
 Maintainer: Brian J Smith <brian-j-smith@uiowa.edu>
 Description: A package for multi-reader and multi-case analysis of variance.
 Imports: ggplot2, gtools, magrittr, methods, ROCR
+NeedsCompilation: yes
 LazyData: true
 License: GPL-3
 RoxygenNote: 6.1.1

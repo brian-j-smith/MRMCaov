@@ -1,3 +1,6 @@
+useDynLib(MRMCaov, .registration = TRUE)
+
+
 import(ggplot2)
 
 
@@ -15,6 +18,7 @@ export(
   DeLong,
   jackknife,
   mrmc,
+  proproc_auc,
   roc,
   roc_auc,
   unbiased
