@@ -1,6 +1,2 @@
 PKG_FCFLAGS = -I./include -J./include
 PKG_LIBS = -lgfortran $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
-
-include scripts/SOURCES_F90.mkf
-
-OBJECTS = init.o $(SOURCES_F90:.f90=.o)
