@@ -124,7 +124,6 @@ real(kind = double), dimension(num_categ+1,num_categ+1), intent(out), optional  
      ! rest will be set to garbage
  
 ! Internal variables
-logical:: debug_already_opened ! whether the unit debug unit was already associated with a file
 integer:: i,j ! loop counter for logging warnings about cutoffs
 character(len = line_length):: msg    ! character string used to display state information
 character(len = line_length):: err_msg    ! character string used to display state information
@@ -160,15 +159,6 @@ else
  debug = .false.
 endif
 
-! Check if debugging information has to be printed to DebugUnit
-debug_already_opened = .false.
-if(idebug == 1) then
-    !If debugging log information needs to be passed, check whether the file unit DebugUnit is 
-    ! already associated, otherwise associate it with an open statement with the chosen file name (below)
-    inquire( unit = DebugUnit, opened = debug_already_opened)
-    if(.NOT.debug_already_opened) open(unit = debugUnit,file = 'MLE_fit.log') 
-endif  
-
 ! First check whether the input is acceptable, that is it can't contain negative number 
 ! of cases in any category for any truth state and the number of actually positive and 
 ! actually negative cases in each category can't be  equal to zero for all categories
@@ -199,8 +189,6 @@ if(  ( any(catn_in < 0) .or. any(cats_in < 0) ) .or.  & ! negative # of cases
     cutoffs_out     = -666.0_double
     log_like        = -666.0_double
     cov_out         = -666.0_double
-    ! Close the debug file -- November 2009
-    if(.NOT.debug_already_opened .and. idebug == 1) close(debugUnit)
     return
 endif 
 ! COLLAPSE (IF NEEDED) AND LOAD THE COLLAPSED DATA INTO NEW ARRAYS
@@ -518,9 +506,6 @@ end select
 
 deallocate(catn, cats) ! Deallocate the arrays in the local data modules
 deallocate(cov , hessian, cutoffs, cutoffs_array)
-
-! Close the debug file -- November 2009
-if(.NOT.debug_already_opened .and. idebug == 1) close(debugUnit)
 
 !---------------------------------------------------------------------------------
 end subroutine cvbmroc_mle
@@ -856,8 +841,6 @@ subroutine compute_MLE(mn, ms, num_cat, catn, cats, idebug, a_par, b_par, cutoff
 
  integer::i, nf ! nf is a flag for the optimization procedure
 
- integer, parameter:: opt_out = 26 ! unit number for output file of optimizer steps
-
  real(kind=double) :: fpf, tpf
  character(len = line_length):: msg ! text line to be sent use to log information about the run
 
@@ -901,20 +884,12 @@ subroutine compute_MLE(mn, ms, num_cat, catn, cats, idebug, a_par, b_par, cutoff
  param_vec(2) = b_par
  param_vec(3:num_param) = cutoffs(1: num_cat - 1) ! cutoffs are in between categories
 
-! Open file where the data about the optimization steps will be stored
-! Note that it will overwrite files with this name
-if(idebug == 1) open(opt_out , file = "optimization.info", status = "replace")
-
 ! Maximum might be on a cups in such a situation, the hessian
 ! is singular, then we restart the algorithm from a slightly different point. 
 optimize: do  iter = 1 ,  max_iter
    ! Call the routine that initializes the TOMS611 optimizer.
    call deflt(2,iv,liv,lv,v)
-   if (idebug == 1) then ! Print optimizer output to file opt_out
-      iv(21) = opt_out 
-   else ! or not
-      iv(21) = 0
-   endif
+   iv(21) = 0
    iv(17) = 500 ! Maximum number of function evaluations to attempt, only very small curves use more than a few 10's 
    iv(18) = 500 ! Maximum number of overall optimization steps " "
    iv(1)= 12 ! tell sumsl that deflt (initialization) was already called
@@ -962,8 +937,6 @@ optimize: do  iter = 1 ,  max_iter
         exit optimize ! either it worked or we exceeded max_iter or the error can't be fixed
    endif
 enddo optimize
-
-close(opt_out) ! Close optimization file info
 
 call print_convergence(iv(1),ierror,err_msg) ! explicit what kind of convergence was obtained
                                              ! by the optimizer

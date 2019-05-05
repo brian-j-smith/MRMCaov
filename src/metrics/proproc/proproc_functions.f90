@@ -147,22 +147,12 @@ real(kind=double), parameter:: c_small = 1.0e-6_double ! values below this one a
 ! the reason is that this kind of dataset carries such a large error that it is useless to
 ! worry too much for accuracy, which costs time and programming care. In fact we are being too careful for the
 ! needs of this algorithm.
-logical:: debug_already_opened ! whether the unit debug unit was already associated with a file
 
 ! Debug is used to pass the debugging flag around optimizers that have no business knowing its value
 if(idebug == 1) then 
  debug = .true.
 else
  debug = .false.
-endif
- 
-! CHECK if debugging information has to be printed to DebugUnit
-debug_already_opened = .false.
-if(idebug == 1) then
-    !If debugging log information needs to be passed, check whether the file unit DebugUnit is 
-    ! already associated, otherwise associate it with an open statement with the chosen file name (below)
-    inquire( unit = DebugUnit, opened = debug_already_opened)
-    if(.NOT.debug_already_opened) open(unit = debugUnit,file = 'MLE_fit.log') 
 endif
  
 ! Prepare the variables that will be stored in the moduli from file "proproc_other_modules.f90"
@@ -377,22 +367,12 @@ real(kind=double), parameter:: c_small = 1.0e-6_double ! values below this one a
 ! the reason is that this kind of dataset carries such a large error that it is useless to
 ! worry too much for accuracy, which costs time and programming care. In fact we are being too careful for the
 ! needs of this algorithm.
-logical:: debug_already_opened ! whether the unit debug unit was already associated with a file
 
 ! Debug is used to pass the debugging flag around optimizers that have no business knowing its value
 if(idebug == 1) then 
  debug = .true.
 else
  debug = .false.
-endif
- 
-! Check if debugging information has to be printed to DebugUnit
-debug_already_opened = .false.
-if(idebug == 1) then
-    !If debugging log information needs to be passed, check whether the file unit DebugUnit is 
-    ! already associated, otherwise associate it with an open statement with the chosen file name (below)
-    inquire( unit = DebugUnit, opened = debug_already_opened)
-    if(.NOT.debug_already_opened) open(unit = debugUnit,file = 'MLE_fit.log') 
 endif
  
 ! Prepare the variables that will be stored in the moduli from file "proproc_other_modules.f90"
@@ -1133,7 +1113,6 @@ real(kind = double), dimension(num_categ+1,num_categ+1), intent(out), optional  
      ! rest will be set to garbage
  
 ! Internal variables
-logical:: debug_already_opened ! whether the unit debug unit was already associated with a file
 integer:: i,j ! loop counter for logging warnings about cutoffs
 character(len = line_length):: msg    ! character string used to display state information
 character(len = line_length):: err_msg    ! character string used to display state information
@@ -1173,15 +1152,6 @@ else
  debug = .false.
 endif
 
-! Check if debugging information has to be printed to DebugUnit
-debug_already_opened = .false.
-if(idebug == 1) then
-    !If debugging log information needs to be passed, check whether the file unit DebugUnit is 
-    ! already associated, otherwise associate it with an open statement with the chosen file name (below)
-    inquire( unit = DebugUnit, opened = debug_already_opened)
-    if(.NOT.debug_already_opened) open(unit = debugUnit,file = 'MLE_fit.log') 
-endif  
-
 ! First check whether the input is acceptable, that is it can't contain negative number 
 ! of cases in any category for any truth state and the number of actually positive and 
 ! actually negative cases in each category can't be  equal to zero for all categories
@@ -1212,8 +1182,6 @@ if(  ( any(catn_in < 0) .or. any(cats_in < 0) ) .or.  & ! negative # of cases
     vc_cutoffs_out     = -666.0_double
     log_like        = -666.0_double
     cov_out         = -666.0_double
-    ! Close the debug file -- November 2009
-    if(.NOT.debug_already_opened .and. idebug == 1) close(debugUnit)
     return
 endif 
 ! COLLAPSE (IF NEEDED) AND LOAD THE COLLAPSED DATA INTO NEW ARRAYS
@@ -1594,9 +1562,6 @@ end select
 
 deallocate(catn, cats) ! Deallocate the arrays in the local data modules
 deallocate(cov , hessian, vc_cutoffs, vc_cutoffs_array)
-
-! close debugging file Nov 2009
-if(.NOT.debug_already_opened .and. idebug == 1) close(debugUnit)
 
 !---------------------------------------------------------------------------------------------------    
 end subroutine pbmroc_mle    
@@ -3168,8 +3133,6 @@ subroutine compute_MLE(mn, ms, num_cat, catn, cats, idebug, d_a_par, c_par, vc_c
 
  integer::i, nf ! nf is a flag for the optimization procedure
 
- integer, parameter:: opt_out = 26 ! unit number for output file of optimizer steps
-
  real(kind=double) :: vc_bound ! finite boundary for vc (see Metz & Pan)
                                 ! sometimes an upper sometimes a lower
 
@@ -3217,10 +3180,6 @@ subroutine compute_MLE(mn, ms, num_cat, catn, cats, idebug, d_a_par, c_par, vc_c
  param_vec(2) = c_par
  param_vec(3:num_param) = vc_cutoffs(1: num_cat - 1) ! cutoffs are in between categories
 
-! Open file where the data about the optimization steps will be stored
-! Note that it will overwrite files with this name
-if(idebug == 1) open(opt_out , file = "optimization.info", status = "replace")
-
 ! This loop is rarely used. Only for curve that are barely or not at all above the guessing line (AUC = .5)
 ! Since the maximum tends to be a cups in such a situation, surrounded by a couple of lines where the hessian
 ! is singular, it happens that the algorithm can use being restarted from a slightly different point. It seems
@@ -3229,11 +3188,7 @@ if(idebug == 1) open(opt_out , file = "optimization.info", status = "replace")
 optimize: do  iter = 1 ,  max_iter
    ! Call the routine that initializes the TOMS611 optimizer.
    call deflt(2,iv,liv,lv,v)
-   if (idebug == 1) then ! Print optimizer output to file opt_out
-      iv(21) = opt_out 
-   else ! or not
-      iv(21) = 0
-   endif
+   iv(21) = 0
    iv(17) = 5000 ! Maximum number of function evaluations to attempt, only very small curves use more than a few 10's 
    iv(18) = 5000 ! Maximum number of overall optimization steps " "
    iv(1)= 12 ! tell sumsl that deflt (initialization) was already called
@@ -3292,8 +3247,6 @@ optimize: do  iter = 1 ,  max_iter
         exit optimize ! either it worked or we exceeded max_iter or the error can't be fixed
    endif
 enddo optimize
-
-close(opt_out) ! Close optimization file info
 
 call print_convergence(iv(1),ierror,err_msg) ! explicit what kind of convergence was obtained
                                              ! by the optimizer

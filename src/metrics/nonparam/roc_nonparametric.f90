@@ -715,7 +715,7 @@ real(kind=double), dimension(ms,num_mod), intent(IN):: act_pos ! actually-positi
 integer, dimension(mn,num_mod), intent(IN):: des_neg ! actually-negative design matrix (whether a case is present (1) or absent (0)
                                                 ! for each the two modalities to be analyzed
 integer, dimension(ms,num_mod), intent(IN):: des_pos ! actually-positive design matrix (whether a case is present (1) or absent (0)
-                                                ! for each the two modalities to be analyzedç
+                                                ! for each the two modalities to be analyzed?
 Real(kind=double),dimension(num_mod), intent(out):: U_vec    ! Array of Wilcoxon statistics, one per treatment
 real(kind=double),dimension(num_mod,num_mod), intent(out):: U_vec_cov ! Variance-covariance matrix of the U_vec in the i>=j 
                                                                  ! elements the variance covariance matrix and in the i< j elements
@@ -1275,8 +1275,6 @@ r_loop: do r_mod = 1, num_mod
 
  enddo r_loop
 
-close(8)
-
 !---------------------------------------------------------------------------
 end subroutine m_mod_one_shot
 !---------------------------------------------------------------------------
@@ -1750,4 +1748,5 @@ end do build_Vs
 
 
  end module roc_nonparametric
-
+
+
