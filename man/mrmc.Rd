@@ -4,28 +4,25 @@
 \alias{mrmc}
 \title{Multi-Reader Multi-Case ROC Analysis}
 \usage{
-mrmc(formula, cases, data, method = jackknife, fixed = NULL,
+mrmc(response, test, reader, case, data, method = jackknife,
   design = 1)
 }
 \arguments{
-\item{formula}{formula defining the response metric and variables on the left
-hand side and the test and reader variables on the right hand side.
-The response should be expressed in terms of a package-supplied performance
-\code{\link[=metrics]{metric}}.  Test and reader variables should be specified in that
-order and separated by the \code{+} operator.}
+\item{response}{response metric expressed in terms of a package-supplied
+performance \code{\link[=metrics]{metric}}.}
 
-\item{cases}{variable containing the case identifiers.}
+\item{test}{variable of test identifiers.}
 
-\item{data}{data frame containing the \code{formula} and \code{cases}
-variables.}
+\item{reader}{variable of reader identifiers.}
+
+\item{case}{variable of case identifiers.}
+
+\item{data}{data frame containing the \code{response}, \code{test},
+\code{reader}, and \code{case} variables.}
 
 \item{method}{function, function call, or character string naming the
 \code{\link[=cov_methods]{method}} to use in calculating performance
 metric covariances.}
-
-\item{fixed}{formula whose right hand side specifies one of the reader or
-case variables as being a fixed factor in the analysis, or \code{NULL} if
-both are random.}
 
 \item{design}{one of the following study designs: 1 = factorial, 2 = cases
 nested within readers, or 3 = cases nested within tests.}
@@ -34,11 +31,22 @@ nested within readers, or 3 = cases nested within tests.}
 Estimation and comparison of ROC performance metrics for multi-reader
 multi-case studies.
 }
+\details{
+Readers and cases are treated as random factors by default.  Either one may
+be designated as fixed in calls to \code{mrmc} with the syntax
+\code{factor(<variable name>)}, where \code{<variable name>} is the name of
+the reader or case variable.
+}
 \examples{
-(est <- mrmc(roc_auc(truth, rating) ~ treatment + reader, cases = case,
-             data = VanDyke))
+## Random readers and cases
+(est <- mrmc(roc_auc(truth, rating), treatment, reader, case, data = VanDyke))
 summary(est)
 plot(est)
+
+## Fixed readers and fixed cases
+est <- mrmc(roc_auc(truth, rating), treatment, fixed(reader), case,
+            data = VanDyke)
+summary(est)
 
 }
 \seealso{

@@ -3,37 +3,47 @@
 #' Estimation and comparison of ROC performance metrics for multi-reader
 #' multi-case studies.
 #' 
-#' @param formula formula defining the response metric and variables on the left
-#' hand side and the test and reader variables on the right hand side.
-#' The response should be expressed in terms of a package-supplied performance
-#' \code{\link[=metrics]{metric}}.  Test and reader variables should be specified in that
-#' order and separated by the \code{+} operator.
-#' @param cases variable containing the case identifiers.
-#' @param data data frame containing the \code{formula} and \code{cases}
-#' variables.
+#' @param response response metric expressed in terms of a package-supplied
+#' performance \code{\link[=metrics]{metric}}.
+#' @param test variable of test identifiers.
+#' @param reader variable of reader identifiers.
+#' @param case variable of case identifiers.
+#' @param data data frame containing the \code{response}, \code{test},
+#' \code{reader}, and \code{case} variables.
 #' @param method function, function call, or character string naming the
 #' \code{\link[=cov_methods]{method}} to use in calculating performance
 #' metric covariances.
-#' @param fixed formula whose right hand side specifies one of the reader or
-#' case variables as being a fixed factor in the analysis, or \code{NULL} if
-#' both are random.
 #' @param design one of the following study designs: 1 = factorial, 2 = cases
 #' nested within readers, or 3 = cases nested within tests.
+#' 
+#' @details
+#' Readers and cases are treated as random factors by default.  Either one may
+#' be designated as fixed in calls to \code{mrmc} with the syntax
+#' \code{factor(<variable name>)}, where \code{<variable name>} is the name of
+#' the reader or case variable.
 #' 
 #' @seealso \code{\link{metrics}}, \code{\link{cov_methods}},
 #' \code{\link{summary}}, \code{\link{plot}}
 #' 
 #' @examples
-#' (est <- mrmc(roc_auc(truth, rating) ~ treatment + reader, cases = case,
-#'              data = VanDyke))
+#' ## Random readers and cases
+#' (est <- mrmc(roc_auc(truth, rating), treatment, reader, case, data = VanDyke))
 #' summary(est)
 #' plot(est)
 #' 
-mrmc <- function(formula, cases, data, method = jackknife, fixed = NULL,
+#' ## Fixed readers and fixed cases
+#' est <- mrmc(roc_auc(truth, rating), treatment, fixed(reader), case,
+#'             data = VanDyke)
+#' summary(est)
+#' 
+mrmc <- function(response, test, reader, case, data, method = jackknife,
                  design = 1) {
-  formula <- update(formula, ~ .^2)
+  
+  terms <- eval(substitute(mrmc_terms(response, test, reader, case)))
+  
+  formula <- terms$formula
   vars <- extract_vars(formula)
-  vars["cases"] <- as.character(substitute(cases))
+  vars["cases"] <- terms$case
 
   factor_vars <- c("observed", "tests", "readers")
   data[vars[factor_vars]] <- lapply(data[vars[factor_vars]], factor)
@@ -52,13 +62,16 @@ mrmc <- function(formula, cases, data, method = jackknife, fixed = NULL,
   fo[[2]] <- as.name(names(df)[ncol(df)])
   aovfit <- aov(fo, data = df)
   
-  mrmc_class <- if (!is(fixed, "formula")) "mrmc_rrrc" else {
-    fixed <- labels(terms(fixed))
-    if (all(vars["readers"] == fixed)) "mrmc_frrc" else
-      if (all(vars["cases"] == fixed)) "mrmc_rrfc" else
-        stop("fixed formula must identify one of the readers or cases variable")
+  mrmc_class <- if (all(terms$fixed)) {
+    stop("only one of reader or case may be fixed")
+  } else if (terms$fixed["reader"]) {
+    "mrmc_frrc"
+  } else if (terms$fixed["case"]) {
+    "mrmc_rrfc"
+  } else {
+    "mrmc_rrrc"
   }
-  
+
   structure(
     list(call = sys.call(),
          design = design,
@@ -73,4 +86,40 @@ mrmc <- function(formula, cases, data, method = jackknife, fixed = NULL,
          ),
     class = c(mrmc_class, "mrmc")
   )
+}
+
+
+mrmc_terms <- function(response, test, reader, case) {
+  args <- eval(substitute(
+    alist(response = response, test = test, reader = reader, case = case)
+  ))
+  
+  test <- extract_term(args$test, type = c("", "fixed"))
+  reader <- extract_term(args$reader)
+  case <- extract_term(args$case)
+  
+  fo <- reformulate(c(test$label, reader$label), args$response)
+  
+  list(
+    formula = update(fo, . ~ .^2),
+    case = case$label,
+    fixed = c(reader = reader$type, case = case$type) == "fixed"
+  )
+}
+
+
+extract_term <- function(x, type = c("random", "fixed")) {
+  if (is.symbol(x)) {
+    term_symbol <- x
+    term_type <- type[1]
+  } else if (is.call(x) && length(x) == 2) {
+    term_symbol <- x[[2]]
+    term_type <- as.character(x[[1]])
+  } else {
+    term_symbol <- NULL
+  }
+  if (!(is.symbol(term_symbol) && (term_type %in% type))) {
+    stop("invalid mrmc term syntax: ", deparse(x), call. = FALSE)
+  } 
+  list(label = as.character(term_symbol), type = term_type)
 }
