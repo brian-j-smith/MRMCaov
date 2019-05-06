@@ -6,10 +6,14 @@ Date: 2018-03-10
 Authors@R: c(person("Brian J", "Smith",
                     email = "brian-j-smith@uiowa.edu",
                     role = c("aut", "cre")),
+             person("Stephen L", "Hillis",
+                    email = "steve-hillis@uiowa.edu",
+                    role = "aut"),
              person("Lorenzo L", "Pesce",
                     email = "lorenzo.pesce@northwestern.edu",
                     role = "ctb"))
 Author: Brian J Smith [aut, cre],
+  Stephen L Hillis [aut],
   Lorenzo L Pesce [ctb]
 Maintainer: Brian J Smith <brian-j-smith@uiowa.edu>
 Description: A package for multi-reader and multi-case analysis of variance.
