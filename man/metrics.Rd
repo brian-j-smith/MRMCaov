@@ -2,10 +2,13 @@
 % Please edit documentation in R/metrics.R
 \name{metrics}
 \alias{metrics}
+\alias{binormroc_auc}
 \alias{proproc_auc}
 \alias{roc_auc}
 \title{Performance Metrics}
 \usage{
+binormroc_auc(observed, predicted)
+
 proproc_auc(observed, predicted)
 
 roc_auc(observed, predicted)

@@ -18,6 +18,7 @@ export(
   DeLong,
   jackknife,
   mrmc,
+  binormroc_auc,
   proproc_auc,
   roc,
   roc_auc,

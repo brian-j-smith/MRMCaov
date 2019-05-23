@@ -11,6 +11,22 @@ psi <- function(x_pos, x_neg) {
 #' @param observed vector of observed binary responses.
 #' @param predicted vector of predcited responses.
 #' 
+binormroc_auc <- function(observed, predicted) {
+  observed <- as.factor(observed)
+  is_pos <- observed == levels(observed)[2]
+
+  pred_pos <- as.double(predicted[is_pos])
+  pred_neg <- as.double(predicted[!is_pos])
+  
+  fit <- .Fortran("cvbmroc",
+                  length(pred_neg), length(pred_pos), pred_neg, pred_pos,
+                  double(1), double(1), est = double(1), var = double(1))
+  fit$est
+}
+
+
+#' @rdname metrics
+#' 
 proproc_auc <- function(observed, predicted) {
   observed <- as.factor(observed)
   is_pos <- observed == levels(observed)[2]

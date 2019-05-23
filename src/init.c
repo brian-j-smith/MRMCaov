@@ -3,9 +3,11 @@
 #include <R_ext/Rdynload.h>
 
 /* .Fortran calls */
+extern void F77_SUB(cvbmroc)(void *, void *, void *, void *, void *, void *, void *, void *);
 extern void F77_SUB(pbmroc)(void *, void *, void *, void *, void *, void *, void *, void *);
 
 static const R_FortranMethodDef FortranEntries[] = {
+    {"cvbmroc", (DL_FUNC) &F77_SUB(cvbmroc), 8},
     {"pbmroc", (DL_FUNC) &F77_SUB(pbmroc), 8},
     {NULL, NULL, 0}
 };
