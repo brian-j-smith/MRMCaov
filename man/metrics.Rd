@@ -7,16 +7,16 @@
 \alias{roc_auc}
 \title{Performance Metrics}
 \usage{
-binormroc_auc(observed, predicted)
+binormroc_auc(truth, rating)
 
-proproc_auc(observed, predicted)
+proproc_auc(truth, rating)
 
-roc_auc(observed, predicted)
+roc_auc(truth, rating)
 }
 \arguments{
-\item{observed}{vector of observed binary responses.}
+\item{truth}{vector of true binary responses.}
 
-\item{predicted}{vector of predcited responses.}
+\item{rating}{vector of ratings.}
 }
 \description{
 Performance Metrics

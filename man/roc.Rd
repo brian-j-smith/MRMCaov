@@ -4,18 +4,18 @@
 \alias{roc}
 \title{ROC Performance Metrics}
 \usage{
-roc(observed, predicted, ...)
+roc(truth, rating, ...)
 }
 \arguments{
-\item{observed}{vector of observed binary responses.}
+\item{truth}{vector of true binary responses.}
 
-\item{predicted}{vector of predcited responses.}
+\item{rating}{vector of ratings.}
 
 \item{...}{interaction factors within which to calculate metrics.}
 }
 \description{
-Calculation of TPR and FPR pairs for all values of a numeric predictor
-of an observed binary response.
+Calculation of TPR and FPR pairs for all values of a numeric rating of a
+true binary response.
 }
 \examples{
 with(VanDyke, roc(truth, rating, treatment, reader))
