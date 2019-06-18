@@ -14,6 +14,10 @@ DeLong <- function() {
         stop("response metric must be 'roc_auc' for DeLong covariance method")
       }
       
+      if (any(table(data[c(vars[c("tests", "readers")], "(cases)")]) != 1)) {
+        stop("balanced design required for DeLong covariance method")
+      }
+      
       observed <- data[[vars["observed"]]]
       predicted <- data[[vars["predicted"]]]
       groups <- interaction(data[[vars["tests"]]], data[[vars["readers"]]],

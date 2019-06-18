@@ -14,12 +14,13 @@
 #' \code{\link[=cov_methods]{method}} to use in calculating performance
 #' metric covariances.
 #' @param design one of the following study designs: 1 = factorial, 2 = cases
-#' nested within readers, or 3 = cases nested within tests.
+#' nested within readers, 3 = cases nested within tests, or \code{NULL} to
+#' automatically set the design based on variable codings in data.
 #' 
 #' @details
 #' Readers and cases are treated as random factors by default.  Either one may
 #' be designated as fixed in calls to \code{mrmc} with the syntax
-#' \code{factor(<variable name>)}, where \code{<variable name>} is the name of
+#' \code{fixed(<variable name>)}, where \code{<variable name>} is the name of
 #' the reader or case variable.
 #' 
 #' @seealso \code{\link{metrics}}, \code{\link{cov_methods}},
@@ -37,7 +38,7 @@
 #' summary(est)
 #' 
 mrmc <- function(response, test, reader, case, data, method = jackknife,
-                 design = 1) {
+                 design = NULL) {
   
   terms <- eval(substitute(mrmc_terms(response, test, reader, case)))
   
@@ -49,8 +50,17 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
   data[vars[factor_vars]] <- lapply(data[vars[factor_vars]], factor)
   data[["(cases)"]] <- factor(data[[vars["cases"]]])
 
-  cov <- get_method(method)(formula, data)
+  design_data <- get_design(data, vars)
+  if (is.null(design_data)) {
+    stop("data factor codings are not a supported study design")
+  } else if (is.null(design)) {
+    design <- design_data
+  } else if (design_data != design) {
+    stop("data factor codings do not match study design ", design)
+  }
 
+  cov <- get_method(method)(formula, data)
+  
   fo <- formula
   df_by <- by(data, data[vars[3:4]], function(split) {
     structure(

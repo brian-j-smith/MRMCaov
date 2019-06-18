@@ -5,7 +5,7 @@
 \title{Multi-Reader Multi-Case ROC Analysis}
 \usage{
 mrmc(response, test, reader, case, data, method = jackknife,
-  design = 1)
+  design = NULL)
 }
 \arguments{
 \item{response}{response metric expressed in terms of a package-supplied
@@ -25,7 +25,8 @@ performance \code{\link[=metrics]{metric}}.}
 metric covariances.}
 
 \item{design}{one of the following study designs: 1 = factorial, 2 = cases
-nested within readers, or 3 = cases nested within tests.}
+nested within readers, 3 = cases nested within tests, or \code{NULL} to
+automatically set the design based on variable codings in data.}
 }
 \description{
 Estimation and comparison of ROC performance metrics for multi-reader
@@ -34,7 +35,7 @@ multi-case studies.
 \details{
 Readers and cases are treated as random factors by default.  Either one may
 be designated as fixed in calls to \code{mrmc} with the syntax
-\code{factor(<variable name>)}, where \code{<variable name>} is the name of
+\code{fixed(<variable name>)}, where \code{<variable name>} is the name of
 the reader or case variable.
 }
 \examples{

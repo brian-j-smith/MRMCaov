@@ -18,6 +18,21 @@ extract_vars <- function(formula) {
 }
 
 
+get_design <- function(data, vars) {
+  crosstab <- function(...) table(data[vars[c(...)]]) > 0
+
+  if (all(crosstab("tests", "readers"))) {
+    if (all(colSums(crosstab("readers", "cases")) == 1)) {
+      2
+    } else if (all(colSums(crosstab("tests", "cases")) == 1)) {
+      3
+    } else {
+      1
+    }
+  }
+}
+
+
 get_method <- function(x) {
   if (is(x, "character")) x <- get(x, mode = "function")
   if (!is(x, "cov_method")) x <- x()
