@@ -1,15 +1,15 @@
 Package: MRMCaov
 Type: Package
 Title: Multi-Reader Multi-Case Analysis of Variance
-Version: 0.1.0
-Date: 2018-03-10
-Authors@R: c(person("Brian J", "Smith",
+Version: 0.1.1
+Date: 2018-06-21
+Authors@R: c(person(c("Brian", "J"), "Smith",
                     email = "brian-j-smith@uiowa.edu",
                     role = c("aut", "cre")),
-             person("Stephen L", "Hillis",
+             person(c("Stephen", "L"), "Hillis",
                     email = "steve-hillis@uiowa.edu",
                     role = "aut"),
-             person("Lorenzo L", "Pesce",
+             person(c("Lorenzo", "L"), "Pesce",
                     email = "lorenzo.pesce@northwestern.edu",
                     role = "ctb"))
 Author: Brian J Smith [aut, cre],
