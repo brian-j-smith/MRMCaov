@@ -7,9 +7,9 @@
 roc(truth, rating, ...)
 }
 \arguments{
-\item{truth}{vector of true binary responses.}
+\item{truth}{vector of true binary statuses.}
 
-\item{rating}{vector of ratings.}
+\item{rating}{vector of numeric ratings.}
 
 \item{...}{interaction factors within which to calculate metrics.}
 }

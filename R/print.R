@@ -5,6 +5,8 @@ print.mrmc <- function(x, n = 20, ...) {
   cat("Call:\n")
   print(x$call)
   
+  cat("\nPositive", x$vars["observed"], "status:", x$levels[2], "\n")
+  
   cat("\nResponse metric estimates:\n\n")
   print(x$aov_data)
   cat("\nANOVA Table:\n\n")

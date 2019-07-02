@@ -92,7 +92,8 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
          aov = aovfit,
          aov_data = df,
          cov = cov,
-         mrmc_tests = mrmc_tests(aovfit$model, cov, design)
+         mrmc_tests = mrmc_tests(aovfit$model, cov, design),
+         levels = levels(data[[vars["observed"]]])
          ),
     class = c(mrmc_class, "mrmc")
   )

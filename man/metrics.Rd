@@ -14,10 +14,20 @@ proproc_auc(truth, rating)
 roc_auc(truth, rating)
 }
 \arguments{
-\item{truth}{vector of true binary responses.}
+\item{truth}{vector of true binary statuses.}
 
-\item{rating}{vector of ratings.}
+\item{rating}{vector of numeric ratings.}
 }
 \description{
 Performance Metrics
+}
+\details{
+Performance metrics measure the degree to which higher case ratings are
+associated with positive case statuses, where positive status is taken to be
+the highest level of \code{truth}.  Available metrics include the following.
+\describe{
+\item{binormroc_auc:}{Area under the binormal ROC curve.}
+\item{proproc_auc:}{Area under a proper ROC curve.}
+\item{roc_auc:}{Area under the empirical, or trapezoidal, ROC curve.}
+}
 }

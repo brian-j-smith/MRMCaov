@@ -8,8 +8,18 @@ psi <- function(x_pos, x_neg) {
 #' @name metrics
 #' @rdname metrics
 #' 
-#' @param truth vector of true binary responses.
-#' @param rating vector of ratings.
+#' @param truth vector of true binary statuses.
+#' @param rating vector of numeric ratings.
+#' 
+#' @details
+#' Performance metrics measure the degree to which higher case ratings are
+#' associated with positive case statuses, where positive status is taken to be
+#' the highest level of \code{truth}.  Available metrics include the following.
+#' \describe{
+#' \item{binormroc_auc:}{Area under the binormal ROC curve.}
+#' \item{proproc_auc:}{Area under a proper ROC curve.}
+#' \item{roc_auc:}{Area under the empirical, or trapezoidal, ROC curve.}
+#' }
 #' 
 binormroc_auc <- function(truth, rating) {
   truth <- as.factor(truth)
@@ -59,8 +69,8 @@ roc_auc <- function(truth, rating) {
 #' Calculation of TPR and FPR pairs for all values of a numeric rating of a
 #' true binary response.
 #' 
-#' @param truth vector of true binary responses.
-#' @param rating vector of ratings.
+#' @param truth vector of true binary statuses.
+#' @param rating vector of numeric ratings.
 #' @param ... interaction factors within which to calculate metrics.
 #' 
 #' @seealso \code{\link{plot}}
