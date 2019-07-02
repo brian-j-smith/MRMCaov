@@ -4,7 +4,7 @@
 \name{VanDyke}
 \alias{VanDyke}
 \title{Multi-reader multi-case dataset}
-\format{A data frame with 1140 rows and 6 variables:
+\format{A data frame with 1140 rows and 7 variables:
 \describe{
   \item{reader}{reader identifier}
   \item{treatment}{treatment identifier}
@@ -19,5 +19,10 @@ VanDyke
 }
 \description{
 Multi-reader multi-case dataset
+}
+\references{
+Van Dyke CW, White RD, Obuchowski NA, Geisinger MA, Lorig RJ, Meziane MA
+(1993). Cine MRI in the diagnosis of thoracic aortic dissection. 79th
+Radiological Society of North America Meetings, Chicago, IL.
 }
 \keyword{datasets}
