@@ -17,3 +17,24 @@
 #' Radiological Society of North America Meetings, Chicago, IL.
 #' 
 "VanDyke"
+
+
+#' Multi-reader multi-case dataset
+#' 
+#' @format A data frame with 800 rows and 5 variables:
+#' \describe{
+#'   \item{Reader}{reader identifier}
+#'   \item{Treatment}{treatment identifier}
+#'   \item{Case}{case identifier}
+#'   \item{Truth}{true case status (1 = abnormal, 0 = normal)}
+#'   \item{Rating}{ordinal reader ratings of case normal status (1 = definitely
+#'   abnormal, 5 = definitely normal)}
+#' }
+#' 
+#' @references
+#' Franken EA Jr, Berbaum KS, Marley SM, Smith WL, Sato Y, Kao SC, Milam SG
+#' (1992). Evaluation of a digital workstation for interpreting neonatal
+#' examinations: a receiver operating characteristic study. Investigational
+#' Radiology, 27(9): 732-737.
+#' 
+"Franken"
