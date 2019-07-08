@@ -18,7 +18,6 @@ export(
   DeLong,
   jackknife,
   mrmc,
-  binormal_auc,
   empirical_auc,
   proproc_auc,
   trapezoidal_auc,

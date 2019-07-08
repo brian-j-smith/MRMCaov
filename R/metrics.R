@@ -3,25 +3,6 @@ psi <- function(x_pos, x_neg) {
 }
 
 
-#' Performance Metrics
-#' 
-#' @name metrics
-#' @rdname metrics
-#' 
-#' @param truth vector of true binary statuses.
-#' @param rating vector of numeric ratings.
-#' 
-#' @details
-#' Performance metrics measure the degree to which higher case ratings are
-#' associated with positive case statuses, where positive status is taken to be
-#' the highest level of \code{truth}.  Available metrics include the following.
-#' \describe{
-#' \item{binormal_auc:}{Area under the binormal ROC curve.}
-#' \item{empirical_auc, trapezoidal_auc:}{Area under the empirical, or
-#' trapezoidal, ROC curve.}
-#' \item{proproc_auc:}{Area under a proper ROC curve.}
-#' }
-#' 
 binormal_auc <- function(truth, rating) {
   truth <- as.factor(truth)
   is_pos <- truth == levels(truth)[2]
@@ -36,7 +17,23 @@ binormal_auc <- function(truth, rating) {
 }
 
 
+#' Performance Metrics
+#' 
+#' @name metrics
 #' @rdname metrics
+#' 
+#' @param truth vector of true binary statuses.
+#' @param rating vector of numeric ratings.
+#' 
+#' @details
+#' Performance metrics measure the degree to which higher case ratings are
+#' associated with positive case statuses, where positive status is taken to be
+#' the highest level of \code{truth}.  Available metrics include the following.
+#' \describe{
+#' \item{empirical_auc, trapezoidal_auc:}{Area under the empirical, or
+#' trapezoidal, ROC curve.}
+#' \item{proproc_auc:}{Area under a proper ROC curve.}
+#' }
 #' 
 empirical_auc <- function(truth, rating) {
   truth <- as.factor(truth)
