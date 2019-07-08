@@ -2,16 +2,19 @@
 % Please edit documentation in R/metrics.R
 \name{metrics}
 \alias{metrics}
-\alias{binormroc_auc}
+\alias{binormal_auc}
+\alias{empirical_auc}
 \alias{proproc_auc}
-\alias{roc_auc}
+\alias{trapezoidal_auc}
 \title{Performance Metrics}
 \usage{
-binormroc_auc(truth, rating)
+binormal_auc(truth, rating)
+
+empirical_auc(truth, rating)
 
 proproc_auc(truth, rating)
 
-roc_auc(truth, rating)
+trapezoidal_auc(truth, rating)
 }
 \arguments{
 \item{truth}{vector of true binary statuses.}
@@ -26,8 +29,9 @@ Performance metrics measure the degree to which higher case ratings are
 associated with positive case statuses, where positive status is taken to be
 the highest level of \code{truth}.  Available metrics include the following.
 \describe{
-\item{binormroc_auc:}{Area under the binormal ROC curve.}
+\item{binormal_auc:}{Area under the binormal ROC curve.}
+\item{empirical_auc, trapezoidal_auc:}{Area under the empirical, or
+trapezoidal, ROC curve.}
 \item{proproc_auc:}{Area under a proper ROC curve.}
-\item{roc_auc:}{Area under the empirical, or trapezoidal, ROC curve.}
 }
 }

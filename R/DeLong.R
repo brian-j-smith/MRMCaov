@@ -10,8 +10,9 @@ DeLong <- function() {
     function(formula, data, ...) {
       vars <- extract_vars(formula)
       
-      if (vars["metric"] != "roc_auc") {
-        stop("response metric must be 'roc_auc' for DeLong covariance method")
+      if (!(vars["metric"] %in% c("empirical_auc", "trapezoidal_auc"))) {
+        stop("response metric must be 'empirical_auc' or 'trapezoidal_auc' for",
+             " DeLong covariance method")
       }
       
       if (any(table(data[c(vars[c("tests", "readers")], "(cases)")]) != 1)) {
@@ -28,7 +29,7 @@ DeLong <- function() {
         observed <- observed[indices]
         predicted <- predicted[indices]
         varcomp <- varcomp_Sen(observed, predicted)
-        auc <- roc_auc(observed, predicted)
+        auc <- empirical_auc(observed, predicted)
         list(varcomp10 = varcomp$v10 - auc, varcomp01 = varcomp$v01 - auc,
              auc = auc)
       })

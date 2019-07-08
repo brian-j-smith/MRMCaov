@@ -5,8 +5,9 @@ unbiased <- function() {
     function(formula, data, ...) {
       vars <- extract_vars(formula)
       
-      if (vars["metric"] != "roc_auc") {
-        stop("response metric must be 'roc_auc' for unbiased covariance method")
+      if (!(vars["metric"] %in% c("empirical_auc", "trapezoidal_auc"))) {
+        stop("response metric must be 'empirical_auc' or 'trapezoidal_auc' for",
+             " for unbiased covariance method")
       }
       
       df <- data.frame(

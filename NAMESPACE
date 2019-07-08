@@ -18,10 +18,11 @@ export(
   DeLong,
   jackknife,
   mrmc,
-  binormroc_auc,
+  binormal_auc,
+  empirical_auc,
   proproc_auc,
+  trapezoidal_auc,
   roc,
-  roc_auc,
   unbiased
 )
 

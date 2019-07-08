@@ -40,12 +40,13 @@ the reader or case variable.
 }
 \examples{
 ## Random readers and cases
-(est <- mrmc(roc_auc(truth, rating), treatment, reader, case, data = VanDyke))
+(est <- mrmc(empirical_auc(truth, rating), treatment, reader, case,
+             data = VanDyke))
 summary(est)
 plot(est)
 
 ## Fixed readers and fixed cases
-est <- mrmc(roc_auc(truth, rating), treatment, fixed(reader), case,
+est <- mrmc(empirical_auc(truth, rating), treatment, fixed(reader), case,
             data = VanDyke)
 summary(est)
 
