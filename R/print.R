@@ -52,7 +52,8 @@ print.summary.mrmc <- function(x, ...) {
   .print.summary.mrmc(x)
   
   cat("\n\nReader-specific ", 100 * x$conf.level, "% CIs and tests for ",
-      x$vars["metric"], " pairwise differences:\n\n", sep = "")
+      x$vars["metric"], " pairwise differences (each analysis based only on",
+      " data for the specified reader):\n\n", sep = "")
   print(x$reader_test_diffs)
   
   invisible()
@@ -86,7 +87,8 @@ print.summary.mrmc <- function(x, ...) {
       " pairwise differences:\n\n", sep = "")
   print(x$test_diffs)
   
-  cat("\n\n", 100 * x$conf.level, "% ", tests_metric, " CIs:\n\n", sep = "")
+  cat("\n\n", 100 * x$conf.level, "% ", tests_metric, " CIs (each analysis",
+      " based only on data for the specified treatment):\n\n", sep = "")
   print(x$test_means)
   
   invisible()
