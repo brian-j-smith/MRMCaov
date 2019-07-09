@@ -25,9 +25,9 @@ summary.mrmc <- function(object, conf.level = 0.95, ...) {
   MS <- comps$MS
   cov <- comps$cov
   
-  test_levels <- levels(object)$tests
+  test_levels <- levels(object)$test
 
-  denominator <- MS[["T:R"]] + n[["readers"]] * max(cov[2] - cov[3], 0)
+  denominator <- MS[["T:R"]] + n[["reader"]] * max(cov[2] - cov[3], 0)
   test_equality <- data.frame(
     `MS(T)` = MS[["T"]],
     `MS(T:R)` = MS[["T:R"]],
@@ -35,9 +35,9 @@ summary.mrmc <- function(object, conf.level = 0.95, ...) {
     Cov3 = cov[3],
     Denominator = denominator,
     F = MS[["T"]] / denominator,
-    df1 = n[["tests"]] - 1,
-    df2 = (MS[["T:R"]] + n[["readers"]] * max(cov[2] - cov[3], 0))^2 /
-      (MS[["T:R"]]^2 / ((n[["tests"]] - 1) * (n[["readers"]] - 1))),
+    df1 = n[["test"]] - 1,
+    df2 = (MS[["T:R"]] + n[["reader"]] * max(cov[2] - cov[3], 0))^2 /
+      (MS[["T:R"]]^2 / ((n[["test"]] - 1) * (n[["reader"]] - 1))),
     check.names = FALSE
   )
   test_equality$`p-value` <- with(test_equality, 1 - pf(F, df1, df2))
@@ -52,7 +52,7 @@ summary.mrmc <- function(object, conf.level = 0.95, ...) {
   test_diffs <- data.frame(
     Comparison = paste(test_levels[combs[, 1]], "-", test_levels[combs[, 2]]),
     Estimate = estimates[combs[, 1]] - estimates[combs[, 2]],
-    StdErr = sqrt(2 / n[["readers"]] * denominator),
+    StdErr = sqrt(2 / n[["reader"]] * denominator),
     df = test_equality$df2
   )
   test_diffs$CI <- with(test_diffs, {
@@ -80,18 +80,18 @@ summary.mrmc <- function(object, conf.level = 0.95, ...) {
   MS <- comps$MS
   cov <- comps$cov
   
-  test_levels <- levels(object)$tests
-  reader_levels <- levels(object)$readers
+  test_levels <- levels(object)$test
+  reader_levels <- levels(object)$reader
   
-  denominator <- comps$var - cov[1] + (n[["readers"]] - 1) * (cov[2] - cov[3])
+  denominator <- comps$var - cov[1] + (n[["reader"]] - 1) * (cov[2] - cov[3])
   test_equality <- data.frame(
     `MS(T)` = MS[["T"]],
     Cov1 = cov[1],
     Cov2 = cov[2],
     Cov3 = cov[3],
     Denominator = denominator,
-    X2 = (n[["tests"]] - 1) * MS[["T"]] / denominator,
-    df = n[["tests"]] - 1,
+    X2 = (n[["test"]] - 1) * MS[["T"]] / denominator,
+    df = n[["test"]] - 1,
     check.names = FALSE
   )
   test_equality$`p-value` <- with(test_equality, 1 - pchisq(X2, df))
@@ -106,7 +106,7 @@ summary.mrmc <- function(object, conf.level = 0.95, ...) {
   test_diffs <- data.frame(
     Comparison = paste(test_levels[combs[, 1]], "-", test_levels[combs[, 2]]),
     Estimate = estimates[combs[, 1]] - estimates[combs[, 2]],
-    StdErr = sqrt(2 / n[["readers"]] * denominator)
+    StdErr = sqrt(2 / n[["reader"]] * denominator)
   )
   test_diffs$CI <- with(test_diffs, {
     Estimate + qnorm((1 + conf.level) / 2) * StdErr %o% c(Lower = -1, Upper = 1)
@@ -131,18 +131,18 @@ summary.mrmc <- function(object, conf.level = 0.95, ...) {
 reader_test_diffs <- function(object, conf.level) {
   
   n <- dim(object)
-  test_levels <- levels(object)$tests
-  reader_levels <- levels(object)$readers
+  test_levels <- levels(object)$test
+  reader_levels <- levels(object)$reader
   
-  estimates <- matrix(object$aov$model[[1]], ncol = n["tests"], byrow = TRUE)
+  estimates <- matrix(object$aov$model[[1]], ncol = n["test"], byrow = TRUE)
   
   stderrs <- sapply(reader_levels, function(reader) {
     comps <- vcov_comps(object, reader = reader)
     sqrt(2 * (comps$var - comps$cov[1]))
   })
   
-  combs <- combinations(n["tests"], 2)
-  combs_reader <- rep(1, n["readers"]) %x% combs
+  combs <- combinations(n["test"], 2)
+  combs_reader <- rep(1, n["reader"]) %x% combs
   reader_indices <- rep(seq(reader_levels), each = nrow(combs))
   
   df <- data.frame(
@@ -170,14 +170,14 @@ reader_test_diffs <- function(object, conf.level) {
   MS <- comps$MS
   cov <- comps$cov
   
-  test_levels <- levels(object)$tests
+  test_levels <- levels(object)$test
 
   test_equality <- data.frame(
     `MS(T)` = MS[["T"]],
     `MS(T:R)` = MS[["T:R"]],
     F = MS[["T"]] / MS[["T:R"]],
-    df1 = n[["tests"]] - 1,
-    df2 = (n[["tests"]] - 1) * (n[["readers"]] - 1),
+    df1 = n[["test"]] - 1,
+    df2 = (n[["test"]] - 1) * (n[["reader"]] - 1),
     check.names = FALSE
   )
   test_equality$`p-value` <- with(test_equality, 1 - pf(F, df1, df2))
@@ -192,8 +192,8 @@ reader_test_diffs <- function(object, conf.level) {
   test_diffs <- data.frame(
     Comparison = paste(test_levels[combs[, 1]], "-", test_levels[combs[, 2]]),
     Estimate = estimates[combs[, 1]] - estimates[combs[, 2]],
-    df = (n[["tests"]] - 1) * (n[["readers"]] - 1),
-    StdErr = sqrt(2 / n[["readers"]] * MS[["T:R"]])
+    df = (n[["test"]] - 1) * (n[["reader"]] - 1),
+    StdErr = sqrt(2 / n[["reader"]] * MS[["T:R"]])
   )
   test_diffs$CI <- with(test_diffs, {
     Estimate + qt((1 + conf.level) / 2, df) * StdErr %o% c(Lower = -1, Upper = 1)

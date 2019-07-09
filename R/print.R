@@ -5,7 +5,7 @@ print.mrmc <- function(x, n = 20, ...) {
   cat("Call:\n")
   print(x$call)
   
-  cat("\nPositive", x$vars["observed"], "status:", x$levels[2], "\n")
+  cat("\nPositive truth status:", x$levels[2], "\n")
   
   cat("\nResponse metric estimates:\n\n")
   print(x$aov_data)
@@ -71,23 +71,23 @@ print.summary.mrmc <- function(x, ...) {
   cat("Experimental design:",
       switch(x$design,
              "factorial",
-             paste("cases nested within", x$vars["readers"]),
-             paste("cases nested within", x$vars["tests"])),
+             paste("cases nested within", x$vars["reader"]),
+             paste("cases nested within", x$vars["test"])),
       "\n\n")
   
   cat("Obuchowski-Rockette variance component and covariance estimates:\n\n")
   print(x$vcov_comps)
   
-  tests_metric <- paste(x$vars["tests"], x$vars["metric"])
+  test_metric <- paste(x$vars["test"], x$vars["metric"])
   
-  cat("\n\nANOVA global test of equal", tests_metric, ":\n\n")
+  cat("\n\nANOVA global test of equal ", test_metric, ":\n\n", sep = "")
   print(x$test_equality)
   
-  cat("\n\n", 100 * x$conf.level, "% CIs and tests for ", tests_metric,
+  cat("\n\n", 100 * x$conf.level, "% CIs and tests for ", test_metric,
       " pairwise differences:\n\n", sep = "")
   print(x$test_diffs)
   
-  cat("\n\n", 100 * x$conf.level, "% ", tests_metric, " CIs (each analysis",
+  cat("\n\n", 100 * x$conf.level, "% ", test_metric, " CIs (each analysis",
       " based only on data for the specified treatment):\n\n", sep = "")
   print(x$test_means)
   

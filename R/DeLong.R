@@ -7,29 +7,27 @@
 #' 
 DeLong <- function() {
   structure(
-    function(formula, data, ...) {
-      vars <- extract_vars(formula)
+    function(data, ...) {
       
-      if (!(vars["metric"] %in% c("empirical_auc", "trapezoidal_auc"))) {
+      if (!(attr(data, "metric") %in% c("empirical_auc", "trapezoidal_auc"))) {
         stop("response metric must be 'empirical_auc' or 'trapezoidal_auc' for",
              " DeLong covariance method")
       }
       
-      if (any(table(data[c(vars[c("tests", "readers")], "(cases)")]) != 1)) {
+      if (any(table(data[c("test", "reader", "case")]) != 1)) {
         stop("balanced design required for DeLong covariance method")
       }
       
-      observed <- data[[vars["observed"]]]
-      predicted <- data[[vars["predicted"]]]
-      groups <- interaction(data[[vars["tests"]]], data[[vars["readers"]]],
-                            drop = TRUE)
-    
+      truths <- data$truth
+      ratings <- data$rating
+      groups <- interaction(data$test, data$reader, drop = TRUE)
+
       varcomps <- lapply(levels(groups), function(group) {
         indices <- groups == group
-        observed <- observed[indices]
-        predicted <- predicted[indices]
-        varcomp <- varcomp_Sen(observed, predicted)
-        auc <- empirical_auc(observed, predicted)
+        truths <- truths[indices]
+        ratings <- ratings[indices]
+        varcomp <- varcomp_Sen(truths, ratings)
+        auc <- empirical_auc(truths, ratings)
         list(varcomp10 = varcomp$v10 - auc, varcomp01 = varcomp$v01 - auc,
              auc = auc)
       })
@@ -52,15 +50,15 @@ DeLong <- function() {
 }
 
 
-varcomp_Sen <- function(observed, predicted) {
-  is_pos <- observed == levels(observed)[2]
-  predicted_pos <- predicted[is_pos]
-  predicted_neg <- predicted[!is_pos]
+varcomp_Sen <- function(truths, ratings) {
+  is_pos <- truths == levels(truths)[2]
+  ratings_pos <- ratings[is_pos]
+  ratings_neg <- ratings[!is_pos]
   
-  indices <- expand.grid(pos = seq_along(predicted_pos),
-                         neg = seq_along(predicted_neg))
+  indices <- expand.grid(pos = seq_along(ratings_pos),
+                         neg = seq_along(ratings_neg))
   
-  psi_all <- psi(predicted_pos[indices$pos], predicted_neg[indices$neg])
+  psi_all <- psi(ratings_pos[indices$pos], ratings_neg[indices$neg])
   
   v10 <- tapply(psi_all, indices$pos, mean)
   v01 <- tapply(psi_all, indices$neg, mean)

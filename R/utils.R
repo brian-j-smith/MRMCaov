@@ -11,20 +11,13 @@ dim.mrmc_tests <- function(x) {
 }
 
 
-extract_vars <- function(formula) {
-  vars <- all.vars(formula)
-  c(observed = vars[1], predicted = vars[2], tests = vars[3], readers = vars[4],
-    metric = all.names(formula)[2])
-}
+get_design <- function(data) {
+  crosstab <- function(...) table(data[c(...)]) > 0
 
-
-get_design <- function(data, vars) {
-  crosstab <- function(...) table(data[vars[c(...)]]) > 0
-
-  if (all(crosstab("tests", "readers"))) {
-    if (all(colSums(crosstab("readers", "cases")) == 1)) {
+  if (all(crosstab("test", "reader"))) {
+    if (all(colSums(crosstab("reader", "case")) == 1)) {
       2
-    } else if (all(colSums(crosstab("tests", "cases")) == 1)) {
+    } else if (all(colSums(crosstab("test", "case")) == 1)) {
       3
     } else {
       1
@@ -42,12 +35,12 @@ get_method <- function(x) {
 
 
 levels.mrmc <- function(x) {
-  structure(x$aov$xlevels, names = c("tests", "readers"))
+  structure(x$aov$xlevels, names = c("test", "reader"))
 }
 
 
 levels.mrmc_tests <- function(x) {
-  structure(x$aov$xlevels, names = c("readers"))
+  structure(x$aov$xlevels, names = c("reader"))
 }
 
 
@@ -144,13 +137,13 @@ summary.vcov_comps <- function(object, ...) {
   
   vcov_comps <- data.frame(
     Estimate = c(
-      (MS[["R"]] - MS[["T:R"]]) / n[["tests"]] - cov[1] + cov[3],
+      (MS[["R"]] - MS[["T:R"]]) / n[["test"]] - cov[1] + cov[3],
       MS[["T:R"]] - var_error + cov[1] + (cov[2] - cov[3]),
       var_error,
       cov
     ),
-    row.names = c(object$vars["readers"],
-                  paste0(object$vars[c("tests", "readers")], collapse = ":"),
+    row.names = c(object$vars["reader"],
+                  paste0(object$vars[c("test", "reader")], collapse = ":"),
                   "Error", "Cov1", "Cov2", "Cov3")
   )
   vcov_comps$Correlation <- vcov_comps$Estimate /

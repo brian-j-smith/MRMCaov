@@ -42,16 +42,18 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
                  design = NULL) {
   
   terms <- eval(substitute(mrmc_terms(response, test, reader, case)))
-  
-  formula <- terms$formula
-  vars <- extract_vars(formula)
-  vars["cases"] <- terms$case
 
-  factor_vars <- c("observed", "tests", "readers")
-  data[vars[factor_vars]] <- lapply(data[vars[factor_vars]], factor)
-  data[["(cases)"]] <- factor(data[[vars["cases"]]])
+  response_call <- match.call(get(terms$metric), terms$formula[[2]])
+  mrmc_data <- structure(
+    data.frame(truth = factor(eval(response_call$truth, data)),
+               rating = eval(response_call$rating, data),
+               test = factor(data[[terms$labels["test"]]]),
+               reader = factor(data[[terms$labels["reader"]]]),
+               case = factor(data[[terms$labels["case"]]])), 
+    metric = terms$metric
+  )
 
-  design_data <- get_design(data, vars)
+  design_data <- get_design(mrmc_data)
   if (is.null(design_data)) {
     stop("data factor codings are not a supported study design")
   } else if (is.null(design)) {
@@ -60,13 +62,13 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
     stop("data factor codings do not match study design ", design)
   }
 
-  cov <- get_method(method)(formula, data)
-  
-  fo <- formula
-  df_by <- by(data, data[vars[3:4]], function(split) {
+  cov <- get_method(method)(mrmc_data)
+
+  fo <- terms$formula
+  df_by <- by(data, data[terms$labels[c("test", "reader")]], function(split) {
     structure(
       c(nrow(split), eval(fo[[2]], split)),
-      names = c("N", vars["metric"])
+      names = c("N", terms$metric)
     )
   })
   df <- cbind(expand.grid(dimnames(df_by)), do.call(rbind, df_by))
@@ -86,16 +88,14 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
   structure(
     list(call = sys.call(),
          design = design,
-         vars = vars,
-         roc = do.call(roc, c(list(data[[vars["observed"]]],
-                                   data[[vars["predicted"]]]),
-                              data[vars[c("tests", "readers")]])),
+         vars = c(terms$labels, metric = terms$metric),
+         roc = do.call(roc, list(mrmc_data$truth, mrmc_data$rating,
+                                 mrmc_data$test, mrmc_data$reader)),
          aov = aovfit,
          aov_data = df,
          cov = cov,
          mrmc_tests = mrmc_tests(aovfit$model, cov, design),
-         levels = levels(data[[vars["observed"]]])
-         ),
+         levels = levels(mrmc_data$truth)),
     class = c(mrmc_class, "mrmc")
   )
 }
@@ -114,7 +114,8 @@ mrmc_terms <- function(response, test, reader, case) {
   
   list(
     formula = update(fo, . ~ .^2),
-    case = case$label,
+    metric = all.names(fo)[2],
+    labels = c(test = test$label, reader = reader$label, case = case$label),
     fixed = c(reader = reader$type, case = case$type) == "fixed"
   )
 }

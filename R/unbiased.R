@@ -2,28 +2,22 @@
 #' 
 unbiased <- function() {
   structure(
-    function(formula, data, ...) {
-      vars <- extract_vars(formula)
-      
-      if (!(vars["metric"] %in% c("empirical_auc", "trapezoidal_auc"))) {
+    function(data, ...) {
+
+      if (!(attr(data, "metric") %in% c("empirical_auc", "trapezoidal_auc"))) {
         stop("response metric must be 'empirical_auc' or 'trapezoidal_auc' for",
              " for unbiased covariance method")
       }
       
-      df <- data.frame(
-        observed = data[[vars["observed"]]],
-        case = data[["(cases)"]],
-        predicted = data[[vars["predicted"]]],
-        group = interaction(data[[vars["tests"]]], data[[vars["readers"]]],
-                            drop = TRUE)
-      )
-      
+      df <- data[c("truth", "rating", "case")]
+      df$group <- interaction(data$test, data$reader, drop = TRUE)
+
       tbl <- table(df$group, df$case)
       balanced <- all(tbl == tbl[1])
 
       structure(
         ifelse(balanced, .unbiased_balanced, .unbiased_unbalanced)(df),
-        dimnames = list(levels(data$group), levels(data$group))
+        dimnames = list(levels(df$group), levels(df$group))
       )
     },
     class = c("cov_method", "function")
@@ -33,11 +27,11 @@ unbiased <- function() {
 
 .unbiased_balanced <- function(data) {
   
-  df <- reshape(data, idvar = "case", v.names = "predicted",
+  df <- reshape(data, idvar = "case", v.names = "rating",
                 timevar = "group", direction = "wide")
-  subset_indices <- -match(c("case", "observed"), names(df))
+  subset_indices <- -match(c("case", "truth"), names(df))
   
-  is_pos <- df$observed == levels(df$observed)[2]
+  is_pos <- df$truth == levels(df$truth)[2]
   df_pos <- df[is_pos, subset_indices, drop = FALSE]
   df_neg <- df[!is_pos, subset_indices, drop = FALSE]
 
@@ -82,9 +76,9 @@ unbiased <- function() {
 
 .unbiased_unbalanced <- function(data) {
 
-  subset_indices <- -match("observed", names(data))
+  subset_indices <- -match("truth", names(data))
 
-  is_pos <- data$observed == levels(data$observed)[2]
+  is_pos <- data$truth == levels(data$truth)[2]
   df_pos <- data[is_pos, subset_indices, drop = FALSE]
   df_neg <- data[!is_pos, subset_indices, drop = FALSE]
 
@@ -121,17 +115,17 @@ unbiased <- function() {
 .unbiased_psi <- function(df_pos, df_neg, group) {
   
   is_group_pos <- df_pos$group == group
-  predicted_pos <- df_pos$predicted[is_group_pos]
+  ratings_pos <- df_pos$rating[is_group_pos]
   cases_pos <- df_pos$case[is_group_pos]
   
   is_group_neg <- df_neg$group == group
-  predicted_neg <- df_neg$predicted[is_group_neg]
+  ratings_neg <- df_neg$rating[is_group_neg]
   cases_neg <- df_neg$case[is_group_neg]
   
-  indices <- expand.grid(pos = seq_along(predicted_pos),
-                         neg = seq_along(predicted_neg))
+  indices <- expand.grid(pos = seq_along(ratings_pos),
+                         neg = seq_along(ratings_neg))
   
-  data.frame(psi = psi(predicted_pos[indices$pos], predicted_neg[indices$neg]),
+  data.frame(psi = psi(ratings_pos[indices$pos], ratings_neg[indices$neg]),
              case_pos = cases_pos[indices$pos],
              case_neg = cases_neg[indices$neg])
   

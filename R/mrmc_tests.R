@@ -25,9 +25,9 @@ summary.mrmc_tests_rrrc <- function(object, conf.level = 0.95, ...) {
     Estimate = mean(object),
     `MS(R)` = MS[["R"]],
     Cov2 = cov[2],
-    StdErr = sqrt(MS[["R"]] / n[["readers"]] + max(cov[2], 0)),
-    df = (MS[["R"]] + n[["readers"]] * max(cov[2], 0))^2 /
-      (MS[["R"]]^2 / (n[["readers"]] - 1)),
+    StdErr = sqrt(MS[["R"]] / n[["reader"]] + max(cov[2], 0)),
+    df = (MS[["R"]] + n[["reader"]] * max(cov[2], 0))^2 /
+      (MS[["R"]]^2 / (n[["reader"]] - 1)),
     check.names = FALSE
   )
   df$CI <- with(df, {
@@ -48,8 +48,8 @@ summary.mrmc_tests_frrc <- function(object, conf.level = 0.95, ...) {
     Estimate = mean(object),
     `Var(Error)` = comps$var,
     Cov2 = cov[2],
-    StdErr = sqrt((comps$var + (n[["readers"]] - 1) * max(cov[2], 0)) /
-                    n[["readers"]]),
+    StdErr = sqrt((comps$var + (n[["reader"]] - 1) * max(cov[2], 0)) /
+                    n[["reader"]]),
     check.names = FALSE
   )
   df$CI <- with(df, {
@@ -69,8 +69,8 @@ summary.mrmc_tests_rrfc <- function(object, conf.level = 0.95, ...) {
   df <- data.frame(
     Estimate = mean(object),
     `MS(R)` = MS[["R"]],
-    StdErr = sqrt(MS[["R"]] / n[["readers"]]),
-    df = n[["readers"]] - 1,
+    StdErr = sqrt(MS[["R"]] / n[["reader"]]),
+    df = n[["reader"]] - 1,
     check.names = FALSE
   )
   df$CI <- with(df, {

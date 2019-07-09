@@ -2,17 +2,16 @@
 #' 
 jackknife <- function() {
   structure(
-    function(formula, data, ...) {
-      vars <- extract_vars(formula)
-      cases <- data[["(cases)"]]
-      groups <- interaction(data[[vars["tests"]]], data[[vars["readers"]]])
-      df <- data[vars[c("observed", "predicted")]]
+    function(data, ...) {
+      cases <- data$case
+      groups <- interaction(data$test, data$reader)
+      df <- data[c("truth", "rating")]
       
       metrics <- matrix(NA, nlevels(cases), nlevels(groups))
       for (i in 1:nlevels(cases)) {
         include <- cases != levels(cases)[i]
         metrics[i, ] <- by(df[include, ], groups[include], function(split) {
-          eval(formula[[2]], split)
+          do.call(attr(data, "metric"), split)
         })
       }
       
