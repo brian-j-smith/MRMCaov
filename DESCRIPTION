@@ -17,6 +17,7 @@ Author: Brian J Smith [aut, cre],
   Lorenzo L Pesce [ctb]
 Maintainer: Brian J Smith <brian-j-smith@uiowa.edu>
 Description: A package for multi-reader and multi-case analysis of variance.
+Depends: R (>= 3.5.0)
 Imports: ggplot2, gtools, magrittr, methods, ROCR
 NeedsCompilation: yes
 LazyData: true
