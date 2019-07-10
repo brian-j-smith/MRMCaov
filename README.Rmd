@@ -1,0 +1,46 @@
+---
+title: "MRMCaov: Multi-Reader Multi-Case Analysis of Variance"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Description
+
+**MRMCaov** is an R package for statistical comparison of diagnostic tests - such as those based on medical imaging - for which ratings have been obtained from multiple readers and on multiple cases.  Features of the package include the following.
+
+* Performance metrics: area under the receiver operating characteristic curve (empirical/trapezoidal and proper parametric curves)
+* Study designs: factorial, cases nested within readers, cases nested within tests, partially-paired cases
+* Covariance estimation methods: DeLong, jackknife, unbiased
+
+
+## Download and Installation
+
+To install the package, download the archive file for your operating system from the links provided in the table below.  Next, do the following:
+
+1. Run [RStudio](https://www.rstudio.com/products/rstudio/).
+2. Click on "Tools" from the RStudio menu and then select "Install Packages..." to bring up the "Install Packages" dialog box.
+3. From the dialog box, select "Package Archive File (.zip; .tar.gz)" as the source from which to install, and browse to and select the downloaded package archive file.
+
+| Operating System      | Package Archive File | 
+|-----------------------|----------------------|
+| Microsoft Windows: | [MRMCaov_0.1.2.zip](https://iowa-my.sharepoint.com/:u:/r/personal/bjsmith_uiowa_edu/Documents/Software/Packages/MRMCaov_0.1.2.zip?csf=1&e=nvjXwJ) |
+| Non-Windows: | [MRMCaov_0.1.2.tar.gz](https://iowa-my.sharepoint.com/:u:/r/personal/bjsmith_uiowa_edu/Documents/Software/Packages/MRMCaov_0.1.2.tar.gz?csf=1&e=xaVYpH) |
+
+
+## Getting Started
+
+```{r mrmc, message=FALSE}
+## Load the package
+library(MRMCaov)
+
+## View main help page
+?mrmc
+
+## Analyze the VanDyke dataset
+est <- mrmc(empirical_auc(truth, rating), treatment, reader, case, data = VanDyke)
+plot(est)
+summary(est)
+```
