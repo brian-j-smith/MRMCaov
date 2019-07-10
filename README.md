@@ -26,12 +26,13 @@ following:
     Packages…” to bring up the “Install Packages” dialog box.
 3.  From the dialog box, select “Package Archive File (.zip; .tar.gz)”
     as the source from which to install, and browse to and select the
-    downloaded package archive file.
+    downloaded package archive
+file.
 
-| Operating System   | Package Archive File                                                                                                                                     |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Microsoft Windows: | [MRMCaov\_0.1.2.zip](https://iowa-my.sharepoint.com/:u:/r/personal/bjsmith_uiowa_edu/Documents/Software/Packages/MRMCaov_0.1.2.zip?csf=1&e=nvjXwJ)       |
-| Non-Windows:       | [MRMCaov\_0.1.2.tar.gz](https://iowa-my.sharepoint.com/:u:/r/personal/bjsmith_uiowa_edu/Documents/Software/Packages/MRMCaov_0.1.2.tar.gz?csf=1&e=xaVYpH) |
+| Operating System   | Package Archive File                                                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Microsoft Windows: | [MRMCaov\_0.1.2.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EZlO1rYXXZ9HiT4fD4Q5AF8B-tyJQw087MlMfbsp-4nZEQ?e=mvIZPk)    |
+| Non-Windows:       | [MRMCaov\_0.1.2.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EVvhUJr9mxJNixFiQVvFx8oB11kISQDxWz_Ay4gIPWb1nw?e=ZmIlUf) |
 
 ## Getting Started
 

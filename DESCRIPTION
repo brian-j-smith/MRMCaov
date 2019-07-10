@@ -1,8 +1,8 @@
 Package: MRMCaov
 Type: Package
 Title: Multi-Reader Multi-Case Analysis of Variance
-Version: 0.1.1
-Date: 2018-06-21
+Version: 0.1.2
+Date: 2018-07-10
 Authors@R: c(person(c("Brian", "J"), "Smith",
                     email = "brian-j-smith@uiowa.edu",
                     role = c("aut", "cre")),
