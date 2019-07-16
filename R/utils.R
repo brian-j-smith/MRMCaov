@@ -1,6 +1,3 @@
-utils::globalVariables(c("group", "x", "y"))
-
-
 dim.mrmc <- function(x) {
   sapply(levels(x), length)
 }

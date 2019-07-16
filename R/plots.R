@@ -17,27 +17,29 @@ plot.roc <- function(x, ...) {
     x = x$FPR,
     y = x$TPR
   )
+  aes_args <- list(~ x, ~ y)
   
   x[c("FPR", "TPR")] <- NULL
-  if (ncol(x) > 1) {
-    df$group <- interaction(x)
-    group_name <- "Group"
-  } else {
-    df$group <- x[[1]]
-    group_name <- names(x)
+  n <- ncol(x)
+  
+  if (n > 0) {
+    df$group <- x[[n]]
+    aes_args$color <- ~ group
+  }
+  if (n > 1) {
+    prefix <- paste(names(x)[-n], collapse = ".")
+    df$facet <- paste0(prefix, ": ", interaction(x[-n]))
   }
 
-  aes_perf <- if (nlevels(df$group) > 1) {
-    aes(x, y, color = group)
-  } else {
-    aes(x, y)
-  }
-  
-  ggplot(df, aes_perf) +
+  p <- ggplot(df, do.call(aes_, aes_args)) +
     geom_path() +
     coord_fixed() +
     labs(x = "False Positive Rate", y = "True Positive Rate",
-         color = group_name)
+         color = names(x)[n])
+  
+  if (!is.null(df$facet)) p <- p + facet_wrap(~ facet)
+  
+  p
 }
 
 
