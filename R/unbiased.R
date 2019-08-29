@@ -10,15 +10,29 @@ unbiased <- function() {
       }
       
       df <- data[c("truth", "rating", "case")]
-      df$group <- interaction(data$test, data$reader, drop = TRUE)
+      df$group <- interaction(data$test, data$reader)
 
       tbl <- table(df$group, df$case)
       balanced <- all(tbl == tbl[1])
+      
+      covmat <- ifelse(balanced, .unbiased_balanced, .unbiased_unbalanced)(df)
+      dimnames(covmat) <- list(levels(df$group), levels(df$group))
+      
+      a <- attr(covmat, "a")
+      group_levels <- expand.grid(test = levels(data$test),
+                                  reader = levels(data$reader))
+      same_test <- outer(group_levels$test, group_levels$test, "==")
+      same_reader <- outer(group_levels$reader, group_levels$reader, "==")
+      abar_sigma2 <- sapply(a, function(x) mean(x[same_test & same_reader]))
+      abar_cov1 <- sapply(a, function(x) mean(x[!same_test & same_reader]))
+      abar_cov2 <- sapply(a, function(x) mean(x[same_test & !same_reader]))
+      abar_cov3 <- sapply(a, function(x) mean(x[!(same_test | same_reader)]))
+      
+      structure(covmat,
+                a = NULL,
+                abar = cbind(abar_sigma2, abar_cov1, abar_cov2, abar_cov3),
+                class = "cov_unbiased")
 
-      structure(
-        ifelse(balanced, .unbiased_balanced, .unbiased_unbalanced)(df),
-        dimnames = list(levels(df$group), levels(df$group))
-      )
     },
     class = c("cov_method", "function")
   )
@@ -44,8 +58,8 @@ unbiased <- function() {
   same_case_neg <- outer(indices$neg, indices$neg, "==")
   
   in_a1 <- same_case_pos & same_case_neg
-  in_a2 <- !same_case_pos & same_case_neg
-  in_a3 <- same_case_pos & !same_case_neg
+  in_a2 <- same_case_pos & !same_case_neg
+  in_a3 <- !same_case_pos & same_case_neg
   in_a4 <- !same_case_pos & !same_case_neg
   
   psi_list <- lapply(1:nlevels(data$group), function(i) {
@@ -68,8 +82,10 @@ unbiased <- function() {
     }
   }
   
-  (a1 + (n_pos - 1) * a2 + (n_neg - 1) * a3 + (1 - n_pos - n_neg) * a4) /
-    (n_pos * n_neg)
+  covmat <- (a1 + (n_pos - 1) * a2 + (n_neg - 1) * a3 +
+               (1 - n_pos - n_neg) * a4) / (n_pos * n_neg)
+  
+  structure(covmat, a = list(a1, a2, a3, a4))
   
 }
 
@@ -98,16 +114,18 @@ unbiased <- function() {
       
       mean_of <- function(include) mean(psi_cross[include])
       a1[i, j] <- a1[j, i] <- mean_of(same_case_pos & same_case_neg)
-      a2[i, j] <- a2[j, i] <- mean_of(!same_case_pos & same_case_neg)
-      a3[i, j] <- a3[j, i] <- mean_of(same_case_pos & !same_case_neg)
+      a2[i, j] <- a2[j, i] <- mean_of(same_case_pos & !same_case_neg)
+      a3[i, j] <- a3[j, i] <- mean_of(!same_case_pos & same_case_neg)
       a4[i, j] <- a4[j, i] <- mean_of(!same_case_pos & !same_case_neg)
     }
   }
 
   n_pos <- sum(!duplicated(df_pos$case))
   n_neg <- sum(!duplicated(df_neg$case))
-  (a1 + (n_pos - 1) * a2 + (n_neg - 1) * a3 + (1 - n_pos - n_neg) * a4) /
-    (n_pos * n_neg)
+  covmat <- (a1 + (n_pos - 1) * a2 + (n_neg - 1) * a3 +
+               (1 - n_pos - n_neg) * a4) / (n_pos * n_neg)
+  
+  structure(covmat, a = list(a1, a2, a3, a4))
   
 }
 

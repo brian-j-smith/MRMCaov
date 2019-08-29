@@ -28,6 +28,7 @@ export(
 
 S3method(plot, roc)
 S3method(plot, mrmc)
+S3method(print, cov_unbiased)
 S3method(print, mrmc)
 S3method(print, summary.mrmc)
 S3method(summary, mrmc)

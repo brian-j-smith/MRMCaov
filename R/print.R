@@ -1,3 +1,8 @@
+print.cov_unbiased <- function(x, ...) {
+  print(as(x, "matrix"))
+}
+
+
 print.mrmc <- function(x, n = 20, ...) {
   model <- x$aov$model
   vars <- x$vars
