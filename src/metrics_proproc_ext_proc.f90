@@ -111,6 +111,31 @@ real(kind = double),intent(OUT):: c_par
 !------------------------------------------------------------------------------------------------------------------
 
 
+subroutine pbmrocfpf2tpf(d_a_par, c_par, fpf, tpf, ierror) 
+
+  use data_types
+  use proproc_functions, only: fpf_find_tpf_PBM
+ 
+  real(kind=double), intent(in):: d_a_par, c_par
+  real(kind=double), intent(in):: fpf
+  real(kind=double), intent(OUT):: tpf
+  integer, intent(OUT):: ierror
+  
+  call fpf_find_tpf_PBM(d_a_par, c_par, fpf, tpf, ierror)
+
+end subroutine pbmrocfpf2tpf
 
 
+subroutine pbmroctpf2fpf(d_a_par, c_par, tpf, fpf, ierror) 
 
+  use data_types
+  use proproc_functions, only: tpf_find_fpf_PBM
+ 
+  real(kind=double), intent(in):: d_a_par, c_par
+  real(kind=double), intent(in):: tpf
+  real(kind=double), intent(OUT):: fpf
+  integer, intent(OUT):: ierror
+  
+  call tpf_find_fpf_PBM(d_a_par, c_par, tpf, fpf, ierror)
+
+end subroutine pbmroctpf2fpf
