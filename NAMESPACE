@@ -2,42 +2,43 @@ useDynLib(MRMCaov, .registration = TRUE)
 
 
 import(ggplot2)
+import(methods)
 
 
 importFrom(graphics, plot)
 importFrom(gtools, combinations)
 importFrom(magrittr, "%>%")
 importFrom(methods, is)
-importFrom(ROCR, performance)
-importFrom(stats, aov, coef, pf, pt, reformulate, qt, reshape, terms, update,
-           vcov)
+importFrom(stats, aov, approx, coef, pf, pt, reformulate, qt, reshape, terms,
+           update, vcov)
 importFrom(utils, head)
 
 
 export(
   DeLong,
+  empirical_auc,
+  empirical_sens,
+  empirical_spec,
   jackknife,
   mrmc,
-  empirical_auc,
+  proproc,
   proproc_auc,
-  trapezoidal_auc,
+  proproc_sens,
+  proproc_spec,
   roc,
+  trapezoidal_auc,
+  trapezoidal_sens,
+  trapezoidal_spec,
   unbiased
 )
 
 
-export(
-  proproc,
-  sensitivity,
-  specificity
-)
-
-
-S3method(plot, roc)
+S3method(plot, proproc_frame)
+S3method(plot, roc_frame)
 S3method(plot, mrmc)
 S3method(print, cov_unbiased)
 S3method(print, mrmc)
 S3method(print, summary.mrmc)
-S3method(sensitivity, proproc)
-S3method(specificity, proproc)
+S3method(sensitivity, proproc_params)
+S3method(specificity, proproc_params)
 S3method(summary, mrmc)

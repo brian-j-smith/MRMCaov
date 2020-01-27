@@ -3,23 +3,51 @@
 \name{metrics}
 \alias{metrics}
 \alias{empirical_auc}
+\alias{empirical_sens}
+\alias{empirical_spec}
 \alias{proproc_auc}
+\alias{proproc_sens}
+\alias{proproc_spec}
 \alias{trapezoidal_auc}
+\alias{trapezoidal_sens}
+\alias{trapezoidal_spec}
 \title{Performance Metrics}
 \usage{
-empirical_auc(truth, rating)
+empirical_auc(truth, rating, partial = FALSE, min = 0, max = 1)
 
-proproc_auc(truth, rating)
+empirical_sens(truth, rating, spec)
 
-trapezoidal_auc(truth, rating)
+empirical_spec(truth, rating, sens)
+
+proproc_auc(truth, rating, partial = FALSE, min = 0, max = 1)
+
+proproc_sens(truth, rating, spec)
+
+proproc_spec(truth, rating, sens)
+
+trapezoidal_auc(truth, rating, partial = FALSE, min = 0, max = 1)
+
+trapezoidal_sens(truth, rating, spec)
+
+trapezoidal_spec(truth, rating, sens)
 }
 \arguments{
 \item{truth}{vector of true binary statuses.}
 
 \item{rating}{vector of numeric ratings.}
+
+\item{partial}{character string \code{"sensitivity"} or \code{"specificity"}
+for calculation of partial AUC, or \code{FALSE} for full AUC.  Partial
+matching of the character strings is allowed.}
+
+\item{min, max}{minimum and maximum sensitivity or specificity values over
+which to calculate partial AUC.}
+
+\item{sens, spec}{numeric sensitivity/specificity at which to calculate
+specificity/sensitivity.}
 }
 \description{
-Performance Metrics
+Estimated performance metrics from ROC curves.
 }
 \details{
 Performance metrics measure the degree to which higher case ratings are

@@ -4,8 +4,7 @@
 \alias{mrmc}
 \title{Multi-Reader Multi-Case ROC Analysis}
 \usage{
-mrmc(response, test, reader, case, data, method = jackknife,
-  design = NULL)
+mrmc(response, test, reader, case, data, method = jackknife, design = NULL)
 }
 \arguments{
 \item{response}{response metric expressed in terms of a package-supplied

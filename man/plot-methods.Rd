@@ -2,11 +2,14 @@
 % Please edit documentation in R/plots.R
 \name{plot}
 \alias{plot}
-\alias{plot.roc}
+\alias{plot.roc_frame}
+\alias{plot.proproc_frame}
 \alias{plot.mrmc}
 \title{Performance Plots}
 \usage{
-\method{plot}{roc}(x, ...)
+\method{plot}{roc_frame}(x, ...)
+
+\method{plot}{proproc_frame}(x, n = 101, ...)
 
 \method{plot}{mrmc}(x, ...)
 }
@@ -14,6 +17,10 @@
 \item{x}{object to plot.}
 
 \item{...}{arguments passed to other methods.}
+
+\item{n}{number of equally spaced false-positive rate points at which to
+calculate true-positive rates and interpolate through for display of the
+curve.}
 }
 \description{
 Performance Plots

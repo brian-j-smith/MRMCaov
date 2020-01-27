@@ -26,8 +26,8 @@ To install the package, download the archive file for your operating system from
 
 | Operating System      | Package Archive File | 
 |-----------------------|----------------------|
-| Microsoft Windows: | [MRMCaov_0.1.2.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EZlO1rYXXZ9HiT4fD4Q5AF8B-tyJQw087MlMfbsp-4nZEQ?e=mvIZPk) |
-| Non-Windows: | [MRMCaov_0.1.2.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EVvhUJr9mxJNixFiQVvFx8oB11kISQDxWz_Ay4gIPWb1nw?e=ZmIlUf) |
+| Microsoft Windows: | [MRMCaov_0.1.3.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EaJTWialPrpIrvHbV9y261MB4eG6v470_S697AteVOAgZA) |
+| Non-Windows: | [MRMCaov_0.1.3.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/Eef41Ey8ez1DkUn65j65_MABAT-oVFyYvEuHuyLqET0i9A) |
 
 
 ## Getting Started

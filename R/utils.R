@@ -75,10 +75,10 @@ vcov_comps.mrmc <- function(object, design = object$design, test = NULL,
 
   tests <- model[[2]]
   readers <- model[[3]]
-  
+
   same_test <- outer(tests, tests, "==")
   same_reader <- outer(readers, readers, "==")
-  
+
   is_group <- rep(TRUE, nrow(model))
   if (!is.null(test)) is_group <- is_group & (tests == test)
   if (!is.null(reader)) is_group <- is_group & (readers == reader)
@@ -93,7 +93,7 @@ vcov_comps.mrmc <- function(object, design = object$design, test = NULL,
   } else if (design == 3) {
     cov[c(1, 3)] <- 0
   }
-  
+
   structure(
     list(vars = object$vars,
          n = dim(object),
@@ -113,7 +113,7 @@ vcov_comps.mrmc_tests <- function(object, design = object$design, ...) {
     same_reader <- outer(readers, readers, "==")
     mean(object$cov[!same_reader])
   }
-  
+
   structure(
     list(vars = object$vars,
          n = dim(object),
@@ -122,7 +122,7 @@ vcov_comps.mrmc_tests <- function(object, design = object$design, ...) {
          cov = c(0, cov2, 0)),
     class = "vcov_comps"
   )
-  
+
 }
 
 
@@ -131,7 +131,7 @@ summary.vcov_comps <- function(object, ...) {
   MS <- object$MS
   var_error <- object$var
   cov <- object$cov
-  
+
   vcov_comps <- data.frame(
     Estimate = c(
       (MS[["R"]] - MS[["T:R"]]) / n[["test"]] - cov[1] + cov[3],
@@ -146,6 +146,6 @@ summary.vcov_comps <- function(object, ...) {
   vcov_comps$Correlation <- vcov_comps$Estimate /
     vcov_comps["Error", "Estimate"]
   vcov_comps$Correlation[1:3] <- NA
-  
+
   vcov_comps
 }
