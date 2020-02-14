@@ -9,10 +9,16 @@ DeLong <- function() {
   structure(
     function(data, ...) {
 
-      metric_name <- as.character(attr(data, "metric_call"))
+      metric_call <- attr(data, "metric_call")
+      metric_name <- as.character(metric_call)[1]
       if (!(metric_name %in% c("empirical_auc", "trapezoidal_auc"))) {
         stop("response metric must be 'empirical_auc' or 'trapezoidal_auc' for",
              " DeLong covariance method")
+      }
+
+      partial <- as.list(metric_call)$partial
+      if (!(is.null(partial) || isFALSE(partial))) {
+        stop("DeLong covariance method not available for partial AUC")
       }
 
       if (any(table(data[c("test", "reader", "case")]) != 1)) {
