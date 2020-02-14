@@ -7,7 +7,6 @@ import(methods)
 
 importFrom(graphics, plot)
 importFrom(gtools, combinations)
-importFrom(magrittr, "%>%")
 importFrom(methods, is)
 importFrom(stats, aov, approx, coef, pf, pt, reformulate, qt, reshape, terms,
            update, vcov)

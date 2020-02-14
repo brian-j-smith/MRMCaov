@@ -31,8 +31,10 @@ summary.mrmc_tests_rrrc <- function(object, conf.level = 0.95, ...) {
     check.names = FALSE
   )
   df$CI <- with(df, {
-    Estimate + qt((1 + conf.level) / 2, df) * StdErr %o% c(Lower = -1, Upper = 1)
-  }) %>% pmin(1) %>% pmax(0)
+    ci <- Estimate +
+      qt((1 + conf.level) / 2, df) * StdErr %o% c(Lower = -1, Upper = 1)
+    pmin(pmax(ci, 0), 1)
+  })
 
   df
 }
@@ -53,8 +55,10 @@ summary.mrmc_tests_frrc <- function(object, conf.level = 0.95, ...) {
     check.names = FALSE
   )
   df$CI <- with(df, {
-    Estimate + qnorm((1 + conf.level) / 2) * StdErr %o% c(Lower = -1, Upper = 1)
-  }) %>% pmin(1) %>% pmax(0)
+    ci <- Estimate +
+      qnorm((1 + conf.level) / 2) * StdErr %o% c(Lower = -1, Upper = 1)
+    pmin(pmax(ci, 0), 1)
+  })
 
   df
 }
@@ -74,8 +78,10 @@ summary.mrmc_tests_rrfc <- function(object, conf.level = 0.95, ...) {
     check.names = FALSE
   )
   df$CI <- with(df, {
-    Estimate + qt((1 + conf.level) / 2, df) * StdErr %o% c(Lower = -1, Upper = 1)
-  }) %>% pmin(1) %>% pmax(0)
+    ci <- Estimate +
+      qt((1 + conf.level) / 2, df) * StdErr %o% c(Lower = -1, Upper = 1)
+    pmin(pmax(ci, 0), 1)
+  })
 
   df
 }
