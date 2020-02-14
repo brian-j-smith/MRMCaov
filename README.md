@@ -8,30 +8,43 @@ tests - such as those based on medical imaging - for which ratings have
 been obtained from multiple readers and on multiple cases. Features of
 the package include the following.
 
-  - Performance metrics: area under the receiver operating
-    characteristic curve (empirical/trapezoidal and proper parametric
-    curves)
-  - Study designs: factorial, cases nested within readers, cases nested
-    within tests, partially-paired cases
-  - Covariance estimation methods: DeLong, jackknife, unbiased
+  - Comparison of imaging modalities or diagnostic tests with respect to
+    ROC metrics
+  - ROC metrics include AUC, partial AUC, sensitivity, and specificity
+    as well as user-defined metrics
+  - Parametric and nonparametric estimation and plotting of ROC curves
+  - Support for factorial and nested study designs
+  - DeLong, jackknife, and unbiased covariance estimation
+  - Inference for random or fixed readers and cases
+  - Compatibility with Microsoft Windows, Mac OS, and Linux
 
 ## Download and Installation
 
-To install the package, download the archive file for your operating
-system from the links provided in the table below. Next, do the
-following:
+To install the package, do the following:
 
-1.  Run [RStudio](https://www.rstudio.com/products/rstudio/).
-2.  Click on “Tools” from the RStudio menu and then select “Install
+1.  Download the archive file for your operating system from the links
+    provided in the table below.
+2.  Run [RStudio](https://www.rstudio.com/products/rstudio/).
+3.  Click on “Tools” from the RStudio menu and then select “Install
     Packages…” to bring up the “Install Packages” dialog box.
-3.  From the dialog box, select “Package Archive File (.zip; .tar.gz)”
+4.  From the dialog box, select “Package Archive File (.zip; .tar.gz)”
     as the source from which to install, and browse to and select the
     downloaded package archive file.
+5.  Install packages `ggplot2`, `gtools`, and `pROC` from the CRAN
+    selection in the dialog box if you have not installed these packages
+    previously. Alternatively, these can be installed from the R console
+    with the command.
+
+<!-- end list -->
+
+``` r
+install.packages(c("ggplot2", "gtools", "pROC"))
+```
 
 | Operating System   | Package Archive File                                                                                                                    |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Microsoft Windows: | [MRMCaov\_0.1.3.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EaJTWialPrpIrvHbV9y261MB4eG6v470_S697AteVOAgZA)    |
-| Non-Windows:       | [MRMCaov\_0.1.3.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/Eef41Ey8ez1DkUn65j65_MABAT-oVFyYvEuHuyLqET0i9A) |
+| Microsoft Windows: | [MRMCaov\_0.1.4.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EdvySJhOuwhJiZFeuczm1AgBNAnv9GIEYeqxkl3u42UI3g)    |
+| Non-Windows:       | [MRMCaov\_0.1.4.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EUU-MZ2Rk-1PjqQeg7OTFiwB_0XSUg_lKtdqAdp0bp5vnQ) |
 
 ## Getting Started
 
