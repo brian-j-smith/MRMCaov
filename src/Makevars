@@ -1,2 +1,41 @@
-PKG_FCFLAGS = -I./include -J./include
 PKG_LIBS = -lgfortran $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+
+all: $(SHLIB)
+
+metrics_proproc_ext_proc.o: metrics_data_array_dimensions.o metrics_data_categorization.o metrics_computation_constants.o metrics_sys_data_types.o metrics_sys_io.o metrics_proproc_functions.o metrics_proproc_out.o metrics_roc_nonparametric.o metrics_computation_statistic_function.o
+
+metrics_proproc_out.o: metrics_computation_constants.o metrics_sys_data_types.o metrics_data_error_flags.o metrics_computation_gen_numerics.o metrics_sys_io.o metrics_computation_l_algebra.o metrics_proproc_computation_constants.o metrics_proproc_functions.o metrics_proproc_other_modules.o metrics_computation_statistic_function.o
+
+metrics_proproc_functions.o: metrics_data_array_dimensions.o metrics_data_categorization.o metrics_computation_constants.o metrics_sys_DebugMod.o metrics_data_error_flags.o metrics_computation_gen_numerics.o metrics_sys_io.o metrics_computation_l_algebra.o metrics_proproc_computation_constants.o metrics_proproc_other_modules.o metrics_labroc_functions.o metrics_data_other_modules.o metrics_roc_nonparametric.o metrics_computation_statistic_function.o metrics_computation_toms611.o
+
+metrics_proproc_other_modules.o: metrics_sys_data_types.o
+
+metrics_labroc_ext_proc.o: metrics_data_array_dimensions.o metrics_data_categorization.o metrics_computation_constants.o metrics_sys_io.o metrics_labroc_functions.o metrics_labroc_out.o
+
+metrics_labroc_out.o: metrics_computation_constants.o metrics_sys_data_types.o metrics_data_error_flags.o metrics_sys_io.o metrics_labroc_functions.o
+
+metrics_labroc_functions.o: metrics_data_array_dimensions.o metrics_computation_constants.o metrics_sys_data_types.o metrics_sys_DebugMod.o metrics_data_error_flags.o metrics_computation_gen_numerics.o metrics_sys_io.o metrics_computation_l_algebra.o metrics_labroc_other_modules.o metrics_data_other_modules.o metrics_roc_nonparametric.o metrics_computation_statistic_function.o metrics_computation_toms611.o
+
+metrics_labroc_other_modules.o: metrics_sys_data_types.o
+
+metrics_roc_nonparametric.o: metrics_data_categorization.o metrics_sys_data_types.o metrics_data_error_flags.o metrics_computation_l_algebra.o metrics_computation_statistic_function.o
+
+metrics_proproc_computation_constants.o: metrics_sys_data_types.o
+
+metrics_data_other_modules.o: metrics_sys_data_types.o metrics_sys_DebugMod.o metrics_sys_io.o
+
+metrics_computation_statistic_function.o: metrics_computation_gen_numerics.o
+
+metrics_computation_gen_numerics.o: metrics_sys_data_types.o
+
+metrics_data_categorization.o: metrics_data_array_dimensions.o metrics_sys_data_types.o metrics_sys_DebugMod.o metrics_computation_l_algebra.o metrics_computation_statistic_function.o
+
+metrics_data_error_flags.o: metrics_sys_data_types.o
+
+metrics_computation_constants.o: metrics_sys_data_types.o
+
+metrics_computation_l_algebra.o: metrics_sys_data_types.o metrics_sys_DebugMod.o metrics_sys_io.o
+
+metrics_sys_DebugMod.o: metrics_sys_AIF_Format.o
+
+metrics_sys_io.o: metrics_sys_data_types.o
