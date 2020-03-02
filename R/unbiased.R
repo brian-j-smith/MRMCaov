@@ -89,7 +89,7 @@ unbiased <- function() {
     }
   }
 
-  covmat <- (a1 + (n_pos - 1) * a2 + (n_neg - 1) * a3 +
+  covmat <- (a1 + (n_neg - 1) * a2 + (n_pos - 1) * a3 +
                (1 - n_pos - n_neg) * a4) / (n_pos * n_neg)
 
   structure(covmat, a = list(a1, a2, a3, a4))
@@ -129,7 +129,7 @@ unbiased <- function() {
 
   n_pos <- sum(!duplicated(df_pos$case))
   n_neg <- sum(!duplicated(df_neg$case))
-  covmat <- (a1 + (n_pos - 1) * a2 + (n_neg - 1) * a3 +
+  covmat <- (a1 + (n_neg - 1) * a2 + (n_pos - 1) * a3 +
                (1 - n_pos - n_neg) * a4) / (n_pos * n_neg)
 
   structure(covmat, a = list(a1, a2, a3, a4))
