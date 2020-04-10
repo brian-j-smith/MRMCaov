@@ -22,5 +22,5 @@ Imports: ggplot2, gtools, methods, pROC
 NeedsCompilation: yes
 LazyData: true
 License: GPL-3
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Encoding: UTF-8

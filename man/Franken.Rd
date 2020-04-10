@@ -4,7 +4,8 @@
 \name{Franken}
 \alias{Franken}
 \title{Multi-reader multi-case dataset}
-\format{A data frame with 800 rows and 5 variables:
+\format{
+A data frame with 800 rows and 5 variables:
 \describe{
   \item{Reader}{reader identifier}
   \item{Treatment}{treatment identifier}
@@ -12,7 +13,8 @@
   \item{Truth}{true case status (1 = abnormal, 0 = normal)}
   \item{Rating}{ordinal reader ratings of case normal status (1 = definitely
   abnormal, 5 = definitely normal)}
-}}
+}
+}
 \usage{
 Franken
 }
