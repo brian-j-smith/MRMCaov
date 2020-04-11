@@ -2,6 +2,10 @@
 
 ## Version Updates
 
+## 0.1.7
+* Add `roc_curves()` function for construction of ROC curves and method functions `points()` for calculating points on the curves, `mean()` for averaging multiple curves, and `plot()` for displaying them graphically.
+* Deprecate `roc()` and `proproc()`.
+
 ## 0.1.6
 * Fix unbiased covariance calculation.
 

@@ -43,8 +43,8 @@ install.packages(c("ggplot2", "gtools", "pROC"))
 
 | Operating System   | Package Archive File                                                                                                                    |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Microsoft Windows: | [MRMCaov\_0.1.6.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EVl5o8pyyAdDqMimSMTZjWQBuG9lViKqpl8l3dY4sCPDLg)    |
-| Non-Windows:       | [MRMCaov\_0.1.6.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EU4wKOwKkmpIo1E-UJniAigBtkifmNIT6L5YnBZAG_dEww) |
+| Microsoft Windows: | [MRMCaov\_0.1.7.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EZkiuesUrPNFrZhWUFWp-XoBQ0jrUo031h70T4ijWScaUg)    |
+| Linux:             | [MRMCaov\_0.1.7.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/ETTz0FnZW6pJkA97hXxeY6wBlXRA8Rn2Gq_TWEWTkAwunA) |
 
 ## Getting Started
 
