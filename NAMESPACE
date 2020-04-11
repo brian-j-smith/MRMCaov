@@ -5,11 +5,12 @@ import(ggplot2)
 import(methods)
 
 
-importFrom(graphics, plot)
+importFrom(graphics, plot, points)
 importFrom(gtools, combinations)
 importFrom(methods, is)
 importFrom(stats, aov, approx, coef, pf, pt, reformulate, qt, reshape, terms,
            update, vcov)
+importFrom(tibble, as_tibble, tibble)
 importFrom(utils, head)
 
 
@@ -20,11 +21,10 @@ export(
   empirical_spec,
   jackknife,
   mrmc,
-  proproc,
   proproc_auc,
   proproc_sens,
   proproc_spec,
-  roc,
+  roc_curves,
   trapezoidal_auc,
   trapezoidal_sens,
   trapezoidal_spec,
@@ -32,9 +32,19 @@ export(
 )
 
 
-S3method(plot, proproc_frame)
-S3method(plot, roc_frame)
+export(
+  proproc,
+  roc
+)
+
+
+S3method(mean, roc_curves)
 S3method(plot, mrmc)
+S3method(plot, empirical_curves)
+S3method(plot, proproc_curves)
+S3method(plot, roc_points)
+S3method(points, empirical_curves)
+S3method(points, proproc_curves)
 S3method(print, cov_unbiased)
 S3method(print, mrmc)
 S3method(print, summary.mrmc)

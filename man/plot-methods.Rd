@@ -2,16 +2,19 @@
 % Please edit documentation in R/plots.R
 \name{plot}
 \alias{plot}
-\alias{plot.roc_frame}
-\alias{plot.proproc_frame}
+\alias{plot.empirical_curves}
+\alias{plot.proproc_curves}
+\alias{plot.roc_points}
 \alias{plot.mrmc}
 \title{Performance Plots}
 \usage{
-\method{plot}{roc_frame}(x, ...)
+\method{plot}{empirical_curves}(x, ...)
 
-\method{plot}{proproc_frame}(x, n = 101, ...)
+\method{plot}{proproc_curves}(x, n = 100, ...)
 
-\method{plot}{mrmc}(x, ...)
+\method{plot}{roc_points}(x, ...)
+
+\method{plot}{mrmc}(x, n = 100, ...)
 }
 \arguments{
 \item{x}{object to plot.}
@@ -26,10 +29,12 @@ curve.}
 Performance Plots
 }
 \examples{
-perf <- with(VanDyke, roc(truth, rating, treatment, reader))
-plot(perf)
+curves <- with(VanDyke,
+  roc_curves(truth, rating, groups = list(Test = treatment, Reader = reader))
+)
+plot(curves)
 
 }
 \seealso{
-\code{\link{roc}}
+\code{\link{roc_curves}}
 }

@@ -1,93 +1,196 @@
-#' ROC Performance Metrics
+#' ROC Performance Curves
 #'
-#' Calculation of TPR and FPR pairs for all values of a numeric rating of a
+#' Calculation of TPR and FPR pairs for values of a numeric rating of a
 #' true binary response.
+#'
+#' @rdname roc_curves
 #'
 #' @param truth vector of true binary statuses.
 #' @param rating vector of numeric ratings.
-#' @param ... interaction factors within which to calculate metrics.
-#'
-#' @rdname roc
+#' @param groups list or data frame of grouping variables of the same lengths as
+#'   \code{truth} and \code{rating}.
+#' @param method character string \code{"empirical"}, \code{"trapezoidal"}, or
+#'   \code{"proproc"} indicating the curve type.
+#' @param x object returned by \code{roc_curves} for which to compute points on
+#'   or to average over the curves.
+#' @param values numeric vector of values at which to compute the points.  If
+#'   \code{NULL} then the intersection of all empirical points is used.
+#' @param metric reader performance metric to which the \code{values}
+#'   correspond.
+#' @param ... arguments passed from the \code{mean()} method to \code{points()}.
 #'
 #' @seealso \code{\link{plot}}
 #'
 #' @examples
-#' with(VanDyke, roc(truth, rating, treatment, reader))
+#' curves <- with(VanDyke,
+#'   roc_curves(truth, rating, groups = list(Test = treatment, Reader = reader))
+#' )
+#' points(curves)
+#' mean(curves)
 #'
-roc <- function(truth, rating, ...) {
-  groups <- list(...)
-  if (length(groups) == 0) groups <- list(rep(1, length(truth)))
-  if (is.null(names(groups))) {
-    names(groups) <- make.unique(rep("Group", length(groups)))
-  }
-  groups <- lapply(groups, as.character)
-
-  df <- data.frame(truth, rating, groups)
-  perf_list <- by(df, groups, function(data) {
-    metrics <- .roc(data$truth, data$rating)
-    data.frame(data[rep(1, nrow(metrics)), -(1:2), drop = FALSE],
-               metrics, row.names = NULL)
-  }, simplify = FALSE)
-  names(perf_list) <- NULL
-
-  structure(
-    do.call(rbind, perf_list),
-    class = c("roc_frame", "data.frame")
-  )
+roc_curves <- function(truth, rating, groups = list(), method = "empirical") {
+  method <- match.arg(method, c("empirical", "trapezoidal", "proproc"))
+  switch(method,
+         "empirical" = empirical_curves(truth, rating, groups),
+         "trapezoidal" = empirical_curves(truth, rating, groups),
+         "proproc" = proproc_curves(truth, rating, groups))
 }
 
 
-.roc <- function(truth, rating) {
-  roc <- pROC::roc(truth, rating, auc = FALSE, quiet = TRUE)
-  cbind(FPR = 1 - roc$specificities, TPR = roc$sensitivities)
+empirical_curves <- function(truth, rating, groups) {
+  data <- tibble(truth = truth, rating = rating)
+
+  get_pts <- function(data) {
+    roc <- pROC::roc(data$truth, data$rating, auc = FALSE, quiet = TRUE)
+    pts <- tibble(FPR = 1 - roc$specificities, TPR = roc$sensitivities)
+    pts[nrow(pts):1, ]
+  }
+
+  curves <- if (length(groups)) {
+    pts_list <- by(data, groups, get_pts)
+    pts <- do.call(rbind, pts_list)
+
+    labels <- expand.grid(dimnames(pts_list))
+    labels_ind <- rep(1:nrow(labels), times = sapply(pts_list, nrow))
+
+    tibble(Group = labels[labels_ind, , drop = FALSE],
+           FPR = pts$FPR, TPR = pts$TPR)
+  } else {
+    get_pts(data)
+  }
+
+  structure(curves, class = c("empirical_curves", "roc_curves", class(curves)))
+}
+
+
+proproc_curves <- function(truth, rating, groups) {
+  data <- tibble(truth = truth, rating = rating)
+
+  get_curve <- function(data) {
+    roc <- pROC::roc(data$truth, data$rating, auc = FALSE, quiet = TRUE)
+    spec <- rev(roc$specificities)
+    params <- proproc_params(data$truth, data$rating)
+    pts <- tibble(FPR = 1 - spec, TPR = sensitivity(params, spec))
+    list(pts = pts, params = params)
+  }
+
+  curves <- if (length(groups)) {
+    curve_list <- by(data, groups, get_curve)
+    pts <- do.call(rbind, lapply(curve_list, getElement, name = "pts"))
+    params <- lapply(curve_list, getElement, name = "params")
+
+    labels <- expand.grid(dimnames(curve_list))
+    labels_ind <- rep(1:nrow(labels),
+                      times = sapply(curve_list, function(x) nrow(x$pts)))
+
+    structure(tibble(Group = labels[labels_ind, , drop = FALSE],
+                     FPR = pts$FPR, TPR = pts$TPR),
+              models = tibble(Group = labels, Params = params))
+  } else {
+    curve <- get_curve(data)
+    structure(curve$pts, models = tibble(Params = list(curve$params)))
+  }
+
+  structure(curves, class = c("proproc_curves", "roc_curves", class(curves)))
 }
 
 
 proproc_params <- function(truth, rating) {
   truth <- as.factor(truth)
   is_pos <- truth == levels(truth)[2]
-
   pred_pos <- as.double(rating[is_pos])
   pred_neg <- as.double(rating[!is_pos])
-
-  auc <- .Fortran("pbmroc",
+  roc <- .Fortran("pbmroc",
                   length(pred_neg), length(pred_pos), pred_neg, pred_pos,
                   d_a = double(1), c = double(1),
-                  est = double(1), var = double(1))
-
-  structure(list(d_a = auc$d_a, c = auc$c), class = "proproc_params")
+                  auc = double(1), auc_var = double(1))
+  structure(list(d_a = roc$d_a, c = roc$c), class = "proproc_params")
 }
 
 
-#' @rdname roc
+#' @rdname roc_curves
 #'
-proproc <- function(truth, rating, ...) {
-  groups <- list(...)
-  if (length(groups) == 0) groups <- list(rep(1, length(truth)))
-  if (is.null(names(groups))) {
-    names(groups) <- make.unique(rep("Group", length(groups)))
+points.empirical_curves <- function(x, values = NULL, metric = "specificity",
+                                    ...) {
+  metric <- match.arg(metric)
+
+  new_pts <- if (!is.null(x[["Group"]])) {
+
+    new_pts_list <- if (is.null(values)) {
+      fpr <- sort(unique(x$FPR))
+      fpr_dups_list <- tapply(x$FPR, x$Group, function(fpr) {
+        fpr[duplicated(fpr)]
+      })
+      fpr_dups <- sort(unique(unlist(fpr_dups_list)))
+      n <- length(fpr) + length(fpr_dups)
+      by(x, x$Group, function(curve) {
+        tpr <- approx(curve$FPR, curve$TPR, fpr, ties = "ordered")$y
+        tpr_dups <- approx(curve$FPR, curve$TPR, fpr_dups, ties = min)$y
+        pts <- tibble(FPR = c(fpr, fpr_dups), TPR = c(tpr, tpr_dups))
+        pts[order(pts$FPR, pts$TPR), ]
+      })
+    } else {
+      fpr <- sort(1 - values)
+      n <- length(fpr)
+      by(x, x$Group, function(curve) {
+        tpr <- approx(curve$FPR, curve$TPR, fpr, ties = "ordered")$y
+        tibble(FPR = fpr, TPR = tpr)
+      })
+    }
+    new_pts <- do.call(rbind, new_pts_list)
+
+    labels <- expand.grid(dimnames(new_pts_list))
+    labels_ind <- rep(seq(nrow(labels)), each = n)
+
+    tibble(Group = labels[labels_ind, , drop = FALSE],
+           FPR = new_pts$FPR, TPR = new_pts$TPR)
+
+  } else if (!is.null(values)) {
+
+    fpr <- sort(1 - values)
+    tpr <- approx(x$FPR, x$TPR, fpr, ties = "ordered")$y
+    tibble(FPR = fpr, TPR = tpr)
+
+  } else as_tibble(x)
+
+  structure(new_pts, metric = metric, class = c("roc_points", class(new_pts)))
+}
+
+
+#' @rdname roc_curves
+#'
+points.proproc_curves <- function(x, values = seq(0, 1, length = 100),
+                                  metric = "specificity", ...) {
+  metric <- match.arg(metric)
+
+  fpr <- sort(1 - values)
+  n <- length(fpr)
+
+  models <- attr(x, "models")
+  new_pts_list <- lapply(models$Params, function(params) {
+    tibble(FPR = fpr, TPR = sensitivity(params, 1 - fpr))
+  })
+  new_pts <- do.call(rbind, new_pts_list)
+  if (!is.null(models[["Group"]])) {
+    inds <- rep(seq(new_pts_list), each = n)
+    new_pts <- tibble(Group = models[["Group"]][inds, ],
+                      FPR = new_pts$FPR, TPR = new_pts$TPR)
   }
-  groups <- lapply(groups, as.character)
 
-  all_data <- data.frame(truth, rating)
-  proproc_by <- by(all_data, groups, function(data) {
-    proproc_params(data$truth, data$rating)
-  }, simplify = FALSE)
-  params <- data.frame(row.names = seq(proproc_by))
-  params$coef <- as.data.frame(t(sapply(proproc_by, unlist)))
-  params$group <- expand.grid(dimnames(proproc_by))
+  structure(new_pts, metric = metric, class = c("roc_points", class(new_pts)))
+}
 
-  roc <- roc(truth, rating, ...)
-  groups <- roc[!(names(roc) %in% c("FPR", "TPR"))]
-  roc_split <- split(roc, groups)
-  for (i in seq(roc_split)) {
-    proproc <- structure(as.list(params$coef[i, ]), class = "proproc_params")
-    spec <- 1 - roc_split[[i]]$FPR
-    roc_split[[i]]$TPR <- sensitivity(proproc, spec)
-  }
-  roc <- unsplit(roc_split, groups)
 
-  structure(roc, params = params, class = c("proproc_frame", "data.frame"))
+#' @rdname roc_curves
+#'
+mean.roc_curves <- function(x, ...) {
+  pts <- points(x, ...)
+  if (!is.null(pts[["Group"]])) {
+    tpr_list <- split(pts$TPR, pts[["Group"]])
+    tpr <- rowMeans(do.call(cbind, tpr_list))
+    structure(tibble(FPR = head(pts$FPR, n = length(tpr)), TPR = tpr),
+              metric = attr(pts, "metric"), class = class(pts))
+  } else pts
 }
 
 

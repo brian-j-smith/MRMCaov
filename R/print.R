@@ -26,10 +26,10 @@ print.mrmc <- function(x, n = 20, ...) {
   vcov_comps$Correlation = vcov_comps$Estimate / vcov_comps$Estimate[1]
   vcov_comps$Correlation[1] <- NA
   print(vcov_comps)
-  
+
   cat("\n\nFirst", n, "ROC performance metrics:\n\n")
-  print(head(x$roc, n = n))
-  
+  print(x$roc, n = n)
+
   invisible()
 }
 

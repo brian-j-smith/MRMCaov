@@ -86,15 +86,16 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
     "mrmc_rrrc"
   }
 
-  roc_fun <- if (startsWith(terms$metric, "proproc")) "proproc" else "roc"
+  roc_method <- strsplit(terms$metric, "_")[[1]][1]
+  if (roc_method != "proproc") roc_method <- "empirical"
 
   structure(
     list(call = sys.call(),
          design = design,
          vars = c(terms$labels, metric = terms$metric),
-         roc = do.call(roc_fun, c(list(mrmc_data$truth, mrmc_data$rating),
-                                data[terms$labels["test"]],
-                                data[terms$labels["reader"]])),
+         roc = roc_curves(mrmc_data$truth, mrmc_data$rating,
+                          groups = data[terms$labels[c("test", "reader")]],
+                          method = roc_method),
          aov = aovfit,
          aov_data = df,
          cov = cov,
