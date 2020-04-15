@@ -1,3 +1,9 @@
+chol2det <- function(x, log = FALSE) {
+  d <- diag(x)
+  if (log) 2 * sum(log(d)) else prod(d)^2
+}
+
+
 curves2tibble <- function(x, dimnames = NULL) {
   if (is.null(dimnames)) dimnames <- dimnames(x)
 

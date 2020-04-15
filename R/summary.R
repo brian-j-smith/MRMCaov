@@ -212,3 +212,51 @@ reader_test_diffs <- function(object, conf.level) {
     class = c("summary.mrmc_rrfc", "summary.mrmc")
   )
 }
+
+
+.summary.mrmc_lme <- function(object, conf.level, ...) {
+
+  coef <- object$lme_fit$coef
+  cov <- object$lme_fit$cov$R
+  cov0 <- object$lme_fit$cov$R0
+
+  n <- nrow(object$aov_data)
+  ntests <- nlevels(object$aov_data[[1]])
+
+  x <- diag(ntests)
+  x[, 1] <- 1
+  x <- cbind(x, matrix(0, ntests, length(coef) - ntests))
+
+  combs <- combinations(ntests, 2)
+  x_diff <- x[combs[, 1], , drop = FALSE] - x[combs[, 2], , drop = FALSE]
+
+  est_diff <- as.numeric(x_diff %*% coef)
+  var_diff <- diag(x_diff %*% cov %*% t(x_diff))
+  var0_diff <- diag(x_diff %*% cov0 %*% t(x_diff))
+
+  aov <- object$aov
+  aov_assign <- aov$assign[aov$qr$pivot[1:aov$rank]]
+  df0 <- nrow(aov$model) - sum(aov_assign %in% c(0, 1, 3))
+  df_satt <- var_diff^2 / (var0_diff^2 / df0)
+
+  test_diffs <- data.frame(
+    Comparison = paste(combs[, 1], "-", combs[, 2]),
+    Estimate = est_diff,
+    StdErr = sqrt(var_diff),
+    df = df_satt
+  )
+  test_diffs$CI <- with(test_diffs, {
+    Estimate + qt((1 + conf.level) / 2, df) * StdErr %o% c(Lower = -1, Upper = 1)
+  })
+  test_diffs$t <- with(test_diffs, Estimate / StdErr)
+  test_diffs$`p-value` <- with(test_diffs, 2 * (1 - pt(abs(t), df)))
+
+  structure(
+    list(design = object$design,
+         vars = object$vars,
+         conf.level = conf.level,
+         vcov_comps = summary(vcov_comps(object)),
+         test_diffs = test_diffs),
+    class = c("summary.mrmc_lme", "summary.mrmc")
+  )
+}

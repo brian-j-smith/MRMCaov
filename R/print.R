@@ -54,15 +54,9 @@ print.summary.mrmc <- function(x, ...) {
 }
 
 
-.print.summary.mrmc_rrrc <- function(x, ...) {
-  cat("Factor types: Random Readers and Random Cases\n\n")
-
-  .print.summary.mrmc(x)
-}
-
-
 .print.summary.mrmc_frrc <- function(x, ...) {
-  cat("Factor types: Fixed Readers and Random Cases\n\n")
+  cat("Multi-Reader Multi-Case Analysis of Variance\n",
+      "Factor types: Fixed Readers and Random Cases\n\n")
 
   .print.summary.mrmc(x)
 
@@ -76,7 +70,24 @@ print.summary.mrmc <- function(x, ...) {
 
 
 .print.summary.mrmc_rrfc <- function(x, ...) {
-  cat("Factor types: Random Readers and Fixed Cases\n\n")
+  cat("Multi-Reader Multi-Case Analysis of Variance\n",
+      "Factor types: Random Readers and Fixed Cases\n\n", sep = "")
+
+  .print.summary.mrmc(x)
+}
+
+
+.print.summary.mrmc_rrrc <- function(x, ...) {
+  cat("Multi-Reader Multi-Case Analysis of Variance\n",
+      "Factor types: Random Readers and Random Cases\n\n", sep = "")
+
+  .print.summary.mrmc(x)
+}
+
+
+.print.summary.mrmc_lme <- function(x, ...) {
+  cat("Multi-Reader Multi-Case Linear Mixed Effects Analysis\n",
+      "Factor types: Random Readers and Random Cases\n\n", sep = "")
 
   .print.summary.mrmc(x)
 }
@@ -95,16 +106,22 @@ print.summary.mrmc <- function(x, ...) {
 
   test_metric <- paste(x$vars["test"], x$vars["metric"])
 
-  cat("\n\nANOVA global test of equal ", test_metric, ":\n\n", sep = "")
-  print(x$test_equality)
+  if (!is.null(x$test_equality)) {
+    cat("\n\nANOVA global test of equal ", test_metric, ":\n\n", sep = "")
+    print(x$test_equality)
+  }
 
-  cat("\n\n", 100 * x$conf.level, "% CIs and tests for ", test_metric,
-      " pairwise differences:\n\n", sep = "")
-  print(x$test_diffs)
+  if (!is.null(x$test_diffs)) {
+    cat("\n\n", 100 * x$conf.level, "% CIs and tests for ", test_metric,
+        " pairwise differences:\n\n", sep = "")
+    print(x$test_diffs)
+  }
 
-  cat("\n\n", 100 * x$conf.level, "% ", test_metric, " CIs (each analysis",
-      " based only on data for the specified treatment):\n\n", sep = "")
-  print(x$test_means)
+  if (!is.null(x$test_means)) {
+    cat("\n\n", 100 * x$conf.level, "% ", test_metric, " CIs (each analysis",
+        " based only on data for the specified treatment):\n\n", sep = "")
+    print(x$test_means)
+  }
 
   invisible(x)
 }

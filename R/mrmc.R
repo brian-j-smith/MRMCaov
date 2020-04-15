@@ -41,7 +41,68 @@
 mrmc <- function(response, test, reader, case, data, method = jackknife,
                  design = NULL) {
 
-  terms <- eval(substitute(mrmc_terms(response, test, reader, case)))
+  object <- eval(substitute(
+    new_mrmc(response, test, reader, case, data, method = method,
+             design = design)
+  ))
+  object$mrmc_tests <- mrmc_tests(object$aov$model, object$cov, object$design)
+  object$call <- sys.call()
+
+  mrmc_class <- if (all(object$fixed)) {
+    stop("only one of reader or case may be fixed")
+  } else if (object$fixed["reader"]) {
+    "mrmc_frrc"
+  } else if (object$fixed["case"]) {
+    "mrmc_rrfc"
+  } else {
+    "mrmc_rrrc"
+  }
+
+  structure(object, class = c(mrmc_class, class(object)))
+
+}
+
+
+mrmc_lme <- function(formula, test, reader, case, data, method = jackknife,
+                     design = NULL) {
+
+  stopifnot(is(formula, "formula"))
+  if (length(formula) != 3) stop("formula requires left and right terms")
+
+  response <- formula[[2]]
+  object <- eval(substitute(
+    new_mrmc(response, test, reader, case, data, method = method,
+             design = design, types = "random")
+  ))
+
+  args <- get_lme_args(formula, object, data)
+  args$f <- negloglik_lme_reml
+  args$grad <- grad_lme_reml
+
+  args0 <- args
+  args0$R <- (args$var - sum(args$cov)) * diag(length(args$y))
+
+  params <- do.call(get_lme_params, args)
+  params0 <- do.call(get_lme_params, args0)
+
+  object$lme_fit <- list(
+    coef = params$coef,
+    cov = list(R = params$cov, R0 = params0$cov),
+    optim = list(R = params$optim, R0 = params0$optim)
+  )
+  object$call <- sys.call()
+
+  structure(object, class = c("mrmc_lme", class(object)))
+
+}
+
+
+new_mrmc <- function(response, test, reader, case, data, method, design,
+                     types = c("random", "fixed")) {
+
+  terms <- eval(substitute(
+    mrmc_terms(response, test, reader, case, types = types)
+  ))
 
   response_call <- match.call(get(terms$metric), terms$formula[[2]])
   mrmc_data <- data.frame(
@@ -68,7 +129,7 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
   cov <- get_method(method)(mrmc_data)
 
   fo <- terms$formula
-  vars <- terms$labels[c("reader", "test")]
+  vars <- terms$labels[c("test", "reader")]
   mrmc_groups <- structure(mrmc_data[names(vars)], names = vars)
   df_by <- by(mrmc_data, mrmc_groups, function(split) {
     structure(
@@ -80,39 +141,29 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
   fo[[2]] <- as.name(names(df)[ncol(df)])
   aovfit <- aov(fo, data = df)
 
-  mrmc_class <- if (all(terms$fixed)) {
-    stop("only one of reader or case may be fixed")
-  } else if (terms$fixed["reader"]) {
-    "mrmc_frrc"
-  } else if (terms$fixed["case"]) {
-    "mrmc_rrfc"
-  } else {
-    "mrmc_rrrc"
-  }
-
   structure(
-    list(call = sys.call(),
-         design = design,
+    list(design = design,
          vars = c(terms$labels, metric = terms$metric),
+         fixed = terms$fixed,
          aov = aovfit,
          aov_data = df,
          cov = cov,
          mrmc_data = mrmc_data,
-         mrmc_tests = mrmc_tests(aovfit$model, cov, design),
          levels = levels(mrmc_data$truth)),
-    class = c(mrmc_class, "mrmc")
+    class = "mrmc"
   )
+
 }
 
 
-mrmc_terms <- function(response, test, reader, case) {
+mrmc_terms <- function(response, test, reader, case, types) {
   args <- eval(substitute(
     alist(response = response, test = test, reader = reader, case = case)
   ))
 
-  test <- extract_term(args$test, type = c("", "fixed"))
-  reader <- extract_term(args$reader)
-  case <- extract_term(args$case)
+  test <- extract_term(args$test, types = "fixed")
+  reader <- extract_term(args$reader, types = types)
+  case <- extract_term(args$case, types = types)
 
   fo <- reformulate(c(test$label, reader$label), args$response)
 
@@ -125,17 +176,17 @@ mrmc_terms <- function(response, test, reader, case) {
 }
 
 
-extract_term <- function(x, type = c("random", "fixed")) {
+extract_term <- function(x, types) {
   if (is.symbol(x)) {
     term_symbol <- x
-    term_type <- type[1]
+    term_type <- types[1]
   } else if (is.call(x) && length(x) == 2) {
     term_symbol <- x[[2]]
     term_type <- as.character(x[[1]])
   } else {
     term_symbol <- NULL
   }
-  if (!(is.symbol(term_symbol) && (term_type %in% type))) {
+  if (!(is.symbol(term_symbol) && (term_type %in% types))) {
     stop("invalid mrmc term syntax: ", deparse(x), call. = FALSE)
   }
   list(label = as.character(term_symbol), type = term_type)
