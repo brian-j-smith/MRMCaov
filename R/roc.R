@@ -110,31 +110,51 @@ proproc_params <- function(truth, rating) {
 
 #' @rdname roc_curves
 #'
-points.empirical_curves <- function(x, values = NULL, metric = "specificity",
+points.empirical_curves <- function(x, values = NULL,
+                                    metric = c("specificity", "sensitivity"),
                                     ...) {
   metric <- match.arg(metric)
+  switch(metric,
+         "specificity" = {
+           input_name <- "FPR"
+           output_name <- "TPR"
+           sort_metric <- function(x) sort(1 - x)
+         },
+         sensitivity = {
+           input_name <- "TPR"
+           output_name <- "FPR"
+           sort_metric <- function(x) sort(x)
+         })
 
   new_pts <- if (!is.null(x[["Group"]])) {
 
     new_pts_list <- if (is.null(values)) {
-      fpr <- sort(unique(x$FPR))
-      fpr_dups_list <- tapply(x$FPR, x$Group, function(fpr) {
-        fpr[duplicated(fpr)]
+      input <- sort(unique(x[[input_name]]))
+      input_dups_list <- tapply(x[[input_name]], x[["Group"]], function(input) {
+        input[duplicated(input)]
       })
-      fpr_dups <- sort(unique(unlist(fpr_dups_list)))
-      n <- length(fpr) + length(fpr_dups)
-      by(x, x$Group, function(curve) {
-        tpr <- approx(curve$FPR, curve$TPR, fpr, ties = "ordered")$y
-        tpr_dups <- approx(curve$FPR, curve$TPR, fpr_dups, ties = min)$y
-        pts <- tibble(FPR = c(fpr, fpr_dups), TPR = c(tpr, tpr_dups))
-        pts[order(pts$FPR, pts$TPR), ]
+      input_dups <- sort(unique(unlist(input_dups_list)))
+      n <- length(input) + length(input_dups)
+      by(x, x[["Group"]], function(curve) {
+        output <- approx(curve[[input_name]], curve[[output_name]], input,
+                         ties = "ordered")$y
+        output_dups <- approx(curve[[input_name]], curve[[output_name]],
+                              input_dups, ties = min)$y
+        pts <- tibble(c(input, input_dups), c(output, output_dups))
+        names(pts) <- c(input_name, output_name)
+        pts[order(pts$FPR, pts$TPR), c("FPR", "TPR")]
       })
+
     } else {
-      fpr <- sort(1 - values)
-      n <- length(fpr)
-      by(x, x$Group, function(curve) {
-        tpr <- approx(curve$FPR, curve$TPR, fpr, ties = "ordered")$y
-        tibble(FPR = fpr, TPR = tpr)
+
+      input <- sort_metric(values)
+      n <- length(input)
+      by(x, x[["Group"]], function(curve) {
+        output <- approx(curve[[input_name]], curve[[output_name]], input,
+                         ties = "ordered")$y
+        pts <- tibble(input, output)
+        names(pts) = c(input_name, output_name)
+        pts[c("FPR", "TPR")]
       })
     }
     new_pts <- do.call(rbind, new_pts_list)
@@ -147,9 +167,12 @@ points.empirical_curves <- function(x, values = NULL, metric = "specificity",
 
   } else if (!is.null(values)) {
 
-    fpr <- sort(1 - values)
-    tpr <- approx(x$FPR, x$TPR, fpr, ties = "ordered")$y
-    tibble(FPR = fpr, TPR = tpr)
+    input <- sort_metric(values)
+    output <- approx(x[[input_name]], x[[output_name]], input,
+                     ties = "ordered")$y
+    pts <- tibble(input, output)
+    names(pts) <- c(input_name, output_name)
+    pts[c("FPR", "TPR")]
 
   } else as_tibble(x)
 
@@ -160,15 +183,31 @@ points.empirical_curves <- function(x, values = NULL, metric = "specificity",
 #' @rdname roc_curves
 #'
 points.proproc_curves <- function(x, values = seq(0, 1, length = 100),
-                                  metric = "specificity", ...) {
+                                  metric = c("specificity", "sensitivity"),
+                                  ...) {
   metric <- match.arg(metric)
+  switch(metric,
+         specificity = {
+           input_name <- "FPR"
+           input <- sort(1 - values)
+           output_name <- "TPR"
+           output_fun <- function(params, x) sensitivity(params, 1 - x)
+         },
+         sensitivity = {
+           input_name <- "TPR"
+           input <- sort(values)
+           output_name <- "FPR"
+           output_fun <- function(params, x) 1 - specificity(params, x)
+         })
 
-  fpr <- sort(1 - values)
-  n <- length(fpr)
+  n <- length(input)
 
   models <- attr(x, "models")
   new_pts_list <- lapply(models$Params, function(params) {
-    tibble(FPR = fpr, TPR = sensitivity(params, 1 - fpr))
+    output <- output_fun(params, input)
+    pts <-tibble(input, output)
+    names(pts) = c(input_name, output_name)
+    pts[c("FPR", "TPR")]
   })
   new_pts <- do.call(rbind, new_pts_list)
   if (!is.null(models[["Group"]])) {
@@ -186,10 +225,22 @@ points.proproc_curves <- function(x, values = seq(0, 1, length = 100),
 mean.roc_curves <- function(x, ...) {
   pts <- points(x, ...)
   if (!is.null(pts[["Group"]])) {
-    tpr_list <- split(pts$TPR, pts[["Group"]])
-    tpr <- rowMeans(do.call(cbind, tpr_list))
-    structure(tibble(FPR = head(pts$FPR, n = length(tpr)), TPR = tpr),
-              metric = attr(pts, "metric"), class = class(pts))
+    metric <- attr(pts, "metric")
+    switch(metric,
+           specificity = {
+             input_name <- "FPR"
+             output_name <- "TPR"
+           },
+           sensitivity = {
+             input_name <- "TPR"
+             output_name <- "FPR"
+           })
+    output_list <- split(pts[[output_name]], pts[["Group"]])
+    output <- rowMeans(do.call(cbind, output_list))
+    input <- head(pts[[input_name]], n = length(output))
+    new_pts <- tibble(input, output)
+    names(new_pts) = c(input_name, output_name)
+    structure(new_pts[c("FPR", "TPR")], metric = metric, class = class(pts))
   } else pts
 }
 

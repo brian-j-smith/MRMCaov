@@ -9,9 +9,14 @@
 \usage{
 roc_curves(truth, rating, groups = list(), method = "empirical")
 
-\method{points}{empirical_curves}(x, values = NULL, metric = "specificity", ...)
+\method{points}{empirical_curves}(x, values = NULL, metric = c("specificity", "sensitivity"), ...)
 
-\method{points}{proproc_curves}(x, values = seq(0, 1, length = 100), metric = "specificity", ...)
+\method{points}{proproc_curves}(
+  x,
+  values = seq(0, 1, length = 100),
+  metric = c("specificity", "sensitivity"),
+  ...
+)
 
 \method{mean}{roc_curves}(x, ...)
 }
