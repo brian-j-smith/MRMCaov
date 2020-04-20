@@ -3,7 +3,7 @@
 \name{roc_curves}
 \alias{roc_curves}
 \alias{points.empirical_curves}
-\alias{points.proproc_curves}
+\alias{points.param_curves}
 \alias{mean.roc_curves}
 \title{ROC Performance Curves}
 \usage{
@@ -11,7 +11,7 @@ roc_curves(truth, rating, groups = list(), method = "empirical")
 
 \method{points}{empirical_curves}(x, values = NULL, metric = c("specificity", "sensitivity"), ...)
 
-\method{points}{proproc_curves}(
+\method{points}{param_curves}(
   x,
   values = seq(0, 1, length = 100),
   metric = c("specificity", "sensitivity"),
@@ -28,8 +28,8 @@ roc_curves(truth, rating, groups = list(), method = "empirical")
 \item{groups}{list or data frame of grouping variables of the same lengths as
 \code{truth} and \code{rating}.}
 
-\item{method}{character string \code{"empirical"}, \code{"trapezoidal"}, or
-\code{"proproc"} indicating the curve type.}
+\item{method}{character string \code{"binormal"}, \code{"empirical"},
+\code{"trapezoidal"}, or \code{"proproc"} indicating the curve type.}
 
 \item{x}{object returned by \code{roc_curves} for which to compute points on
 or to average over the curves.}

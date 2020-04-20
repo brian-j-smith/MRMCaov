@@ -16,6 +16,9 @@ importFrom(utils, head)
 
 export(
   DeLong,
+  binormal_auc,
+  binormal_sens,
+  binormal_spec,
   empirical_auc,
   empirical_sens,
   empirical_spec,
@@ -41,13 +44,11 @@ export(
 S3method(mean, roc_curves)
 S3method(plot, mrmc)
 S3method(plot, empirical_curves)
-S3method(plot, proproc_curves)
+S3method(plot, param_curves)
 S3method(plot, roc_points)
 S3method(points, empirical_curves)
-S3method(points, proproc_curves)
+S3method(points, param_curves)
 S3method(print, cov_unbiased)
 S3method(print, mrmc)
 S3method(print, summary.mrmc)
-S3method(sensitivity, proproc_params)
-S3method(specificity, proproc_params)
 S3method(summary, mrmc)

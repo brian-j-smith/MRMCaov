@@ -9,8 +9,8 @@
 #' @param rating vector of numeric ratings.
 #' @param groups list or data frame of grouping variables of the same lengths as
 #'   \code{truth} and \code{rating}.
-#' @param method character string \code{"empirical"}, \code{"trapezoidal"}, or
-#'   \code{"proproc"} indicating the curve type.
+#' @param method character string \code{"binormal"}, \code{"empirical"},
+#'   \code{"trapezoidal"}, or \code{"proproc"} indicating the curve type.
 #' @param x object returned by \code{roc_curves} for which to compute points on
 #'   or to average over the curves.
 #' @param values numeric vector of values at which to compute the points.  If
@@ -29,15 +29,18 @@
 #' mean(curves)
 #'
 roc_curves <- function(truth, rating, groups = list(), method = "empirical") {
-  method <- match.arg(method, c("empirical", "trapezoidal", "proproc"))
-  switch(method,
-         "empirical" = empirical_curves(truth, rating, groups),
-         "trapezoidal" = empirical_curves(truth, rating, groups),
-         "proproc" = proproc_curves(truth, rating, groups))
+  method <- match.arg(method,
+                      c("binormal", "empirical", "trapezoidal", "proproc"))
+  f <- switch(method,
+              "binormal" = param_curves,
+              "empirical" = empirical_curves,
+              "trapezoidal" = empirical_curves,
+              "proproc" = param_curves)
+  f(truth, rating, groups, method = method)
 }
 
 
-empirical_curves <- function(truth, rating, groups) {
+empirical_curves <- function(truth, rating, groups, ...) {
   data <- tibble(truth = truth, rating = rating)
 
   get_pts <- function(data) {
@@ -63,13 +66,17 @@ empirical_curves <- function(truth, rating, groups) {
 }
 
 
-proproc_curves <- function(truth, rating, groups) {
+param_curves <- function(truth, rating, groups, method, ...) {
+  roc_params <- switch(method,
+                       "binormal" = binormal_params,
+                       "proproc" = proproc_params)
+
   data <- tibble(truth = truth, rating = rating)
 
   get_curve <- function(data) {
     roc <- pROC::roc(data$truth, data$rating, auc = FALSE, quiet = TRUE)
     spec <- rev(roc$specificities)
-    params <- proproc_params(data$truth, data$rating)
+    params <- roc_params(data$truth, data$rating)
     pts <- tibble(FPR = 1 - spec, TPR = sensitivity(params, spec))
     list(pts = pts, params = params)
   }
@@ -91,7 +98,20 @@ proproc_curves <- function(truth, rating, groups) {
     structure(curve$pts, models = tibble(Params = list(curve$params)))
   }
 
-  structure(curves, class = c("proproc_curves", "roc_curves", class(curves)))
+  structure(curves, class = c("param_curves", "roc_curves", class(curves)))
+}
+
+
+binormal_params <- function(truth, rating) {
+  truth <- as.factor(truth)
+  is_pos <- truth == levels(truth)[2]
+  pred_pos <- as.double(rating[is_pos])
+  pred_neg <- as.double(rating[!is_pos])
+  roc <- .Fortran("cvbmroc",
+                  length(pred_neg), length(pred_pos), pred_neg, pred_pos,
+                  a = double(1), b = double(1),
+                  auc = double(1), auc_var = double(1))
+  structure(list(a = roc$a, b = roc$b), class = "binormal_params")
 }
 
 
@@ -182,9 +202,8 @@ points.empirical_curves <- function(x, values = NULL,
 
 #' @rdname roc_curves
 #'
-points.proproc_curves <- function(x, values = seq(0, 1, length = 100),
-                                  metric = c("specificity", "sensitivity"),
-                                  ...) {
+points.param_curves <- function(x, values = seq(0, 1, length = 100),
+                                metric = c("specificity", "sensitivity"), ...) {
   metric <- match.arg(metric)
   switch(metric,
          specificity = {
@@ -250,6 +269,16 @@ sensitivity <- function(x, ...) {
 }
 
 
+sensitivity.binormal_params <- function(x, specificity, ...) {
+  sapply(specificity, function(spec) {
+    fpf <- 1.0 - spec
+    .Fortran("cvbmrocfpf2tpf",
+             x$a, x$b,
+             fpf = fpf, tpf = double(1), double(1))$tpf
+  })
+}
+
+
 sensitivity.proproc_params <- function(x, specificity, ...) {
   sapply(specificity, function(spec) {
     fpf <- 1.0 - spec
@@ -262,6 +291,15 @@ sensitivity.proproc_params <- function(x, specificity, ...) {
 
 specificity <- function(x, ...) {
   UseMethod("specificity")
+}
+
+
+specificity.binormal_params <- function(x, sensitivity, ...) {
+  sapply(sensitivity, function(sens) {
+    1 - .Fortran("cvbmroctpf2fpf",
+                 x$a, x$b,
+                 tpf = as.double(sens), fpf = as.double(1), double(1))$fpf
+  })
 }
 
 

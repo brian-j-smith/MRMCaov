@@ -87,7 +87,7 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
   }
 
   roc_method <- strsplit(terms$metric, "_")[[1]][1]
-  if (roc_method != "proproc") roc_method <- "empirical"
+  if (roc_method == "trapezoidal") roc_method <- "empirical"
 
   structure(
     list(call = sys.call(),

@@ -3,14 +3,14 @@
 \name{plot}
 \alias{plot}
 \alias{plot.empirical_curves}
-\alias{plot.proproc_curves}
+\alias{plot.param_curves}
 \alias{plot.roc_points}
 \alias{plot.mrmc}
 \title{Performance Plots}
 \usage{
 \method{plot}{empirical_curves}(x, ...)
 
-\method{plot}{proproc_curves}(x, n = 100, ...)
+\method{plot}{param_curves}(x, n = 100, ...)
 
 \method{plot}{roc_points}(x, ...)
 

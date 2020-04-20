@@ -24,7 +24,7 @@ plot.empirical_curves <- function(x, ...) {
 
 #' @rdname plot-methods
 #'
-plot.proproc_curves <- function(x, n = 100, ...) {
+plot.param_curves <- function(x, n = 100, ...) {
   plot(points(x, values = seq(0, 1, length = n)))
 }
 

@@ -2,6 +2,9 @@
 % Please edit documentation in R/metrics.R
 \name{metrics}
 \alias{metrics}
+\alias{binormal_auc}
+\alias{binormal_sens}
+\alias{binormal_spec}
 \alias{empirical_auc}
 \alias{empirical_sens}
 \alias{empirical_spec}
@@ -13,6 +16,12 @@
 \alias{trapezoidal_spec}
 \title{Performance Metrics}
 \usage{
+binormal_auc(truth, rating, partial = FALSE, min = 0, max = 1)
+
+binormal_sens(truth, rating, spec)
+
+binormal_spec(truth, rating, sens)
+
 empirical_auc(truth, rating, partial = FALSE, min = 0, max = 1)
 
 empirical_sens(truth, rating, spec)

@@ -28,17 +28,51 @@
 NULL
 
 
-cbinorm_auc <- function(truth, rating) {
-  truth <- as.factor(truth)
-  is_pos <- truth == levels(truth)[2]
+#' @rdname metrics
+#'
+binormal_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1) {
+  fit <- if (isFALSE(partial)) {
+    truth <- as.factor(truth)
+    is_pos <- truth == levels(truth)[2]
+    pred_pos <- as.double(rating[is_pos])
+    pred_neg <- as.double(rating[!is_pos])
+    .Fortran("cvbmroc",
+             length(pred_neg), length(pred_pos), pred_neg, pred_pos,
+             double(1), double(1), est = double(1), var = double(1))
+  } else {
+    partial <- match.arg(partial, c("sensitivity", "specificity"))
+    min <- as.double(min)
+    max <- as.double(max)
+    if (partial == "specificity") {
+      flag <- 1L
+      min <- 1 - max
+      max <- 1 - min
+    } else {
+      flag <- 2L
+    }
+    params <- binormal_params(truth, rating)
+    .Fortran("cvbmrocpartial",
+             params$a, params$b, min, max, flag, est = double(1),
+             err = integer(1))
+  }
 
-  pred_pos <- as.double(rating[is_pos])
-  pred_neg <- as.double(rating[!is_pos])
-
-  fit <- .Fortran("cvbmroc",
-                  length(pred_neg), length(pred_pos), pred_neg, pred_pos,
-                  double(1), double(1), est = double(1), var = double(1))
   fit$est
+}
+
+
+#' @rdname metrics
+#'
+binormal_sens <- function(truth, rating, spec) {
+  x <- proproc_params(truth, rating)
+  sensitivity(x, specificity = spec)
+}
+
+
+#' @rdname metrics
+#'
+binormal_spec <- function(truth, rating, sens) {
+  x <- proproc_params(truth, rating)
+  specificity(x, sensitivity = sens)
 }
 
 
