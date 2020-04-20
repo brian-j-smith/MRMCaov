@@ -264,6 +264,57 @@ mean.roc_curves <- function(x, ...) {
 }
 
 
+auc <- function(x, ...) {
+  UseMethod("auc")
+}
+
+
+auc.binormal_params <- function(x, partial = FALSE, min = 0, max = 1, ...) {
+  if (isFALSE(partial)) {
+    pnorm(x$a / sqrt(1 + x$b^2))
+  } else {
+    partial <- partial_params(partial, min, max)
+    .Fortran("cvbmrocpartial",
+             params$a, params$b,
+             partial$min, partial$max, partial$flag,
+             est = double(1), err = integer(1))$est
+  }
+}
+
+
+auc.proproc_params <- function(x, partial = FALSE, min = 0, max = 1, ...) {
+  fit <- if (isFALSE(partial)) {
+    rho <- -1 * (1 - x$c^2) / (1 + x$c^2)
+    rho <- rbind(c(1, rho), c(rho, 1))
+    rho <- diag(2)
+    rho[rbind(c(1, 2), c(2, 1))] <- -1 * (1 - x$c^2) / (1 + x$c^2)
+    pnorm(x$d_a / sqrt(2)) +
+      2 * pmvnorm(upper = c(-x$d_a / sqrt(2), 0), corr = rho)
+  } else {
+    partial <- partial_params(partial, min, max)
+    .Fortran("pbmrocpartial",
+             params$d_a, params$c,
+             partial$min, partial$max, partial$flag,
+             est = double(1), err = integer(1))$est
+  }
+}
+
+
+partial_params <- function(x, min, max) {
+  x <- match.arg(partial, c("sensitivity", "specificity"))
+  min <- as.double(min)
+  max <- as.double(max)
+  if (x == "specificity") {
+    flag <- 1L
+    min <- 1 - max
+    max <- 1 - min
+  } else {
+    flag <- 2L
+  }
+  list(min, max, flag)
+}
+
+
 sensitivity <- function(x, ...) {
   UseMethod("sensitivity")
 }

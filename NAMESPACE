@@ -8,6 +8,7 @@ import(methods)
 importFrom(graphics, plot, points)
 importFrom(gtools, combinations)
 importFrom(methods, is)
+importFrom(mvtnorm, pmvnorm)
 importFrom(stats, aov, approx, coef, pf, pt, reformulate, qt, reshape, terms,
            update, vcov)
 importFrom(tibble, as_tibble, tibble)
