@@ -1,0 +1,14 @@
+citHeader("To cite MRMCaov in publications use:")
+
+citEntry(entry="InProceedings",
+         author = personList(person("Brian J.", "Smith"),
+                             person("Stephen L.", "Hillis")),
+         title = "Multi-reader multi-case analysis of variance software for diagnostic performance comparison of imaging modalities",
+         booktitle = "Proceedings of SPIE 11316, Medical Imaging 2020: Image Perception, Observer Performance, and Technology Assessment",
+         editors = "Frank Samuelson and Sian Taylor-Phillips",
+         month = "16 March",
+         year = "2020",
+         pages = "113160K",
+         doi = "10.117/12.2549075",
+         textVersion = "Brian J. Smith, Stephen L. Hillis, \"Multi-reader multi-case analysis of variance software for diagnostic performance comparison of imaging modalities\", Proc. SPIE 11316, Medical Imaging 2020: Image Perception, Observer Performance, and Technology Assessment, 113160K (16 March 2020); doi: 10.1117/12.2549075"
+)
