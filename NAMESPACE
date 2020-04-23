@@ -42,7 +42,10 @@ export(
 )
 
 
+S3method(auc, binormal_params)
+S3method(auc, proproc_params)
 S3method(mean, roc_curves)
+S3method(mean, binormal_curves)
 S3method(plot, mrmc)
 S3method(plot, empirical_curves)
 S3method(plot, param_curves)

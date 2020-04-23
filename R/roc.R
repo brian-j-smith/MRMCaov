@@ -9,8 +9,9 @@
 #' @param rating vector of numeric ratings.
 #' @param groups list or data frame of grouping variables of the same lengths as
 #'   \code{truth} and \code{rating}.
-#' @param method character string \code{"binormal"}, \code{"empirical"},
-#'   \code{"trapezoidal"}, or \code{"proproc"} indicating the curve type.
+#' @param method character string indicating the curve type as
+#'   \code{"binormal"}, \code{"empirical"}, \code{"trapezoidal"}, or
+#'   \code{"proproc"} or indicating the mean estimation method.
 #' @param x object returned by \code{roc_curves} for which to compute points on
 #'   or to average over the curves.
 #' @param values numeric vector of values at which to compute the points.  If
@@ -20,6 +21,11 @@
 #' @param ... arguments passed from the \code{mean()} method to \code{points()}.
 #'
 #' @seealso \code{\link{plot}}
+#'
+#' @references
+#' Chen W and Samuelson FW (2014) The average receiver operating characteristics
+#' curve in multireader multicase imaging studies. \emph{British Journal of
+#' Radiology}, 87(1040) doi: 10.1259/bjr.20140016.
 #'
 #' @examples
 #' curves <- with(VanDyke,
@@ -98,7 +104,8 @@ param_curves <- function(truth, rating, groups, method, ...) {
     structure(curve$pts, models = tibble(Params = list(curve$params)))
   }
 
-  structure(curves, class = c("param_curves", "roc_curves", class(curves)))
+  structure(curves, class = c(paste0(method, "_curves"), "param_curves",
+                              "roc_curves", class(curves)))
 }
 
 
@@ -261,6 +268,22 @@ mean.roc_curves <- function(x, ...) {
     names(new_pts) = c(input_name, output_name)
     structure(new_pts[c("FPR", "TPR")], metric = metric, class = class(pts))
   } else pts
+}
+
+
+#' @rdname roc_curves
+#'
+mean.binormal_curves <- function(x, method = c("parameters", "points"), ...) {
+  if (match.arg(method) == "parameters") {
+    params <- attr(x, "models")$Params
+    auc_mean <- mean(sapply(params, auc))
+    b_mean <- mean(mapply(getElement, params, "b"))
+    a <- sqrt(1 + b_mean^2) * qnorm(auc_mean)
+    params <- structure(list(a = a, b = b_mean), class = "binormal_params")
+    x <- structure(tibble(), models = tibble(Params = list(params)),
+                   class = class(x))
+  }
+  NextMethod()
 }
 
 

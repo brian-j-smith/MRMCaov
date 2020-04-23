@@ -5,6 +5,7 @@
 \alias{points.empirical_curves}
 \alias{points.param_curves}
 \alias{mean.roc_curves}
+\alias{mean.binormal_curves}
 \title{ROC Performance Curves}
 \usage{
 roc_curves(truth, rating, groups = list(), method = "empirical")
@@ -19,6 +20,8 @@ roc_curves(truth, rating, groups = list(), method = "empirical")
 )
 
 \method{mean}{roc_curves}(x, ...)
+
+\method{mean}{binormal_curves}(x, method = c("parameters", "points"), ...)
 }
 \arguments{
 \item{truth}{vector of true binary statuses.}
@@ -28,8 +31,9 @@ roc_curves(truth, rating, groups = list(), method = "empirical")
 \item{groups}{list or data frame of grouping variables of the same lengths as
 \code{truth} and \code{rating}.}
 
-\item{method}{character string \code{"binormal"}, \code{"empirical"},
-\code{"trapezoidal"}, or \code{"proproc"} indicating the curve type.}
+\item{method}{character string indicating the curve type as
+\code{"binormal"}, \code{"empirical"}, \code{"trapezoidal"}, or
+\code{"proproc"} or indicating the mean estimation method.}
 
 \item{x}{object returned by \code{roc_curves} for which to compute points on
 or to average over the curves.}
@@ -53,6 +57,11 @@ curves <- with(VanDyke,
 points(curves)
 mean(curves)
 
+}
+\references{
+Chen W and Samuelson FW (2014) The average receiver operating characteristics
+curve in multireader multicase imaging studies. \emph{British Journal of
+Radiology}, 87(1040) doi: 10.1259/bjr.20140016.
 }
 \seealso{
 \code{\link{plot}}
