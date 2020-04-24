@@ -1,3 +1,14 @@
+curves2tibble <- function(x, dimnames = NULL) {
+  if (is.null(dimnames)) dimnames <- dimnames(x)
+
+  labels <- expand.grid(dimnames)
+  labels_ind <- rep(seq(nrow(labels)), times = sapply(x, nrow))
+
+  x <- do.call(rbind, x)
+  tibble(Group = labels[labels_ind, , drop = FALSE], FPR = x$FPR, TPR = x$TPR)
+}
+
+
 dim.mrmc <- function(x) {
   sapply(levels(x), length)
 }

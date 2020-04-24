@@ -17,15 +17,34 @@
 #' )
 #' plot(curves)
 #'
-plot.empirical_curves <- function(x, ...) {
+NULL
+
+
+#' @rdname plot-methods
+#'
+plot.roc_curve <- function(x, n = 100, ...) {
+  plot(points(x, values = seq(0, 1, length = n)))
+}
+
+
+#' @rdname plot-methods
+#'
+plot.roc_curves <- function(x, n = 100, ...) {
+  plot(points(x, values = seq(0, 1, length = n)))
+}
+
+
+#' @rdname plot-methods
+#'
+plot.empirical_curve <- function(x, ...) {
   plot(points(x))
 }
 
 
 #' @rdname plot-methods
 #'
-plot.param_curves <- function(x, n = 100, ...) {
-  plot(points(x, values = seq(0, 1, length = n)))
+plot.empirical_curves <- function(x, ...) {
+  plot(points(x))
 }
 
 

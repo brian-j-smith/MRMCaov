@@ -2,26 +2,49 @@
 % Please edit documentation in R/roc.R
 \name{roc_curves}
 \alias{roc_curves}
+\alias{points.roc_curve}
+\alias{points.roc_curves}
+\alias{points.empirical_curve}
 \alias{points.empirical_curves}
-\alias{points.param_curves}
+\alias{mean.roc_curve}
 \alias{mean.roc_curves}
-\alias{mean.binormal_curves}
 \title{ROC Performance Curves}
 \usage{
 roc_curves(truth, rating, groups = list(), method = "empirical")
 
-\method{points}{empirical_curves}(x, values = NULL, metric = c("specificity", "sensitivity"), ...)
-
-\method{points}{param_curves}(
+\method{points}{roc_curve}(
   x,
-  values = seq(0, 1, length = 100),
   metric = c("specificity", "sensitivity"),
+  values = seq(0, 1, length = 100),
   ...
 )
 
-\method{mean}{roc_curves}(x, ...)
+\method{points}{roc_curves}(
+  x,
+  metric = c("specificity", "sensitivity"),
+  values = seq(0, 1, length = 100),
+  ...
+)
 
-\method{mean}{binormal_curves}(x, method = c("parameters", "points"), ...)
+\method{points}{empirical_curve}(
+  x,
+  metric = c("specificity", "sensitivity"),
+  values = NULL,
+  ties = max,
+  ...
+)
+
+\method{points}{empirical_curves}(
+  x,
+  metric = c("specificity", "sensitivity"),
+  values = NULL,
+  ties = max,
+  ...
+)
+
+\method{mean}{roc_curve}(x, ...)
+
+\method{mean}{roc_curves}(x, ...)
 }
 \arguments{
 \item{truth}{vector of true binary statuses.}
@@ -33,18 +56,21 @@ roc_curves(truth, rating, groups = list(), method = "empirical")
 
 \item{method}{character string indicating the curve type as
 \code{"binormal"}, \code{"empirical"}, \code{"trapezoidal"}, or
-\code{"proproc"} or indicating the mean estimation method.}
+\code{"proproc"}.}
 
 \item{x}{object returned by \code{roc_curves} for which to compute points on
 or to average over the curves.}
 
-\item{values}{numeric vector of values at which to compute the points.  If
-\code{NULL} then the intersection of all empirical points is used.}
-
 \item{metric}{reader performance metric to which the \code{values}
 correspond.}
 
+\item{values}{numeric vector of values at which to compute the points.  If
+\code{NULL} then the intersection of all empirical points is used.}
+
 \item{...}{arguments passed from the \code{mean()} method to \code{points()}.}
+
+\item{ties}{function determining empirical roc points returned in cases of
+ties.}
 }
 \description{
 Calculation of TPR and FPR pairs for values of a numeric rating of a
@@ -57,11 +83,6 @@ curves <- with(VanDyke,
 points(curves)
 mean(curves)
 
-}
-\references{
-Chen W and Samuelson FW (2014) The average receiver operating characteristics
-curve in multireader multicase imaging studies. \emph{British Journal of
-Radiology}, 87(1040) doi: 10.1259/bjr.20140016.
 }
 \seealso{
 \code{\link{plot}}

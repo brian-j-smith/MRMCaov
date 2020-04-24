@@ -2,15 +2,21 @@
 % Please edit documentation in R/plots.R
 \name{plot}
 \alias{plot}
+\alias{plot.roc_curve}
+\alias{plot.roc_curves}
+\alias{plot.empirical_curve}
 \alias{plot.empirical_curves}
-\alias{plot.param_curves}
 \alias{plot.roc_points}
 \alias{plot.mrmc}
 \title{Performance Plots}
 \usage{
-\method{plot}{empirical_curves}(x, ...)
+\method{plot}{roc_curve}(x, n = 100, ...)
 
-\method{plot}{param_curves}(x, n = 100, ...)
+\method{plot}{roc_curves}(x, n = 100, ...)
+
+\method{plot}{empirical_curve}(x, ...)
+
+\method{plot}{empirical_curves}(x, ...)
 
 \method{plot}{roc_points}(x, ...)
 
@@ -19,11 +25,11 @@
 \arguments{
 \item{x}{object to plot.}
 
-\item{...}{arguments passed to other methods.}
-
 \item{n}{number of equally spaced false-positive rate points at which to
 calculate true-positive rates and interpolate through for display of the
 curve.}
+
+\item{...}{arguments passed to other methods.}
 }
 \description{
 Performance Plots

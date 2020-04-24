@@ -31,7 +31,8 @@ NULL
 #' @rdname metrics
 #'
 binormal_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1) {
-  auc(binormal_params(truth, rating), partial = partial, min = min, max = max)
+  x <- binormal_params(truth, rating)
+  auc(x, partial = partial, min = min, max = max)
 }
 
 
@@ -54,38 +55,32 @@ binormal_spec <- function(truth, rating, sens) {
 #' @rdname metrics
 #'
 empirical_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1) {
-  args <- list(pROC::roc(truth, rating, quiet = TRUE))
-  if (!isFALSE(partial)) {
-    partial <- match.arg(partial, c("sensitivity", "specificity"))
-    args$partial.auc <- c(min, max)
-    args$partial.auc.focus <- partial
-  }
-  as.numeric(do.call(pROC::auc, args))
+  x <- empirical_params(truth, rating)
+  auc(x, partial = partial, min = min, max = max)
 }
 
 
 #' @rdname metrics
 #'
 empirical_sens <- function(truth, rating, spec) {
-  roc <- pROC::roc(truth, rating, quiet = TRUE)
-  pROC::coords(roc, spec, input = "specificity", ret = "sensitivity",
-               transpose = TRUE, drop = TRUE)
+  x <- empirical_params(truth, rating)
+  sensitivity(x, specificity = spec)
 }
 
 
 #' @rdname metrics
 #'
 empirical_spec <- function(truth, rating, sens) {
-  roc <- pROC::roc(truth, rating, quiet = TRUE)
-  pROC::coords(roc, sens, input = "sensitivity", ret = "specificity",
-               transpose = TRUE, drop = TRUE)
+  x <- empirical_params(truth, rating)
+  specificity(x, sensitivity = sens)
 }
 
 
 #' @rdname metrics
 #'
 proproc_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1) {
-  auc(proproc_params(truth, rating), partial = partial, min = min, max = max)
+  x <- proproc_params(truth, rating)
+  auc(x, partial = partial, min = min, max = max)
 }
 
 

@@ -28,9 +28,22 @@ print.mrmc <- function(x, n = 20, ...) {
   print(vcov_comps)
 
   cat("\n\nFirst", n, "ROC performance metrics:\n\n")
-  print(x$roc, n = n)
+  print(curves2tibble(x$roc), n = n)
 
   invisible()
+}
+
+
+print.roc_curve <- function(x, ...) {
+  labels <- c(
+    "binormal_curve" = "Binormal",
+    "empirical_curve" = "Empirical",
+    "proproc_curve" = "Proper Binormal",
+    "roc_curve" = "ROC"
+  )
+  index <- match(TRUE, mapply(inherits, list(x), names(labels)))
+  cat(labels[index], "Curve\n")
+  NextMethod()
 }
 
 
