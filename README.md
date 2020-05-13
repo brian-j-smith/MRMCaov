@@ -43,8 +43,8 @@ install.packages(c("ggplot2", "gtools", "pROC"))
 
 | Operating System   | Package Archive File                                                                                                                    |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Microsoft Windows: | [MRMCaov\_0.1.7.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EZkiuesUrPNFrZhWUFWp-XoBQ0jrUo031h70T4ijWScaUg)    |
-| Linux:             | [MRMCaov\_0.1.7.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/ETTz0FnZW6pJkA97hXxeY6wBlXRA8Rn2Gq_TWEWTkAwunA) |
+| Microsoft Windows: | [MRMCaov\_0.1.8.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/Ed0_WcuPbe5LkhapFOzmQYMB72GSKzNQmhnpUDWPh7nheg)    |
+| Linux:             | [MRMCaov\_0.1.8.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/ESAtW6VQ2MlKu2Dk_dmYbK8B8niyS2p0igKuQ8vtfvqDVA) |
 
 ## Getting Started
 
@@ -102,3 +102,30 @@ summary(est)
     ##    Estimate       MS(R)         Cov2     StdErr       df  CI.Lower  CI.Upper
     ## 1 0.8970370 0.003082629 0.0004839618 0.03317360 12.74465 0.8252236 0.9688505
     ## 2 0.9408374 0.001304602 0.0002041879 0.02156637 12.71019 0.8941378 0.9875369
+
+``` r
+## Package citation
+citation("MRMCaov")
+```
+
+    ## 
+    ## To cite MRMCaov in publications use:
+    ## 
+    ##   Brian J. Smith, Stephen L. Hillis, "Multi-reader multi-case analysis
+    ##   of variance software for diagnostic performance comparison of imaging
+    ##   modalities", Proc. SPIE 11316, Medical Imaging 2020: Image
+    ##   Perception, Observer Performance, and Technology Assessment, 113160K
+    ##   (16 March 2020); doi: 10.1117/12.2549075
+    ## 
+    ## A BibTeX entry for LaTeX users is
+    ## 
+    ##   @InProceedings{,
+    ##     author = {Brian J. Smith and Stephen L. Hillis},
+    ##     title = {Multi-reader multi-case analysis of variance software for diagnostic performance comparison of imaging modalities},
+    ##     booktitle = {Proceedings of SPIE 11316, Medical Imaging 2020: Image Perception, Observer Performance, and Technology Assessment},
+    ##     editors = {Frank Samuelson and Sian Taylor-Phillips},
+    ##     month = {16 March},
+    ##     year = {2020},
+    ##     pages = {113160K},
+    ##     doi = {10.117/12.2549075},
+    ##   }
