@@ -40,6 +40,17 @@ install.packages(c("ggplot2", "gtools", "pROC"))
 | Linux: | [MRMCaov_0.1.8.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/ESAtW6VQ2MlKu2Dk_dmYbK8B8niyS2p0igKuQ8vtfvqDVA) |
 
 
+## Citing the Software
+
+```{r citation, comment = ""}
+## Text format
+citation("MRMCaov")
+
+## Bibtex format
+toBibtex(citation("MRMCaov"))
+```
+
+
 ## Getting Started
 
 ```{r mrmc, message=FALSE}
@@ -53,7 +64,4 @@ library(MRMCaov)
 est <- mrmc(empirical_auc(truth, rating), treatment, reader, case, data = VanDyke)
 plot(est)
 summary(est)
-
-## Package citation
-citation("MRMCaov")
 ```
