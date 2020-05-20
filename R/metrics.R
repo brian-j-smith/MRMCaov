@@ -6,7 +6,8 @@
 #' @rdname metrics
 #'
 #' @param truth vector of true binary statuses.
-#' @param rating vector of numeric ratings.
+#' @param rating vector of binary ratings for the binary metrics and ranges of
+#'   numeric ratings for the others.
 #' @param partial character string \code{"sensitivity"} or \code{"specificity"}
 #'   for calculation of partial AUC, or \code{FALSE} for full AUC.  Partial
 #'   matching of the character strings is allowed.
@@ -26,6 +27,36 @@
 #' }
 #'
 NULL
+
+
+#' @rdname metrics
+#'
+binary_sens <- function(truth, rating) {
+  binary_metric(truth, rating, function(truth, rating) {
+    events <- truth == levels(truth)[2]
+    pos <- rating == levels(rating)[2]
+    mean(pos[events])
+  })
+}
+
+
+#' @rdname metrics
+#'
+binary_spec <- function(truth, rating) {
+  binary_metric(truth, rating, function(truth, rating) {
+    nonevents <- truth != levels(truth)[2]
+    neg <- rating != levels(rating)[2]
+    mean(neg[nonevents])
+  })
+}
+
+
+binary_metric <- function(truth, rating, f) {
+  truth <- as.factor(truth)
+  rating <- as.factor(rating)
+  stopifnot(nlevels(truth) == 2 && nlevels(rating) == 2)
+  f(truth, rating)
+}
 
 
 #' @rdname metrics

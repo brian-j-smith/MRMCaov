@@ -46,7 +46,7 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
   response_call <- match.call(get(terms$metric), terms$formula[[2]])
   mrmc_data <- data.frame(
     truth = factor(eval(response_call$truth, data)),
-    rating = eval(response_call$rating, data),
+    rating = as.numeric(eval(response_call$rating, data)),
     test = factor(data[[terms$labels["test"]]]),
     reader = factor(data[[terms$labels["reader"]]]),
     case = factor(data[[terms$labels["case"]]])
@@ -87,7 +87,9 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
   }
 
   roc_method <- strsplit(terms$metric, "_")[[1]][1]
-  if (roc_method == "trapezoidal") roc_method <- "empirical"
+  if (!(roc_method %in% c("binormal", "empirical", "proproc"))) {
+    roc_method <- "empirical"
+  }
 
   structure(
     list(call = sys.call(),

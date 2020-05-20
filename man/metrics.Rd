@@ -2,6 +2,8 @@
 % Please edit documentation in R/metrics.R
 \name{metrics}
 \alias{metrics}
+\alias{binary_sens}
+\alias{binary_spec}
 \alias{binormal_auc}
 \alias{binormal_sens}
 \alias{binormal_spec}
@@ -16,6 +18,10 @@
 \alias{trapezoidal_spec}
 \title{Performance Metrics}
 \usage{
+binary_sens(truth, rating)
+
+binary_spec(truth, rating)
+
 binormal_auc(truth, rating, partial = FALSE, min = 0, max = 1)
 
 binormal_sens(truth, rating, spec)
@@ -43,7 +49,8 @@ trapezoidal_spec(truth, rating, sens)
 \arguments{
 \item{truth}{vector of true binary statuses.}
 
-\item{rating}{vector of numeric ratings.}
+\item{rating}{vector of binary ratings for the binary metrics and ranges of
+numeric ratings for the others.}
 
 \item{partial}{character string \code{"sensitivity"} or \code{"specificity"}
 for calculation of partial AUC, or \code{FALSE} for full AUC.  Partial

@@ -17,6 +17,8 @@ importFrom(utils, head)
 
 export(
   DeLong,
+  binary_sens,
+  binary_spec,
   binormal_auc,
   binormal_sens,
   binormal_spec,
