@@ -1,6 +1,8 @@
 ---
 title: "MRMCaov: Multi-Reader Multi-Case Analysis of Variance"
-output: github_document
+output:
+  github_document:
+    toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -28,27 +30,16 @@ To install the package, do the following:
 2. Run [RStudio](https://www.rstudio.com/products/rstudio/).
 3. Click on "Tools" from the RStudio menu and then select "Install Packages..." to bring up the "Install Packages" dialog box.
 4. From the dialog box, select "Package Archive File (.zip; .tar.gz)" as the source from which to install, and browse to and select the downloaded package archive file.
-5. Install packages `ggplot2`, `gtools`, and `pROC` from the CRAN selection in the dialog box if you have not installed these packages previously.  Alternatively, these can be installed from the R console with the command.
+5. Install the packages below with the given command submitted at the R console, if they have not been installed previously.
 
 ```{r eval = FALSE}
-install.packages(c("ggplot2", "gtools", "pROC"))
+install.packages(c("ggplot2", "gtools", "mvtnorm", "pROC", "tibble"))
 ```
 
 | Operating System      | Package Archive File | 
 |-----------------------|----------------------|
-| Microsoft Windows: | [MRMCaov_0.1.8.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/Ed0_WcuPbe5LkhapFOzmQYMB72GSKzNQmhnpUDWPh7nheg) |
-| Linux: | [MRMCaov_0.1.8.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/ESAtW6VQ2MlKu2Dk_dmYbK8B8niyS2p0igKuQ8vtfvqDVA) |
-
-
-## Citing the Software
-
-```{r citation, comment = ""}
-## Text format
-citation("MRMCaov")
-
-## Bibtex format
-toBibtex(citation("MRMCaov"))
-```
+| Microsoft Windows: | [MRMCaov_0.1.9.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/Eeu3QgBhO0ZFlJX_PIFoogYBiZphexEyQu85r8GsSku0Yg) |
+| Linux: | [MRMCaov_0.1.9.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EVGNS0XLj09Cj_BtUXvILvYBrCDoeeoO1-F0hoIJ2N-uTw) |
 
 
 ## Getting Started
@@ -64,4 +55,15 @@ library(MRMCaov)
 est <- mrmc(empirical_auc(truth, rating), treatment, reader, case, data = VanDyke)
 plot(est)
 summary(est)
+```
+
+
+## Citing the Software
+
+```{r citation, comment = ""}
+## Text format
+citation("MRMCaov")
+
+## Bibtex format
+toBibtex(citation("MRMCaov"))
 ```

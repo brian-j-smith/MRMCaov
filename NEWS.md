@@ -2,6 +2,9 @@
 
 ## Version Updates
 
+## 0.1.9
+* Add `binary_sens()` and `binary_spec()` metrics.
+
 ## 0.1.8
 * Support sensitivity values in `points()` methods.
 * Implement conventional binormal ROC curves and metrics.

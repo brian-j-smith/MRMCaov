@@ -1,6 +1,11 @@
 MRMCaov: Multi-Reader Multi-Case Analysis of Variance
 ================
 
+  - [Description](#description)
+  - [Download and Installation](#download-and-installation)
+  - [Getting Started](#getting-started)
+  - [Citing the Software](#citing-the-software)
+
 ## Description
 
 **MRMCaov** is an R package for statistical comparison of diagnostic
@@ -30,75 +35,19 @@ To install the package, do the following:
 4.  From the dialog box, select “Package Archive File (.zip; .tar.gz)”
     as the source from which to install, and browse to and select the
     downloaded package archive file.
-5.  Install packages `ggplot2`, `gtools`, and `pROC` from the CRAN
-    selection in the dialog box if you have not installed these packages
-    previously. Alternatively, these can be installed from the R console
-    with the command.
+5.  Install the packages below with the given command submitted at the R
+    console, if they have not been installed previously.
 
 <!-- end list -->
 
 ``` r
-install.packages(c("ggplot2", "gtools", "pROC"))
+install.packages(c("ggplot2", "gtools", "mvtnorm", "pROC", "tibble"))
 ```
 
 | Operating System   | Package Archive File                                                                                                                    |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Microsoft Windows: | [MRMCaov\_0.1.8.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/Ed0_WcuPbe5LkhapFOzmQYMB72GSKzNQmhnpUDWPh7nheg)    |
-| Linux:             | [MRMCaov\_0.1.8.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/ESAtW6VQ2MlKu2Dk_dmYbK8B8niyS2p0igKuQ8vtfvqDVA) |
-
-## Citing the Software
-
-``` r
-## Text format
-citation("MRMCaov")
-```
-
-``` 
-
-To cite MRMCaov in publications, please use the following two
-references, including the R package URL.
-
-Smith BJ, Hillis SL, Pesce LL (2020). _MCMCaov: Multi-Reader Multi-Case
-Analysis of Variance_. R package version 0.1.8, <URL:
-https://github.com/brian-j-smith/MRMCaov>.
-
-Smith BJ, Hillis SL (2020). "Multi-reader multi-case analysis of
-variance software for diagnostic performance comparison of imaging
-modalities." In Samuelson F, Taylor-Phillips S (eds.), _Proceedings of
-SPIE 11316, Medical Imaging 2020: Image Perception, Observer
-Performance, and Technology Assessment_, 113160K. doi:
-10.117/12.2549075 (URL: https://doi.org/10.117/12.2549075), <URL:
-https://pubmed.ncbi.nlm.nih.gov/32351258>.
-
-To see these entries in BibTeX format, use 'print(<citation>,
-bibtex=TRUE)', 'toBibtex(.)', or set
-'options(citation.bibtex.max=999)'.
-```
-
-``` r
-## Bibtex format
-toBibtex(citation("MRMCaov"))
-```
-
-    @Manual{MRMCaov-package,
-      author = {Brian J Smith and Stephen L Hillis and Lorenzo L Pesce},
-      title = {MCMCaov: Multi-Reader Multi-Case Analysis of Variance},
-      year = {2020},
-      note = {R package version 0.1.8},
-      url = {https://github.com/brian-j-smith/MRMCaov},
-    }
-    
-    @InProceedings{MRMCaov-SPIE2020,
-      author = {Brian J. Smith and Stephen L. Hillis},
-      title = {Multi-reader multi-case analysis of variance software for diagnostic performance comparison of imaging modalities},
-      booktitle = {Proceedings of SPIE 11316, Medical Imaging 2020: Image Perception, Observer Performance, and Technology Assessment},
-      editor = {Frank Samuelson and Sian Taylor-Phillips},
-      month = {16 March},
-      year = {2020},
-      pages = {113160K},
-      doi = {10.117/12.2549075},
-      url = {https://pubmed.ncbi.nlm.nih.gov/32351258},
-    }
+| Microsoft Windows: | [MRMCaov\_0.1.9.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/Eeu3QgBhO0ZFlJX_PIFoogYBiZphexEyQu85r8GsSku0Yg)    |
+| Linux:             | [MRMCaov\_0.1.9.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EVGNS0XLj09Cj_BtUXvILvYBrCDoeeoO1-F0hoIJ2N-uTw) |
 
 ## Getting Started
 
@@ -156,3 +105,57 @@ summary(est)
     ##    Estimate       MS(R)         Cov2     StdErr       df  CI.Lower  CI.Upper
     ## 1 0.8970370 0.003082629 0.0004839618 0.03317360 12.74465 0.8252236 0.9688505
     ## 2 0.9408374 0.001304602 0.0002041879 0.02156637 12.71019 0.8941378 0.9875369
+
+## Citing the Software
+
+``` r
+## Text format
+citation("MRMCaov")
+```
+
+``` 
+
+To cite MRMCaov in publications, please use the following two
+references, including the R package URL.
+
+Smith BJ, Hillis SL, Pesce LL (2020). _MCMCaov: Multi-Reader Multi-Case
+Analysis of Variance_. R package version 0.1.9, <URL:
+https://github.com/brian-j-smith/MRMCaov>.
+
+Smith BJ, Hillis SL (2020). "Multi-reader multi-case analysis of
+variance software for diagnostic performance comparison of imaging
+modalities." In Samuelson F, Taylor-Phillips S (eds.), _Proceedings of
+SPIE 11316, Medical Imaging 2020: Image Perception, Observer
+Performance, and Technology Assessment_, 113160K. doi:
+10.117/12.2549075 (URL: https://doi.org/10.117/12.2549075), <URL:
+https://pubmed.ncbi.nlm.nih.gov/32351258>.
+
+To see these entries in BibTeX format, use 'print(<citation>,
+bibtex=TRUE)', 'toBibtex(.)', or set
+'options(citation.bibtex.max=999)'.
+```
+
+``` r
+## Bibtex format
+toBibtex(citation("MRMCaov"))
+```
+
+    @Manual{MRMCaov-package,
+      author = {Brian J Smith and Stephen L Hillis and Lorenzo L Pesce},
+      title = {MCMCaov: Multi-Reader Multi-Case Analysis of Variance},
+      year = {2020},
+      note = {R package version 0.1.9},
+      url = {https://github.com/brian-j-smith/MRMCaov},
+    }
+    
+    @InProceedings{MRMCaov-SPIE2020,
+      author = {Brian J. Smith and Stephen L. Hillis},
+      title = {Multi-reader multi-case analysis of variance software for diagnostic performance comparison of imaging modalities},
+      booktitle = {Proceedings of SPIE 11316, Medical Imaging 2020: Image Perception, Observer Performance, and Technology Assessment},
+      editor = {Frank Samuelson and Sian Taylor-Phillips},
+      month = {16 March},
+      year = {2020},
+      pages = {113160K},
+      doi = {10.117/12.2549075},
+      url = {https://pubmed.ncbi.nlm.nih.gov/32351258},
+    }
