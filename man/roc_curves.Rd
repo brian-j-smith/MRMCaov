@@ -4,6 +4,8 @@
 \alias{roc_curves}
 \alias{roc_curves.default}
 \alias{roc_curves.mrmc}
+\alias{as.data.frame.roc_curves}
+\alias{as_tibble.roc_curves}
 \alias{points.roc_curve}
 \alias{points.roc_curves}
 \alias{points.empirical_curve}
@@ -17,6 +19,10 @@ roc_curves(...)
 \method{roc_curves}{default}(truth, rating, groups = list(), method = "empirical", ...)
 
 \method{roc_curves}{mrmc}(x, ...)
+
+\method{as.data.frame}{roc_curves}(x, ...)
+
+\method{as_tibble}{roc_curves}(x, ...)
 
 \method{points}{roc_curve}(
   x,

@@ -44,6 +44,8 @@ export(
 )
 
 
+S3method(as.data.frame, roc_curves)
+S3method(as_tibble, roc_curves)
 S3method(auc, binormal_params)
 S3method(auc, proproc_params)
 S3method(mean, roc_curve)

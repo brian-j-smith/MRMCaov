@@ -138,6 +138,20 @@ proproc_params <- function(truth, rating) {
 
 #' @rdname roc_curves
 #'
+as.data.frame.roc_curves <- function(x, ...) {
+  as.data.frame(as_tibble(x))
+}
+
+
+#' @rdname roc_curves
+#'
+as_tibble.roc_curves <- function(x, ...) {
+  curves2tibble(x)
+}
+
+
+#' @rdname roc_curves
+#'
 points.roc_curve <- function(x, metric = c("specificity", "sensitivity"),
                              values = seq(0, 1, length = 100), ...) {
   points(attr(x, "params"), metric = metric, values = values, ...)
