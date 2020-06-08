@@ -2,6 +2,8 @@
 % Please edit documentation in R/roc.R
 \name{roc_curves}
 \alias{roc_curves}
+\alias{roc_curves.default}
+\alias{roc_curves.mrmc}
 \alias{points.roc_curve}
 \alias{points.roc_curves}
 \alias{points.empirical_curve}
@@ -10,7 +12,11 @@
 \alias{mean.roc_curves}
 \title{ROC Performance Curves}
 \usage{
-roc_curves(truth, rating, groups = list(), method = "empirical")
+roc_curves(...)
+
+\method{roc_curves}{default}(truth, rating, groups = list(), method = "empirical", ...)
+
+\method{roc_curves}{mrmc}(x, ...)
 
 \method{points}{roc_curve}(
   x,
@@ -47,6 +53,8 @@ roc_curves(truth, rating, groups = list(), method = "empirical")
 \method{mean}{roc_curves}(x, ...)
 }
 \arguments{
+\item{...}{arguments passed from the \code{mean()} method to \code{points()}.}
+
 \item{truth}{vector of true binary statuses.}
 
 \item{rating}{vector of numeric ratings.}
@@ -58,16 +66,14 @@ roc_curves(truth, rating, groups = list(), method = "empirical")
 \code{"binormal"}, \code{"empirical"}, \code{"trapezoidal"}, or
 \code{"proproc"}.}
 
-\item{x}{object returned by \code{roc_curves} for which to compute points on
-or to average over the curves.}
+\item{x}{object returned by \code{\link{mrmc}} or \code{roc_curves} for which
+to compute points on or to average over the curves.}
 
 \item{metric}{reader performance metric to which the \code{values}
 correspond.}
 
 \item{values}{numeric vector of values at which to compute the points.  If
 \code{NULL} then the intersection of all empirical points is used.}
-
-\item{...}{arguments passed from the \code{mean()} method to \code{points()}.}
 
 \item{ties}{function determining empirical roc points returned in cases of
 ties.}

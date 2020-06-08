@@ -49,8 +49,8 @@ trapezoidal_spec(truth, rating, sens)
 \arguments{
 \item{truth}{vector of true binary statuses.}
 
-\item{rating}{vector of binary ratings for the binary metrics and ranges of
-numeric ratings for the others.}
+\item{rating}{vector of 0-1 binary ratings for the binary metrics and ranges
+of numeric ratings for the others.}
 
 \item{partial}{character string \code{"sensitivity"} or \code{"specificity"}
 for calculation of partial AUC, or \code{FALSE} for full AUC.  Partial

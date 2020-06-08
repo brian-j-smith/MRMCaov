@@ -84,5 +84,5 @@ plot.roc_points <- function(x, ...) {
 #' @rdname plot-methods
 #'
 plot.mrmc <- function(x, n = 100, ...) {
-  plot(x$roc, n = n)
+  plot(roc_curves(x), n = n)
 }

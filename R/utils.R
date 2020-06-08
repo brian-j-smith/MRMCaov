@@ -75,6 +75,19 @@ meansq.mrmc_tests <- function(x, ...) {
 }
 
 
+preprocess <- function(data) {
+  metric_name <- as.character(attr(data, "metric_call"))[1]
+  level <- switch(metric_name,
+                  "binary_sens" = 2,
+                  "binary_spec" = 1)
+  if (!is.null(level)) {
+    keep <- data$truth == levels(data$truth)[level]
+    droplevels(data[keep, , drop = FALSE],
+               except = which(names(data) == "truth"))
+  } else data
+}
+
+
 vcov_comps <- function(object, ...) {
   UseMethod("vcov_comps")
 }

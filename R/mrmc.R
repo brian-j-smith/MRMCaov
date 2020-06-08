@@ -54,6 +54,8 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
   response_call[c(2, 3)] <- c(quote(truth), quote(rating))
   attr(mrmc_data, "metric_call") <- response_call
 
+  mrmc_data <- preprocess(mrmc_data)
+
   design_data <- get_design(mrmc_data)
   if (is.null(design_data)) {
     stop("data factor codings are not a supported study design")
@@ -66,9 +68,11 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
   cov <- get_method(method)(mrmc_data)
 
   fo <- terms$formula
-  df_by <- by(data, data[terms$labels[c("test", "reader")]], function(split) {
+  vars <- terms$labels[c("reader", "test")]
+  mrmc_groups <- structure(mrmc_data[names(vars)], names = vars)
+  df_by <- by(mrmc_data, mrmc_groups, function(split) {
     structure(
-      c(nrow(split), eval(fo[[2]], split)),
+      c(nrow(split), eval(response_call, split)),
       names = c("N", terms$metric)
     )
   })
@@ -86,21 +90,14 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
     "mrmc_rrrc"
   }
 
-  roc_method <- strsplit(terms$metric, "_")[[1]][1]
-  if (!(roc_method %in% c("binormal", "empirical", "proproc"))) {
-    roc_method <- "empirical"
-  }
-
   structure(
     list(call = sys.call(),
          design = design,
          vars = c(terms$labels, metric = terms$metric),
-         roc = roc_curves(mrmc_data$truth, mrmc_data$rating,
-                          groups = data[terms$labels[c("test", "reader")]],
-                          method = roc_method),
          aov = aovfit,
          aov_data = df,
          cov = cov,
+         mrmc_data = mrmc_data,
          mrmc_tests = mrmc_tests(aovfit$model, cov, design),
          levels = levels(mrmc_data$truth)),
     class = c(mrmc_class, "mrmc")

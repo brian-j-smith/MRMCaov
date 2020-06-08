@@ -12,8 +12,8 @@
 #' @param method character string indicating the curve type as
 #'   \code{"binormal"}, \code{"empirical"}, \code{"trapezoidal"}, or
 #'   \code{"proproc"}.
-#' @param x object returned by \code{roc_curves} for which to compute points on
-#'   or to average over the curves.
+#' @param x object returned by \code{\link{mrmc}} or \code{roc_curves} for which
+#'   to compute points on or to average over the curves.
 #' @param values numeric vector of values at which to compute the points.  If
 #'   \code{NULL} then the intersection of all empirical points is used.
 #' @param metric reader performance metric to which the \code{values}
@@ -31,7 +31,15 @@
 #' points(curves)
 #' mean(curves)
 #'
-roc_curves <- function(truth, rating, groups = list(), method = "empirical") {
+roc_curves <- function(...) {
+  UseMethod("roc_curves")
+}
+
+
+#' @rdname roc_curves
+#'
+roc_curves.default <- function(truth, rating, groups = list(),
+                               method = "empirical", ...) {
   method <- match.arg(method,
                       c("binormal", "empirical", "trapezoidal", "proproc"))
 
@@ -52,6 +60,20 @@ roc_curves <- function(truth, rating, groups = list(), method = "empirical") {
   } else {
     roc_curve(truth, rating, method = method)
   }
+}
+
+
+#' @rdname roc_curves
+#'
+roc_curves.mrmc <- function(x, ...) {
+  roc_method <- unlist(strsplit(x$vars["metric"], "_"))[1]
+  if (!(roc_method %in% c("binormal", "empirical", "proproc"))) {
+    roc_method <- "empirical"
+  }
+  vars <- x$vars[c("reader", "test")]
+  roc_curves(x$mrmc_data$truth, x$mrmc_data$rating,
+             groups = structure(x$mrmc_data[names(vars)], names = vars),
+             method = roc_method)
 }
 
 

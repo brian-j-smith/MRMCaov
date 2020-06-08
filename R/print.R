@@ -27,9 +27,6 @@ print.mrmc <- function(x, n = 20, ...) {
   vcov_comps$Correlation[1] <- NA
   print(vcov_comps)
 
-  cat("\n\nFirst", n, "ROC performance metrics:\n\n")
-  print(curves2tibble(x$roc), n = n)
-
   invisible()
 }
 
