@@ -18,7 +18,7 @@
 
 \method{plot}{empirical_curves}(x, ...)
 
-\method{plot}{roc_points}(x, ...)
+\method{plot}{roc_points}(x, coord_fixed = TRUE, ...)
 
 \method{plot}{mrmc}(x, n = 100, ...)
 }
@@ -30,6 +30,9 @@ calculate true-positive rates and interpolate through for display of the
 curve.}
 
 \item{...}{arguments passed to other methods.}
+
+\item{coord_fixed}{logical indicating whether to fix the scales of x and y
+axes.}
 }
 \description{
 Performance Plots

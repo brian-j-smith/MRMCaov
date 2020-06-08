@@ -7,6 +7,8 @@
 #' @param n number of equally spaced false-positive rate points at which to
 #'   calculate true-positive rates and interpolate through for display of the
 #'   curve.
+#' @param coord_fixed logical indicating whether to fix the scales of x and y
+#'   axes.
 #' @param ... arguments passed to other methods.
 #'
 #' @seealso \code{\link{roc_curves}}
@@ -50,7 +52,7 @@ plot.empirical_curves <- function(x, ...) {
 
 #' @rdname plot-methods
 #'
-plot.roc_points <- function(x, ...) {
+plot.roc_points <- function(x, coord_fixed = TRUE, ...) {
   df <- data.frame(
     FPR = x$FPR,
     TPR = x$TPR
@@ -71,9 +73,10 @@ plot.roc_points <- function(x, ...) {
 
   p <- ggplot(df, do.call(aes_, aes_args)) +
     geom_path() +
-    coord_fixed() +
     labs(x = "False Positive Rate", y = "True Positive Rate",
          color = names(x[["Group"]])[n_group_vars])
+
+  if (coord_fixed) p <- p + coord_fixed()
 
   if (!is.null(df$facet)) p <- p + facet_wrap(~ facet)
 
