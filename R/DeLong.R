@@ -21,7 +21,7 @@ DeLong <- function() {
         stop("DeLong covariance method not available for partial AUC")
       }
 
-      if (any(table(data[c("test", "reader", "case")]) != 1)) {
+      if (!is_balanced(data)) {
         stop("balanced design required for DeLong covariance method")
       }
 

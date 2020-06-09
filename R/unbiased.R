@@ -19,10 +19,8 @@ unbiased <- function() {
       df <- data[c("truth", "rating", "case")]
       df$group <- interaction(data$test, data$reader)
 
-      tbl <- table(df$group, df$case)
-      balanced <- all(tbl == tbl[1])
-
-      covmat <- ifelse(balanced, .unbiased_balanced, .unbiased_unbalanced)(df)
+      f <- if (is_balanced(data)) .unbiased_balanced else .unbiased_unbalanced
+      covmat <- f(df)
       dimnames(covmat) <- list(levels(df$group), levels(df$group))
 
       a <- attr(covmat, "a")

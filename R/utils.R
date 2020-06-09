@@ -42,6 +42,11 @@ get_method <- function(x) {
 }
 
 
+is_balanced <- function(data) {
+  all(table(data[c("test", "reader", "case")]) == 1)
+}
+
+
 levels.mrmc <- function(x) {
   structure(x$aov$xlevels, names = c("test", "reader"))
 }
