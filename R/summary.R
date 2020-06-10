@@ -1,14 +1,14 @@
 #' Summary Estimates and Statistical Tests
-#' 
+#'
 #' @name summary
 #' @rdname summary-methods
-#' 
+#'
 #' @param object object to summarize.
 #' @param conf.level confidence level for confidence intervals.
 #' @param ... additional arguments affecting the summary.
-#' 
+#'
 #' @seealso \code{\link{mrmc}}
-#' 
+#'
 summary.mrmc <- function(object, conf.level = 0.95, ...) {
   .summary(object, conf.level = conf.level, ...)
 }
@@ -24,7 +24,7 @@ summary.mrmc <- function(object, conf.level = 0.95, ...) {
   n <- comps$n
   MS <- comps$MS
   cov <- comps$cov
-  
+
   test_levels <- levels(object)$test
 
   denominator <- MS[["T:R"]] + n[["reader"]] * max(cov[2] - cov[3], 0)
@@ -79,10 +79,10 @@ summary.mrmc <- function(object, conf.level = 0.95, ...) {
   n <- comps$n
   MS <- comps$MS
   cov <- comps$cov
-  
+
   test_levels <- levels(object)$test
   reader_levels <- levels(object)$reader
-  
+
   denominator <- comps$var - cov[1] + (n[["reader"]] - 1) * (cov[2] - cov[3])
   test_equality <- data.frame(
     `MS(T)` = MS[["T"]],
@@ -129,22 +129,22 @@ summary.mrmc <- function(object, conf.level = 0.95, ...) {
 
 
 reader_test_diffs <- function(object, conf.level) {
-  
+
   n <- dim(object)
   test_levels <- levels(object)$test
   reader_levels <- levels(object)$reader
-  
+
   estimates <- matrix(object$aov$model[[1]], ncol = n["test"], byrow = TRUE)
-  
+
   stderrs <- sapply(reader_levels, function(reader) {
     comps <- vcov_comps(object, reader = reader)
     sqrt(2 * (comps$var - comps$cov[1]))
   })
-  
+
   combs <- combinations(n["test"], 2)
   combs_reader <- rep(1, n["reader"]) %x% combs
   reader_indices <- rep(seq(reader_levels), each = nrow(combs))
-  
+
   df <- data.frame(
     Reader = reader_levels[reader_indices],
     Comparison = paste(test_levels[combs_reader[, 1]],
@@ -159,7 +159,7 @@ reader_test_diffs <- function(object, conf.level) {
   })
   df$z <- with(df, Estimate / StdErr)
   df$`p-value` <- with(df, 2 * (1 - pnorm(abs(z))))
-  
+
   df
 }
 
@@ -169,7 +169,7 @@ reader_test_diffs <- function(object, conf.level) {
   n <- comps$n
   MS <- comps$MS
   cov <- comps$cov
-  
+
   test_levels <- levels(object)$test
 
   test_equality <- data.frame(
