@@ -27,7 +27,7 @@ print.mrmc <- function(x, n = 20, ...) {
   vcov_comps$Correlation[1] <- NA
   print(vcov_comps)
 
-  invisible()
+  invisible(x)
 }
 
 
@@ -71,7 +71,7 @@ print.summary.mrmc <- function(x, ...) {
       " data for the specified reader):\n\n", sep = "")
   print(x$reader_test_diffs)
 
-  invisible()
+  invisible(x)
 }
 
 
@@ -106,5 +106,5 @@ print.summary.mrmc <- function(x, ...) {
       " based only on data for the specified treatment):\n\n", sep = "")
   print(x$test_means)
 
-  invisible()
+  invisible(x)
 }
