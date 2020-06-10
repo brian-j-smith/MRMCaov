@@ -3,6 +3,9 @@
 .RData
 .Ruserdata
 *.Rproj
+docs/html/_site
+docs/html/*_cache
+docs/html/*_files
 src/*.mod
 src-i386
 src-x64
