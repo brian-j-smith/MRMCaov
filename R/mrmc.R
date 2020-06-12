@@ -85,6 +85,7 @@ mrmc_lme <- function(formula, test, reader, case, data, method = jackknife,
   params <- do.call(get_lme_params, args)
   params0 <- do.call(get_lme_params, args0)
 
+  object$data <- args$data
   object$lme_fit <- list(
     coef = params$coef,
     cov = list(R = params$cov, R0 = params0$cov),
@@ -128,25 +129,26 @@ new_mrmc <- function(response, test, reader, case, data, method, design,
 
   cov <- get_method(method)(mrmc_data)
 
-  fo <- terms$formula
-  vars <- terms$labels[c("test", "reader")]
-  mrmc_groups <- structure(mrmc_data[names(vars)], names = vars)
-  df_by <- by(mrmc_data, mrmc_groups, function(split) {
-    structure(
-      c(nrow(split), eval(response_call, split)),
-      names = c("N", terms$metric)
-    )
-  })
-  df <- cbind(expand.grid(dimnames(df_by)), do.call(rbind, df_by))
-  fo[[2]] <- as.name(names(df)[ncol(df)])
-  aovfit <- aov(fo, data = df)
+  vars <- c("test", "reader")
+  aov_data <- unique(mrmc_data[vars])
+  y <- num_obs <- numeric(nrow(aov_data))
+  for (i in 1:nrow(aov_data)) {
+    split <- merge(mrmc_data, aov_data[i, , drop = FALSE])
+    y[i] <- eval(response_call, split)
+    num_obs[i] <- nrow(split)
+  }
+  names(aov_data) <- terms$labels[vars]
+  aov_data[[terms$metric]] <- y
+  fo <- update(terms$formula, paste(terms$metric, "~ ."))
+  aovfit <- aov(fo, data = aov_data)
 
   structure(
     list(design = design,
          vars = c(terms$labels, metric = terms$metric),
          fixed = terms$fixed,
          aov = aovfit,
-         aov_data = df,
+         data = aov_data,
+         num_obs = num_obs,
          cov = cov,
          mrmc_data = mrmc_data,
          levels = levels(mrmc_data$truth)),

@@ -4,7 +4,7 @@ get_lme_args <- function(formula, object, data) {
   reader_name <- object$vars["reader"]
   metric_name <- object$vars["metric"]
 
-  lme_data <- object$aov_data[c(metric_name, test_name, reader_name)]
+  lme_data <- object$data
   vars <- all.vars(formula[[3]])
   if (length(vars)) {
     vars_data_by <- by(data[vars], data[reader_name], function(split) {
@@ -38,7 +38,13 @@ get_lme_args <- function(formula, object, data) {
     comps_cov[3] * (!same_reader & !same_test) +
     comps_var * (same_reader & same_test)
 
-  list(y = y, X = X, Z = Z, R = R, var = comps_var, cov = comps_cov,
+  list(data = lme_data,
+       y = y,
+       X = X,
+       Z = Z,
+       R = R,
+       var = comps_var,
+       cov = comps_cov,
        inits = comps$MS[2:3])
 
 }

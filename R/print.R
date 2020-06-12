@@ -12,8 +12,8 @@ print.mrmc <- function(x, n = 20, ...) {
 
   cat("\nPositive truth status:", x$levels[2], "\n")
 
-  cat("\nResponse metric estimates:\n\n")
-  print(x$aov_data)
+  cat("\nResponse metric data:\n\n")
+  print(tibble(N = x$num_obs, data = x$data))
   cat("\nANOVA Table:\n\n")
   print(summary(x$aov))
 
