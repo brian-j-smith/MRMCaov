@@ -4,14 +4,10 @@ chol2det <- function(x, log = FALSE) {
 }
 
 
-curves2tibble <- function(x, dimnames = NULL) {
-  if (is.null(dimnames)) dimnames <- dimnames(x)
-
-  labels <- expand.grid(dimnames)
-  labels_ind <- rep(seq(nrow(labels)), times = sapply(x, nrow))
-
+curves2tibble <- function(x, groups) {
+  groups_ind <- rep(seq(nrow(groups)), times = sapply(x, nrow))
   x <- do.call(rbind, x)
-  tibble(Group = labels[labels_ind, , drop = FALSE], FPR = x$FPR, TPR = x$TPR)
+  tibble(Group = groups[groups_ind, , drop = FALSE], FPR = x$FPR, TPR = x$TPR)
 }
 
 

@@ -44,6 +44,22 @@ print.roc_curve <- function(x, ...) {
 }
 
 
+print.roc_curves <- function(x, n = 5, ...) {
+  cat("ROC Curves\n\n")
+  n_more <- nrow(x) - n
+  n <- min(n, nrow(x))
+  vsep <- strrep("-", 0.75 * getOption("width"))
+  for (i in seq_len(n)) {
+    if (i != 1) cat(vsep, "\n")
+    cat(paste0(names(x$Group), ": ",
+               as.character(x$Group[i, ]),
+               collapse = "\n"), "\n")
+    print(x$Curve[[i]])
+  }
+  if (n_more) cat("... with", n_more, "more curves\n")
+}
+
+
 print.summary.mrmc <- function(x, ...) {
   .print(x, ...)
 }

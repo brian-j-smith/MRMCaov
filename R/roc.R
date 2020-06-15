@@ -52,9 +52,12 @@ roc_curves.default <- function(truth, rating, groups = list(),
 
   if (length(groups)) {
     data <- tibble(truth = truth, rating = rating)
-    curves <- by(data, groups, function(x) {
-      roc_curve(x$truth, x$rating, method = method)
+    curves <- by(data, groups, function(split) {
+      roc_curve(split$truth, split$rating, method = method)
     })
+    groups <- expand.grid(dimnames(curves))
+    keep <- !is.null(curves)
+    curves <- tibble(Group = groups[keep, , drop = FALSE], Curve = curves[keep])
     structure(curves,
               class = c(paste0(method, "_curves"), "roc_curves", class(curves)))
   } else {
@@ -146,7 +149,7 @@ as.data.frame.roc_curves <- function(x, ...) {
 #' @rdname roc_curves
 #'
 as_tibble.roc_curves <- function(x, ...) {
-  curves2tibble(x)
+  curves2tibble(x$Curve, x$Group)
 }
 
 
@@ -163,10 +166,10 @@ points.roc_curve <- function(x, metric = c("specificity", "sensitivity"),
 points.roc_curves <- function(x, metric = c("specificity", "sensitivity"),
                               values = seq(0, 1, length = 100), ...) {
   metric <- match.arg(metric)
-  new_pts_list <- lapply(x, function(curve) {
+  new_pts_list <- lapply(x$Curve, function(curve) {
     points(curve, metric = metric, values = values, ...)
   })
-  new_pts <- curves2tibble(new_pts_list, dimnames(x))
+  new_pts <- curves2tibble(new_pts_list, x$Group)
   structure(new_pts, metric = metric,
             class = c("roc_points", class(new_pts)))
 }
@@ -254,24 +257,24 @@ points.empirical_curves <- function(x, metric = c("specificity", "sensitivity"),
              input_name <- "TPR"
              pts_fun <- function(x, input, ...) points(x, values = input, ...)
            })
-    input_list <- mapply(getElement, x, input_name)
+    input_list <- mapply(getElement, x$Curve, input_name)
     input_dups_list <- lapply(input_list, function(input) {
       input[duplicated(input)]
     })
     input <- sort(unique(unlist(input_list)))
     input_dups <- sort(unique(unlist(input_dups_list)))
-    lapply(x, function(curve) {
+    lapply(x$Curve, function(curve) {
       pts <- pts_fun(curve, input, metric = metric, ties = max, ...)
       pts_dups <- pts_fun(curve, input_dups, metric = metric, ties = min, ...)
       pts <- rbind(pts, pts_dups)
       pts[order(pts$FPR, pts$TPR), c("FPR", "TPR")]
     })
   } else {
-    lapply(x, function(curve) {
+    lapply(x$Curve, function(curve) {
       points(curve, metric = metric, values = values, ties = ties, ...)
     })
   }
-  new_pts <- curves2tibble(new_pts_list, dimnames(x))
+  new_pts <- curves2tibble(new_pts_list, x$Group)
 
   structure(new_pts, metric = metric, class = c("roc_points", class(new_pts)))
 }
@@ -314,7 +317,7 @@ mean.roc_params <- function(x, ...) {
 
 mean.binormal_curves <- function(x, method = c("points", "parameters"), ...) {
   if (match.arg(method) == "parameters") {
-    params_list <- mapply(attr, x, "params", SIMPLIFY = FALSE)
+    params_list <- mapply(attr, x$Curve, "params", SIMPLIFY = FALSE)
     auc_mean <- mean(sapply(params_list, auc))
     b_mean <- mean(mapply(getElement, params_list, "b"))
     a <- sqrt(1 + b_mean^2) * qnorm(auc_mean)
