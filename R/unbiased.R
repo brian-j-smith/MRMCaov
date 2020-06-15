@@ -117,7 +117,7 @@ unbiased <- function() {
       same_case_pos <- outer(df_i$case_pos, df_j$case_pos, "==")
       same_case_neg <- outer(df_i$case_neg, df_j$case_neg, "==")
 
-      mean_of <- function(include) mean(psi_cross[include])
+      mean_of <- function(keep) mean(psi_cross[keep])
       a1[i, j] <- a1[j, i] <- mean_of(same_case_pos & same_case_neg)
       a2[i, j] <- a2[j, i] <- mean_of(same_case_pos & !same_case_neg)
       a3[i, j] <- a3[j, i] <- mean_of(!same_case_pos & same_case_neg)

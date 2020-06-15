@@ -9,8 +9,8 @@ jackknife <- function() {
 
       metrics <- matrix(NA, nlevels(cases), nlevels(groups))
       for (i in 1:nlevels(cases)) {
-        include <- cases != levels(cases)[i]
-        metrics[i, ] <- by(df[include, ], groups[include], function(split) {
+        keep <- cases != levels(cases)[i]
+        metrics[i, ] <- by(df[keep, ], groups[keep], function(split) {
           eval(attr(data, "metric_call"), split)
         })
       }
