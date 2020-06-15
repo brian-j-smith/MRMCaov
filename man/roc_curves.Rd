@@ -12,6 +12,7 @@
 \alias{points.empirical_curves}
 \alias{mean.roc_curve}
 \alias{mean.roc_curves}
+\alias{mean.binormal_curves}
 \title{ROC Performance Curves}
 \usage{
 roc_curves(...)
@@ -57,6 +58,8 @@ roc_curves(...)
 \method{mean}{roc_curve}(x, ...)
 
 \method{mean}{roc_curves}(x, ...)
+
+\method{mean}{binormal_curves}(x, method = c("points", "parameters"), ...)
 }
 \arguments{
 \item{...}{arguments passed from the \code{mean()} method to \code{points()}.}
@@ -70,7 +73,8 @@ roc_curves(...)
 
 \item{method}{character string indicating the curve type as
 \code{"binormal"}, \code{"empirical"}, \code{"trapezoidal"}, or
-\code{"proproc"}.}
+\code{"proproc"} or the averaging of binormal curves over \code{"points"}
+or \code{"parameters"}.}
 
 \item{x}{object returned by \code{\link{mrmc}} or \code{roc_curves} for which
 to compute points on or to average over the curves.}
@@ -95,6 +99,11 @@ curves <- with(VanDyke,
 points(curves)
 mean(curves)
 
+}
+\references{
+Chen W and Samuelson FW (2014). The average receiver operating characteristic
+curve in multireader multicase imaging studies. The British Journal of
+Radiology, 87(1040): 20140016.
 }
 \seealso{
 \code{\link{plot}}

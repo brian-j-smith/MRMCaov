@@ -11,7 +11,8 @@
 #'   \code{truth} and \code{rating}.
 #' @param method character string indicating the curve type as
 #'   \code{"binormal"}, \code{"empirical"}, \code{"trapezoidal"}, or
-#'   \code{"proproc"}.
+#'   \code{"proproc"} or the averaging of binormal curves over \code{"points"}
+#'   or \code{"parameters"}.
 #' @param x object returned by \code{\link{mrmc}} or \code{roc_curves} for which
 #'   to compute points on or to average over the curves.
 #' @param values numeric vector of values at which to compute the points.  If
@@ -23,6 +24,11 @@
 #' @param ... arguments passed from the \code{mean()} method to \code{points()}.
 #'
 #' @seealso \code{\link{plot}}
+#'
+#' @references
+#' Chen W and Samuelson FW (2014). The average receiver operating characteristic
+#' curve in multireader multicase imaging studies. The British Journal of
+#' Radiology, 87(1040): 20140016.
 #'
 #' @examples
 #' curves <- with(VanDyke,
@@ -315,6 +321,8 @@ mean.roc_params <- function(x, ...) {
 }
 
 
+#' @rdname roc_curves
+#'
 mean.binormal_curves <- function(x, method = c("points", "parameters"), ...) {
   if (match.arg(method) == "parameters") {
     params_list <- mapply(attr, x$Curve, "params", SIMPLIFY = FALSE)
