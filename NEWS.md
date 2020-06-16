@@ -2,6 +2,11 @@
 
 ## Version Updates
 
+## 0.1.10
+* Subset data in calls to `mrmc()` by event/non-event cases for `binary_sens()`/`binary_spec()` metrics.
+* Add `coord_fixed` argument to `plot()` methods.
+* Add `mean()` method for `binormal_curves` to average over their ROC curve parameters.
+
 ## 0.1.9
 * Add `binary_sens()` and `binary_spec()` metrics.
 
