@@ -1,14 +1,3 @@
----
-title: "MRMCaov: Multi-Reader Multi-Case Analysis of Variance"
-output:
-  github_document:
-    toc: true
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ## Description
 
 **MRMCaov** is an R package for statistical comparison of diagnostic tests - such as those based on medical imaging - for which ratings have been obtained from multiple readers and on multiple cases.  Features of the package include the following.
@@ -38,24 +27,8 @@ install.packages(c("ggplot2", "gtools", "mvtnorm", "pROC", "tibble"))
 
 | Operating System      | Package Archive File | 
 |-----------------------|----------------------|
-| Microsoft Windows: | [MRMCaov_0.1.9.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/Eeu3QgBhO0ZFlJX_PIFoogYBiZphexEyQu85r8GsSku0Yg) |
-| Linux: | [MRMCaov_0.1.9.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EVGNS0XLj09Cj_BtUXvILvYBrCDoeeoO1-F0hoIJ2N-uTw) |
-
-
-## Getting Started
-
-```{r mrmc, message=FALSE}
-## Load the package
-library(MRMCaov)
-
-## View main help page
-?mrmc
-
-## Analyze the VanDyke dataset
-est <- mrmc(empirical_auc(truth, rating), treatment, reader, case, data = VanDyke)
-plot(est)
-summary(est)
-```
+| Microsoft Windows: | [MRMCaov_0.1.10.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EQgwBVaXEk1GjnbGDw_sDcYB8bZrMBsUFvFG2eHd9__jxg) |
+| Linux: | [MRMCaov_0.1.10.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EXpcjYF-qJdLiqY4NcTU9toBl6gqjLdRgCoHH1fTkzUbVQ) |
 
 
 ## Citing the Software

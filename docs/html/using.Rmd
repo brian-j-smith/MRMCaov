@@ -1,0 +1,28 @@
+---
+title: "Using MRMCaov"
+output:
+  html_document:
+    df_print: paged
+bibliography: ../src/bibliography.bib
+nocite: |
+  @MRMCaov-package, @MRMCaov-SPIE2020
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+```{r child = "../src/using_example.Rmd"}
+```
+
+```{r child = "../src/using_curves.Rmd"}
+```
+
+```{r child = "../src/using_metrics.Rmd"}
+```
+
+```{r child = "../src/using_mrmc.Rmd"}
+```
+
+
+# References

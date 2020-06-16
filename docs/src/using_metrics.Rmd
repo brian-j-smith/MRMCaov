@@ -1,0 +1,49 @@
+# Reader Performance Metrics
+
+
+## ROC Curve Metrics
+
+```{r using_metrics_roc}
+## Total area under the empirical ROC curve
+with(VanDyke, {
+  empirical_auc(truth, rating)
+})
+
+## Partial area for specificity from 0.7 to 1.0
+with(VanDyke, {
+  empirical_auc(truth, rating, partial = "spec", min = 0.70, max = 1.0)
+})
+
+## Partial area for sensitivity from 0.7 to 1.0
+with(VanDyke, {
+  empirical_auc(truth, rating, partial = "sens", min = 0.70, max = 1.0)
+})
+
+## Sensitivity for given specificity
+with(VanDyke, {
+  empirical_sens(truth, rating, spec = 0.8)
+})
+
+## Sensitivity for given specificity
+with(VanDyke, {
+  empirical_spec(truth, rating, sens = 0.8)
+})
+```
+
+
+## Binary Metrics
+
+```{r using_metrics_binary}
+## Create binary classification
+VanDyke$binary_rating <- VanDyke$rating >= 3
+
+## Sensitivity
+with(VanDyke, {
+  binary_sens(truth, binary_rating)
+})
+
+## Specificity
+with(VanDyke, {
+  binary_spec(truth, binary_rating)
+})
+```

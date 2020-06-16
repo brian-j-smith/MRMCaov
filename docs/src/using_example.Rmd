@@ -1,0 +1,7 @@
+# VanDyke Example
+
+```{r using_example_data}
+library(MRMCaov)
+
+VanDyke
+```

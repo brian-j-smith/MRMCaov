@@ -1,0 +1,60 @@
+# MRMC Analysis
+
+
+## ROC Curve Metrics
+
+```{r using_mrmc_roc}
+## Load tibble package for concise printing of roc_curves
+library(tibble)
+
+## Compare ROC AUC treatment means for the VanDyke Example
+est <- mrmc(empirical_auc(truth, rating), treatment, reader, case,
+            data = VanDyke)
+print(est)
+print(as_tibble(roc_curves(est)))
+plot(est)
+summary(est)
+```
+
+
+## Binary Metrics
+
+```{r using_mrmc_binary}
+## Compare sensitivity for binary classification
+est <- mrmc(binary_sens(truth, binary_rating), treatment, reader, case,
+            data = VanDyke)
+print(est)
+summary(est)
+```
+
+
+## Covariance Estimation
+
+```{r using_mrmc_cov}
+## DeLong method
+est <- mrmc(empirical_auc(truth, rating), treatment, reader, case,
+            data = VanDyke,
+            method = DeLong)
+summary(est)
+
+## Unbiased method
+est <- mrmc(empirical_auc(truth, rating), treatment, reader, case,
+            data = VanDyke,
+            method = unbiased)
+summary(est)
+```
+
+
+## Fixed Factors
+
+```{r using_mrmc_fixed}
+## Fixed readers
+est <- mrmc(empirical_auc(truth, rating), treatment, fixed(reader), case,
+            data = VanDyke)
+summary(est)
+
+## Fixed cases
+est <- mrmc(empirical_auc(truth, rating), treatment, reader, fixed(case),
+            data = VanDyke)
+summary(est)
+```

@@ -1,0 +1,20 @@
+name: "MRMCaov-website"
+navbar:
+  title: "MRMCaov for R"
+  type: inverse
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Using"
+      href: using.html
+  right:
+    - icon: fa-github fa-lg
+      href: https://github.com/brian-j-smith/MRMCaov
+
+output:
+  html_document:
+    theme: cosmo
+    highlight: textmate
+    toc: true
+    toc_depth: 3
+    toc_float: true
