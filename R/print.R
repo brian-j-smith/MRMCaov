@@ -72,7 +72,9 @@ print.summary.mrmc <- function(x, ...) {
 
 .print.summary.mrmc_frrc <- function(x, ...) {
   cat("Multi-Reader Multi-Case Analysis of Variance\n",
-      "Factor types: Fixed Readers and Random Cases\n\n")
+      "Data: ", x$data_name, "\n",
+      "Factor types: Fixed Readers and Random Cases\n\n",
+      sep = "")
 
   .print.summary.mrmc(x)
 
@@ -87,7 +89,9 @@ print.summary.mrmc <- function(x, ...) {
 
 .print.summary.mrmc_rrfc <- function(x, ...) {
   cat("Multi-Reader Multi-Case Analysis of Variance\n",
-      "Factor types: Random Readers and Fixed Cases\n\n", sep = "")
+      "Data: ", x$data_name, "\n",
+      "Factor types: Random Readers and Fixed Cases\n\n",
+      sep = "")
 
   .print.summary.mrmc(x)
 }
@@ -95,7 +99,9 @@ print.summary.mrmc <- function(x, ...) {
 
 .print.summary.mrmc_rrrc <- function(x, ...) {
   cat("Multi-Reader Multi-Case Analysis of Variance\n",
-      "Factor types: Random Readers and Random Cases\n\n", sep = "")
+      "Data: ", x$data_name, "\n",
+      "Factor types: Random Readers and Random Cases\n\n",
+      sep = "")
 
   .print.summary.mrmc(x)
 }
@@ -103,7 +109,9 @@ print.summary.mrmc <- function(x, ...) {
 
 .print.summary.mrmc_lme <- function(x, ...) {
   cat("Multi-Reader Multi-Case Linear Mixed Effects Analysis\n",
-      "Factor types: Random Readers and Random Cases\n\n", sep = "")
+      "Data: ", x$data_name, "\n",
+      "Factor types: Random Readers and Random Cases\n\n",
+      sep = "")
 
   .print.summary.mrmc(x)
 }

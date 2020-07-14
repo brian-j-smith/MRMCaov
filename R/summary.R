@@ -14,12 +14,13 @@ summary.mrmc <- function(object, conf.level = 0.95, ...) {
 }
 
 
-new_summary_mrmc <- function(design, vars, conf.level, vcov_comps,
+new_summary_mrmc <- function(object, conf.level, vcov_comps,
                              test_equality = NULL, test_diffs = NULL,
                              test_means = NULL) {
   structure(
-    list(design = design,
-         vars = vars,
+    list(data_name = as.character(object$call$data),
+         design = object$design,
+         vars = object$vars,
          conf.level = conf.level,
          vcov_comps = vcov_comps,
          test_equality = test_equality,
@@ -77,8 +78,7 @@ new_summary_mrmc <- function(design, vars, conf.level, vcov_comps,
   test_diffs$t <- with(test_diffs, Estimate / StdErr)
   test_diffs$`p-value` <- with(test_diffs, 2 * (1 - pt(abs(t), df)))
 
-  res <- new_summary_mrmc(design = object$design,
-                          vars = object$vars,
+  res <- new_summary_mrmc(object,
                           conf.level = conf.level,
                           vcov_comps = summary(comps),
                           test_equality = test_equality,
@@ -128,13 +128,12 @@ new_summary_mrmc <- function(design, vars, conf.level, vcov_comps,
   test_diffs$z <- with(test_diffs, Estimate / StdErr)
   test_diffs$`p-value` <- with(test_diffs, 2 * (1 - pnorm(abs(z))))
 
-  res <- new_summary_mrmc(design = object$design,
-                         vars = object$vars,
-                         conf.level = conf.level,
-                         vcov_comps = summary(comps),
-                         test_equality = test_equality,
-                         test_diffs = test_diffs,
-                         test_means = test_means)
+  res <- new_summary_mrmc(object,
+                          conf.level = conf.level,
+                          vcov_comps = summary(comps),
+                          test_equality = test_equality,
+                          test_diffs = test_diffs,
+                          test_means = test_means)
   res$reader_test_diffs = reader_test_diffs(object, conf.level)
   structure(res, class = c("summary.mrmc_frrc", class(res)))
 }
@@ -213,8 +212,7 @@ reader_test_diffs <- function(object, conf.level) {
   test_diffs$t <- with(test_diffs, Estimate / StdErr)
   test_diffs$`p-value` <- with(test_diffs, 2 * (1 - pt(abs(t), df)))
 
-  res <- new_summary_mrmc(design = object$design,
-                          vars = object$vars,
+  res <- new_summary_mrmc(object,
                           conf.level = conf.level,
                           vcov_comps = summary(comps),
                           test_equality = test_equality,
@@ -261,8 +259,7 @@ reader_test_diffs <- function(object, conf.level) {
   test_diffs$t <- with(test_diffs, Estimate / StdErr)
   test_diffs$`p-value` <- with(test_diffs, 2 * (1 - pt(abs(t), df)))
 
-  res <- new_summary_mrmc(design = object$design,
-                          vars = object$vars,
+  res <- new_summary_mrmc(object,
                           conf.level = conf.level,
                           vcov_comps = summary(vcov_comps(object)),
                           test_diffs = test_diffs)

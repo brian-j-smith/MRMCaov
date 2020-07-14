@@ -46,7 +46,7 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
              design = design)
   ))
   object$mrmc_tests <- mrmc_tests(object$aov$model, object$cov, object$design)
-  object$call <- sys.call()
+  object$call <- match.call()
 
   mrmc_class <- if (all(object$fixed)) {
     stop("only one of reader or case may be fixed")
@@ -91,7 +91,7 @@ mrmc_lme <- function(formula, test, reader, case, data, method = jackknife,
     cov = list(R = params$cov, R0 = params0$cov),
     optim = list(R = params$optim, R0 = params0$optim)
   )
-  object$call <- sys.call()
+  object$call <- match.call()
 
   structure(object, class = c("mrmc_lme", class(object)))
 
