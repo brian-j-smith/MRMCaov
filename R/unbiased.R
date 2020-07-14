@@ -36,7 +36,7 @@ unbiased <- function() {
       structure(covmat,
                 a = NULL,
                 abar = cbind(abar_sigma2, abar_cov1, abar_cov2, abar_cov3),
-                class = "cov_unbiased")
+                class = c("cov_unbiased", "cov_matrix"))
 
     },
     class = c("cov_method", "function")

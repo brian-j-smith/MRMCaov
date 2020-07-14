@@ -17,8 +17,11 @@ summary.mrmc <- function(object, conf.level = 0.95, ...) {
 new_summary_mrmc <- function(object, conf.level, vcov_comps,
                              test_equality = NULL, test_diffs = NULL,
                              test_means = NULL) {
+  cov_method <- class(object$cov)[1]
   structure(
     list(data_name = as.character(object$call$data),
+         cov_method = substring(cov_method,
+                                4 * startsWith(cov_method, "cov_") + 1),
          design = object$design,
          vars = object$vars,
          conf.level = conf.level,

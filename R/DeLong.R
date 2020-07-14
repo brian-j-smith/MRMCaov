@@ -49,7 +49,8 @@ DeLong <- function() {
 
       structure(
         s10_mat / n_pos + s01_mat / n_neg,
-        dimnames = list(levels(groups), levels(groups))
+        dimnames = list(levels(groups), levels(groups)),
+        class = c("cov_DeLong", "cov_matrix")
       )
     },
     class = c("cov_method", "function")

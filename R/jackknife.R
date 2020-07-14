@@ -18,7 +18,8 @@ jackknife <- function() {
       n <- nrow(metrics)
       structure(
         ((n - 1) / n) * crossprod(scale(metrics, scale = FALSE)),
-        dimnames = list(levels(groups), levels(groups))
+        dimnames = list(levels(groups), levels(groups)),
+        class = c("cov_jackknife", "cov_matrix")
       )
     },
     class = c("cov_method", "function")
