@@ -31,6 +31,7 @@ export(
   proproc_sens,
   proproc_spec,
   roc_curves,
+  srmc,
   trapezoidal_auc,
   trapezoidal_sens,
   trapezoidal_spec,
@@ -71,3 +72,4 @@ S3method(print, summary.mrmc)
 S3method(roc_curves, default)
 S3method(roc_curves, mrmc)
 S3method(summary, mrmc)
+S3method(summary, srmc)

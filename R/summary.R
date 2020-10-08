@@ -15,6 +15,17 @@ summary.mrmc <- function(object, conf.level = 0.95, ...) {
 }
 
 
+#' @rdname summary-methods
+#'
+summary.srmc <- function(object, conf.level = 0.95, ...) {
+  z <- qnorm((1 + conf.level) / 2)
+  structure(
+    c(object$est, object$se, object$est + c(-1, 1) * z * object$se),
+    names = c(object$metric, "StdErr", "CI.Lower", "CI.Upper")
+  )
+}
+
+
 new_summary_mrmc <- function(object, conf.level, vcov_comps,
                              test_equality = NULL, test_diffs = NULL,
                              test_means = NULL, reader_means = NULL) {

@@ -3,9 +3,12 @@
 \name{summary}
 \alias{summary}
 \alias{summary.mrmc}
+\alias{summary.srmc}
 \title{Summary Estimates and Statistical Tests}
 \usage{
 \method{summary}{mrmc}(object, conf.level = 0.95, ...)
+
+\method{summary}{srmc}(object, conf.level = 0.95, ...)
 }
 \arguments{
 \item{object}{object to summarize.}
