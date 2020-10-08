@@ -194,12 +194,19 @@ new_summary_mrmc <- function(object, conf.level, vcov_comps,
   test_diffs$z <- with(test_diffs, Estimate / StdErr)
   test_diffs$`p-value` <- with(test_diffs, 2 * (1 - pnorm(abs(z))))
 
+
+  reader_means <- object$data
+  reader_means$StdErr <- sqrt(diag(object$cov))
+  reader_means$CI <- reader_means[[3]] + qnorm((1 + conf.level) / 2) *
+    reader_means$StdErr %o% c(Lower = -1, Upper = 1)
+
   res <- new_summary_mrmc(object,
                           conf.level = conf.level,
                           vcov_comps = summary(comps),
                           test_equality = test_equality,
                           test_diffs = test_diffs,
-                          test_means = test_means)
+                          test_means = test_means,
+                          reader_means = reader_means)
   res$reader_test_diffs = reader_test_diffs(object, conf.level)
   structure(res, class = c("summary.mrmc_frrc", class(res)))
 }
