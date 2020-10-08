@@ -24,7 +24,8 @@ dim.mrmc_tests <- function(x) {
 get_design <- function(data) {
   crosstab <- function(...) table(data[c(...)]) > 0
 
-  if (all(crosstab("test", "reader"))) {
+  test_x_reader <- crosstab("test", "reader") > 0
+  if (all(test_x_reader)) {
     if (all(colSums(crosstab("reader", "case")) == 1)) {
       2
     } else if (all(colSums(crosstab("test", "case")) == 1)) {
@@ -32,6 +33,8 @@ get_design <- function(data) {
     } else {
       1
     }
+  } else if (all(colSums(test_x_reader) == 1)) {
+    4
   }
 }
 
@@ -70,10 +73,8 @@ meansq <- function(x, ...) {
 
 
 meansq.mrmc <- function(x, ...) {
-  structure(
-    summary(x$aov)[[1]][["Mean Sq"]],
-    names = c("T", "R", "T:R")
-  )
+  res <- summary(x$aov)[[1]][["Mean Sq"]]
+  structure(res, names = head(c("T", "R", "T:R"), length(res)))
 }
 
 
@@ -123,11 +124,17 @@ vcov_comps.mrmc <- function(object, design = object$design, test = NULL,
     cov[2:3] <- 0
   } else if (design == 3) {
     cov[c(1, 3)] <- 0
+  } else if (design == 4) {
+    cov[1] <- 0
   }
+
+  n_mat <- table(data[1:2])
+  names(dimnames(n_mat)) <- c("test", "reader")
 
   structure(
     list(vars = object$vars,
          n = dim(object),
+         n_mat = n_mat,
          MS = meansq(object),
          var = mean(diag(object$cov[is_group, is_group])),
          cov = cov),
@@ -163,17 +170,20 @@ summary.vcov_comps <- function(object, ...) {
   var_error <- object$var
   cov <- object$cov
 
-  vcov_comps <- data.frame(
-    Estimate = c(
-      (MS[["R"]] - MS[["T:R"]]) / n[["test"]] - cov[1] + cov[3],
-      MS[["T:R"]] - var_error + cov[1] + (cov[2] - cov[3]),
-      var_error,
-      cov
-    ),
-    row.names = c(object$vars["reader"],
-                  paste0(object$vars[c("test", "reader")], collapse = ":"),
-                  "Error", "Cov1", "Cov2", "Cov3")
-  )
+  if ("T:R" %in% names(MS)) {
+    est <- c((MS[["R"]] - MS[["T:R"]]) / n[["test"]] - cov[1] + cov[3],
+             MS[["T:R"]] - var_error + cov[1] + (cov[2] - cov[3]))
+    names(est) <- c(object$vars["reader"],
+                    paste0(object$vars[c("test", "reader")], collapse = ":"))
+  } else {
+    cat(str(object))
+    est <- MS[["R"]] - var_error + cov[2]
+    names(est) <- object$vars["reader"]
+  }
+  est["Error"] <- var_error
+  est[paste0("Cov", 1:3)] <- cov
+
+  vcov_comps <- data.frame(Estimate = est)
   vcov_comps$Correlation <- vcov_comps$Estimate /
     vcov_comps["Error", "Estimate"]
   vcov_comps$Correlation[1:3] <- NA

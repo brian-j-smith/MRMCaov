@@ -79,10 +79,17 @@ print.summary.mrmc <- function(x, ...) {
 
   .print.summary.mrmc(x)
 
-  cat("\n\nReader-specific ", 100 * x$conf.level, "% CIs and tests for ",
-      x$vars["metric"], " pairwise differences (each analysis based only on",
-      " data for the specified reader):\n\n", sep = "")
-  print(x$reader_test_diffs)
+  if (!is.null(x$reader_test_diffs)) {
+    cat("\n\nReader-specific ", 100 * x$conf.level, "% CIs and tests for ",
+        x$vars["metric"], " pairwise differences (each analysis based only on",
+        " data for the specified reader):\n\n", sep = "")
+    print(x$reader_test_diffs)
+  }
+
+  if (!is.null(x$reader_means)) {
+    cat("\n\nSingle reader ", 100 * x$conf.level, "% CIs:\n\n", sep = "")
+    print(x$reader_means)
+  }
 
   invisible(x)
 }
@@ -126,7 +133,8 @@ print.summary.mrmc <- function(x, ...) {
       switch(x$design,
              "factorial",
              paste("cases nested within", x$vars["reader"]),
-             paste("cases nested within", x$vars["test"])),
+             paste("cases nested within", x$vars["test"]),
+             paste(x$vars["reader"], "nested within", x$vars["test"])),
       "\n\n")
 
   cat("Obuchowski-Rockette variance component and covariance estimates:\n\n")
