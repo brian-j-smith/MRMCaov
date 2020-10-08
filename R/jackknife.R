@@ -4,7 +4,7 @@ jackknife <- function() {
   structure(
     function(data, ...) {
       cases <- data$case
-      groups <- interaction(data$test, data$reader)
+      groups <- interaction(data$test, data$reader, drop = TRUE)
       df <- data[c("truth", "rating")]
 
       metrics <- matrix(NA, nlevels(cases), nlevels(groups))
