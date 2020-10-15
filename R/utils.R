@@ -96,6 +96,32 @@ preprocess <- function(data) {
 }
 
 
+trunc_ci <- function(object, x, ...) {
+  UseMethod("trunc_ci")
+}
+
+
+trunc_ci.character <- function(object, x, ...) {
+  unit_metrics <- c("_auc", "_sens", "_spec")
+  if (any(endsWith(object, unit_metrics))) {
+    x[, 1] <- pmax(0, x[, 1])
+    x[, 2] <- pmin(x[, 2], 1)
+  }
+  x
+}
+
+
+trunc_ci.mrmc <- function(object, x, ...) {
+  metric <- as.character(attr(object$mrmc_data, "metric_call"))[1]
+  trunc_ci(metric, x)
+}
+
+
+trunc_ci.srmc <- function(object, x, ...) {
+  c(trunc_ci(object$metric, rbind(x)))
+}
+
+
 vcov_comps <- function(object, ...) {
   UseMethod("vcov_comps")
 }

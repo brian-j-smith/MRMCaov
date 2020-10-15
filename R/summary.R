@@ -19,8 +19,9 @@ summary.mrmc <- function(object, conf.level = 0.95, ...) {
 #'
 summary.srmc <- function(object, conf.level = 0.95, ...) {
   z <- qnorm((1 + conf.level) / 2)
+  ci <- trunc_ci(object, object$est + c(-1, 1) * z * object$se)
   structure(
-    c(object$est, object$se, object$est + c(-1, 1) * z * object$se),
+    c(object$est, object$se, ci),
     names = c(object$metric, "StdErr", "CI.Lower", "CI.Upper")
   )
 }
@@ -210,6 +211,7 @@ new_summary_mrmc <- function(object, conf.level, vcov_comps,
   reader_means$StdErr <- sqrt(diag(object$cov))
   reader_means$CI <- reader_means[[3]] + qnorm((1 + conf.level) / 2) *
     reader_means$StdErr %o% c(Lower = -1, Upper = 1)
+  reader_means$CI <- trunc_ci(object, reader_means$CI)
 
   res <- new_summary_mrmc(object,
                           conf.level = conf.level,
@@ -306,6 +308,7 @@ reader_test_diffs <- function(object, conf.level) {
   reader_means$StdErr <- sqrt(diag(object$cov))
   reader_means$CI <- reader_means[[3]] + qnorm((1 + conf.level) / 2) *
     reader_means$StdErr %o% c(Lower = -1, Upper = 1)
+  reader_means$CI <- trunc_ci(object, reader_means$CI)
 
   res <- new_summary_mrmc(object,
                           conf.level = conf.level,
