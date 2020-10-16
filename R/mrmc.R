@@ -129,15 +129,17 @@ new_mrmc <- function(response, test, reader, case, data, method, design,
 
   cov <- get_method(method)(mrmc_data)
 
-  vars <- c("test", "reader")
-  aov_data <- unique(mrmc_data[vars])
+  var_names <- c("test", "reader")
+  aov_data <- unique(mrmc_data[var_names])
+  sort_order <- do.call(order, rev(aov_data))
+  aov_data <- aov_data[sort_order, , drop = FALSE]
   y <- num_obs <- numeric(nrow(aov_data))
   for (i in 1:nrow(aov_data)) {
     split <- merge(mrmc_data, aov_data[i, , drop = FALSE])
     y[i] <- eval(response_call, split)
     num_obs[i] <- nrow(split)
   }
-  names(aov_data) <- terms$labels[vars]
+  names(aov_data) <- terms$labels[var_names]
   aov_data[[terms$metric]] <- y
   fo <- update(terms$formula, paste(terms$metric, "~ ."))
   aovfit <- aov(fo, data = aov_data)
