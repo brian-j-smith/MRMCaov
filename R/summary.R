@@ -209,7 +209,7 @@ new_summary_mrmc <- function(object, conf.level, vcov_comps,
 
   reader_means <- object$data
   reader_means$StdErr <- sqrt(diag(object$cov))
-  reader_means$CI <- reader_means[[3]] + qnorm((1 + conf.level) / 2) *
+  reader_means$CI <- reader_means[[1]] + qnorm((1 + conf.level) / 2) *
     reader_means$StdErr %o% c(Lower = -1, Upper = 1)
   reader_means$CI <- trunc_ci(object, reader_means$CI)
 
@@ -231,7 +231,7 @@ reader_test_diffs <- function(object, conf.level) {
   test_levels <- levels(object)$test
   reader_levels <- levels(object)$reader
 
-  estimates <- matrix(object$aov$model[[1]], ncol = n["test"], byrow = TRUE)
+  estimates <- matrix(object$data[[1]], ncol = n["test"], byrow = TRUE)
 
   stderrs <- sapply(reader_levels, function(reader) {
     comps <- vcov_comps(object, reader = reader)
@@ -306,7 +306,7 @@ reader_test_diffs <- function(object, conf.level) {
 
   reader_means <- object$data
   reader_means$StdErr <- sqrt(diag(object$cov))
-  reader_means$CI <- reader_means[[3]] + qnorm((1 + conf.level) / 2) *
+  reader_means$CI <- reader_means[[1]] + qnorm((1 + conf.level) / 2) *
     reader_means$StdErr %o% c(Lower = -1, Upper = 1)
   reader_means$CI <- trunc_ci(object, reader_means$CI)
 

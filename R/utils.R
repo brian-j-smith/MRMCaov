@@ -1,3 +1,9 @@
+aov_mrmc <- function(data) {
+  fo <- update(formula(data), . ~ .^2)
+  aov(fo, data = data)
+}
+
+
 chol2det <- function(x, log = FALSE) {
   d <- diag(x)
   if (log) 2 * sum(log(d)) else prod(d)^2
@@ -129,15 +135,15 @@ vcov_comps <- function(object, ...) {
 
 vcov_comps.mrmc <- function(object, design = object$design, test = NULL,
                             reader = NULL, ...) {
-  model <- object$aov$model
+  data <- object$data
 
-  tests <- model[[2]]
-  readers <- model[[3]]
+  tests <- data[[2]]
+  readers <- data[[3]]
 
   same_test <- outer(tests, tests, "==")
   same_reader <- outer(readers, readers, "==")
 
-  is_group <- rep(TRUE, nrow(model))
+  is_group <- rep(TRUE, nrow(data))
   if (!is.null(test)) is_group <- is_group & (tests == test)
   if (!is.null(reader)) is_group <- is_group & (readers == reader)
   in_group <- as.logical(is_group %o% is_group)
@@ -154,7 +160,7 @@ vcov_comps.mrmc <- function(object, design = object$design, test = NULL,
     cov[1] <- 0
   }
 
-  n_mat <- table(data[1:2])
+  n_mat <- table(data[2:3])
   names(dimnames(n_mat)) <- c("test", "reader")
 
   structure(
@@ -170,10 +176,10 @@ vcov_comps.mrmc <- function(object, design = object$design, test = NULL,
 
 
 vcov_comps.mrmc_tests <- function(object, design = object$design, ...) {
-  model <- object$aov$model
+  data <- object$aov$model
 
   cov2 <- if (design == 2) 0 else {
-    readers <- model[[2]]
+    readers <- data[[2]]
     same_reader <- outer(readers, readers, "==")
     mean(object$cov[!same_reader])
   }

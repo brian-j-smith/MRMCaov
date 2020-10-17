@@ -45,7 +45,7 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
     new_mrmc(response, test, reader, case, data, method = method,
              design = design)
   ))
-  object$mrmc_tests <- mrmc_tests(object$aov$model, object$cov, object$design)
+  object$mrmc_tests <- mrmc_tests(object$data, object$cov, object$design)
   object$call <- match.call()
 
   mrmc_class <- if (all(object$fixed)) {
@@ -105,7 +105,7 @@ new_mrmc <- function(response, test, reader, case, data, method, design,
     mrmc_terms(response, test, reader, case, types = types)
   ))
 
-  response_call <- match.call(get(terms$metric), terms$formula[[2]])
+  response_call <- match.call(get(terms$metric), terms$response)
   mrmc_data <- data.frame(
     truth = factor(eval(response_call$truth, data)),
     rating = as.numeric(eval(response_call$rating, data)),
@@ -139,10 +139,9 @@ new_mrmc <- function(response, test, reader, case, data, method, design,
     y[i] <- eval(response_call, split)
     num_obs[i] <- nrow(split)
   }
-  names(aov_data) <- terms$labels[var_names]
-  aov_data[[terms$metric]] <- y
-  fo <- update(terms$formula, paste(terms$metric, "~ ."))
-  aovfit <- aov(fo, data = aov_data)
+  aov_data <- cbind(y, aov_data)
+  names(aov_data) <- c(terms$metric, terms$labels[var_names])
+  aovfit <- aov_mrmc(aov_data)
 
   structure(
     list(design = design,
@@ -169,11 +168,9 @@ mrmc_terms <- function(response, test, reader, case, types) {
   reader <- extract_term(args$reader, types = types)
   case <- extract_term(args$case, types = types)
 
-  fo <- reformulate(c(test$label, reader$label), args$response)
-
   list(
-    formula = update(fo, . ~ .^2),
-    metric = all.names(fo)[2],
+    response = args$response,
+    metric = as.character(args$response[[1]]),
     labels = c(test = test$label, reader = reader$label, case = case$label),
     fixed = c(reader = reader$type, case = case$type) == "fixed"
   )

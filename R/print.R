@@ -4,9 +4,6 @@ print.cov_matrix <- function(x, ...) {
 
 
 print.mrmc <- function(x, n = 20, ...) {
-  model <- x$aov$model
-  vars <- x$vars
-
   cat("Call:\n")
   print(x$call)
 
