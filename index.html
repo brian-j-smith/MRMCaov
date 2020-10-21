@@ -25,8 +25,19 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -411,11 +422,11 @@ div.tocify {
 <tbody>
 <tr class="odd">
 <td>Microsoft Windows:</td>
-<td><a href="https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EQgwBVaXEk1GjnbGDw_sDcYB8bZrMBsUFvFG2eHd9__jxg">MRMCaov_0.1.10.zip</a></td>
+<td><a href="https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EVufHZjYutJIoa24GIkJ-dgBib_bSWhCHWr9bo682nIBVw">MRMCaov_0.1.11.zip</a></td>
 </tr>
 <tr class="even">
 <td>Linux:</td>
-<td><a href="https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EXpcjYF-qJdLiqY4NcTU9toBl6gqjLdRgCoHH1fTkzUbVQ">MRMCaov_0.1.10.tar.gz</a></td>
+<td><a href="https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EXz-QvvVqFtDv_Eptd_I3iUBuSO_iJoJoQCNQMqV75GVMQ">MRMCaov_0.1.11.tar.gz</a></td>
 </tr>
 </tbody>
 </table>
@@ -429,7 +440,7 @@ To cite MRMCaov in publications, please use the following two
 references, including the R package URL.
 
 Smith BJ, Hillis SL, Pesce LL (2020). _MCMCaov: Multi-Reader Multi-Case
-Analysis of Variance_. R package version 0.1.10, &lt;URL:
+Analysis of Variance_. R package version 0.1.11, &lt;URL:
 https://github.com/brian-j-smith/MRMCaov&gt;.
 
 Smith BJ, Hillis SL (2020). &quot;Multi-reader multi-case analysis of
@@ -449,7 +460,7 @@ toBibtex(citation(&quot;MRMCaov&quot;))</code></pre>
   author = {Brian J Smith and Stephen L Hillis and Lorenzo L Pesce},
   title = {MCMCaov: Multi-Reader Multi-Case Analysis of Variance},
   year = {2020},
-  note = {R package version 0.1.10},
+  note = {R package version 0.1.11},
   url = {https://github.com/brian-j-smith/MRMCaov},
 }
 
@@ -477,7 +488,7 @@ toBibtex(citation(&quot;MRMCaov&quot;))</code></pre>
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
