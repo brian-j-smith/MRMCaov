@@ -1,9 +1,69 @@
+#' Print ROC Objects
+#'
+#' Print ROC objects from the \pkg{MRMCaov} package.
+#'
+#' @rdname print
+#'
+#' @param x object to print.
+#' @param n number of ROC curve points to print.
+#' @param n_curves number of ROC curves to print.
+#' @param ... arguments passed to other methods.
+#'
+#' @examples
+#' curves <- with(VanDyke,
+#'   roc_curves(truth, rating, groups = list(Test = treatment, Reader = reader))
+#' )
+#' print(curves)
+#'
+print.roc_curve <- function(x, n = 11, ...) {
+  labels <- c(
+    "binormal_curve" = "Binormal",
+    "proproc_curve" = "Proper Binormal",
+    "roc_curve" = "ROC"
+  )
+  index <- match(TRUE, mapply(inherits, list(x), names(labels)))
+  cat(labels[index], "Curve\n")
+  params <- parameters(x)
+  cat("Parameters:",
+      paste(names(params), format(params), sep = " = ", collapse = ", "), "\n")
+  cat("Points:\n")
+  print(points(x, values = seq(0, 1, length = n)))
+  invisible(x)
+}
+
+
+print.empirical_curve <- function(x, n = 11, ...) {
+  cat("Emprical Curve\nPoints:\n")
+  print(points(x, values = if (is.numeric(n)) seq(0, 1, length = n), ...))
+  invisible(x)
+}
+
+
+#' @rdname print
+#'
+print.roc_curves <- function(x, n_curves = 5, n = 11, ...) {
+  cat("ROC Curves\n\n")
+  n_more <- nrow(x) - n_curves
+  n_curves <- min(n_curves, nrow(x))
+  vsep <- strrep("-", 0.75 * getOption("width"))
+  for (i in seq_len(n_curves)) {
+    if (i != 1) cat(vsep, "\n")
+    cat(paste0(names(x$Group), ": ",
+               as.character(x$Group[i, ]),
+               collapse = "\n"), "\n")
+    print(x$Curve[[i]], n = n, ...)
+  }
+  if (n_more) cat("... with", n_more, "more curves\n")
+  invisible(x)
+}
+
+
 print.cov_matrix <- function(x, ...) {
   print(as(x, "matrix"))
 }
 
 
-print.mrmc <- function(x, n = 20, ...) {
+print.mrmc <- function(x, ...) {
   cat("Call:\n")
   print(x$call)
 
@@ -25,35 +85,6 @@ print.mrmc <- function(x, n = 20, ...) {
   print(vcov_comps)
 
   invisible(x)
-}
-
-
-print.roc_curve <- function(x, ...) {
-  labels <- c(
-    "binormal_curve" = "Binormal",
-    "empirical_curve" = "Empirical",
-    "proproc_curve" = "Proper Binormal",
-    "roc_curve" = "ROC"
-  )
-  index <- match(TRUE, mapply(inherits, list(x), names(labels)))
-  cat(labels[index], "Curve\n")
-  NextMethod()
-}
-
-
-print.roc_curves <- function(x, n = 5, ...) {
-  cat("ROC Curves\n\n")
-  n_more <- nrow(x) - n
-  n <- min(n, nrow(x))
-  vsep <- strrep("-", 0.75 * getOption("width"))
-  for (i in seq_len(n)) {
-    if (i != 1) cat(vsep, "\n")
-    cat(paste0(names(x$Group), ": ",
-               as.character(x$Group[i, ]),
-               collapse = "\n"), "\n")
-    print(x$Curve[[i]])
-  }
-  if (n_more) cat("... with", n_more, "more curves\n")
 }
 
 

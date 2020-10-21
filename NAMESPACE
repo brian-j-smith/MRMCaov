@@ -27,6 +27,7 @@ export(
   empirical_spec,
   jackknife,
   mrmc,
+  parameters,
   proproc_auc,
   proproc_sens,
   proproc_spec,
@@ -45,29 +46,27 @@ export(
 )
 
 
-S3method(as.data.frame, roc_curves)
-S3method(as_tibble, roc_curves)
-S3method(auc, binormal_params)
-S3method(auc, proproc_params)
 S3method(mean, binormal_curves)
 S3method(mean, roc_curve)
 S3method(mean, roc_curves)
-S3method(mean, roc_params)
-S3method(plot, mrmc)
 S3method(plot, empirical_curve)
 S3method(plot, empirical_curves)
+S3method(plot, mrmc)
 S3method(plot, roc_curve)
 S3method(plot, roc_curves)
 S3method(plot, roc_points)
+S3method(parameters, empirical_curves)
+S3method(parameters, roc_curve)
+S3method(parameters, roc_curves)
 S3method(points, empirical_curve)
 S3method(points, empirical_curves)
 S3method(points, roc_curve)
 S3method(points, roc_curves)
-S3method(points, roc_params)
 S3method(print, cov_matrix)
+S3method(print, empirical_curve)
+S3method(print, mrmc)
 S3method(print, roc_curve)
 S3method(print, roc_curves)
-S3method(print, mrmc)
 S3method(print, summary.mrmc)
 S3method(roc_curves, default)
 S3method(roc_curves, mrmc)

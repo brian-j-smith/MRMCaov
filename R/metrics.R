@@ -65,72 +65,72 @@ binary_metric <- function(truth, rating, f) {
 #' @rdname metrics
 #'
 binormal_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1) {
-  x <- binormal_params(truth, rating)
-  auc(x, partial = partial, min = min, max = max)
+  curve <- roc_curves(truth, rating, method = "binormal")
+  auc(curve, partial = partial, min = min, max = max)
 }
 
 
 #' @rdname metrics
 #'
 binormal_sens <- function(truth, rating, spec) {
-  x <- proproc_params(truth, rating)
-  sensitivity(x, specificity = spec)
+  curve <- roc_curves(truth, rating, method = "binormal")
+  sensitivity(curve, specificity = spec)
 }
 
 
 #' @rdname metrics
 #'
 binormal_spec <- function(truth, rating, sens) {
-  x <- proproc_params(truth, rating)
-  specificity(x, sensitivity = sens)
+  curve <- roc_curves(truth, rating, method = "binormal")
+  specificity(curve, sensitivity = sens)
 }
 
 
 #' @rdname metrics
 #'
 empirical_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1) {
-  x <- empirical_params(truth, rating)
-  auc(x, partial = partial, min = min, max = max)
+  curve <- roc_curves(truth, rating, method = "empirical")
+  auc(curve, partial = partial, min = min, max = max)
 }
 
 
 #' @rdname metrics
 #'
 empirical_sens <- function(truth, rating, spec) {
-  x <- empirical_params(truth, rating)
-  sensitivity(x, specificity = spec)
+  curve <- roc_curves(truth, rating, method = "empirical")
+  sensitivity(curve, specificity = spec)
 }
 
 
 #' @rdname metrics
 #'
 empirical_spec <- function(truth, rating, sens) {
-  x <- empirical_params(truth, rating)
-  specificity(x, sensitivity = sens)
+  curve <- roc_curves(truth, rating, method = "empirical")
+  specificity(curve, sensitivity = sens)
 }
 
 
 #' @rdname metrics
 #'
 proproc_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1) {
-  x <- proproc_params(truth, rating)
-  auc(x, partial = partial, min = min, max = max)
+  curve <- roc_curves(truth, rating, method = "proproc")
+  auc(curve, partial = partial, min = min, max = max)
 }
 
 
 #' @rdname metrics
 #'
 proproc_sens <- function(truth, rating, spec) {
-  x <- proproc_params(truth, rating)
-  sensitivity(x, specificity = spec)
+  curve <- roc_curves(truth, rating, method = "empirical")
+  sensitivity(curve, specificity = spec)
 }
 
 
 #' @rdname metrics
 #'
 proproc_spec <- function(truth, rating, sens) {
-  x <- proproc_params(truth, rating)
-  specificity(x, sensitivity = sens)
+  curve <- roc_curves(truth, rating, method = "empirical")
+  specificity(curve, sensitivity = sens)
 }
 
 

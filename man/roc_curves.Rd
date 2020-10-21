@@ -4,8 +4,9 @@
 \alias{roc_curves}
 \alias{roc_curves.default}
 \alias{roc_curves.mrmc}
-\alias{as.data.frame.roc_curves}
-\alias{as_tibble.roc_curves}
+\alias{parameters}
+\alias{parameters.roc_curve}
+\alias{parameters.roc_curves}
 \alias{points.roc_curve}
 \alias{points.roc_curves}
 \alias{points.empirical_curve}
@@ -21,21 +22,23 @@ roc_curves(...)
 
 \method{roc_curves}{mrmc}(x, ...)
 
-\method{as.data.frame}{roc_curves}(x, ...)
+parameters(x, ...)
 
-\method{as_tibble}{roc_curves}(x, ...)
+\method{parameters}{roc_curve}(x, ...)
+
+\method{parameters}{roc_curves}(x, ...)
 
 \method{points}{roc_curve}(
   x,
   metric = c("specificity", "sensitivity"),
-  values = seq(0, 1, length = 100),
+  values = seq(0, 1, length = 101),
   ...
 )
 
 \method{points}{roc_curves}(
   x,
   metric = c("specificity", "sensitivity"),
-  values = seq(0, 1, length = 100),
+  values = seq(0, 1, length = 101),
   ...
 )
 

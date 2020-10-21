@@ -11,7 +11,7 @@ library(tibble)
 est <- mrmc(empirical_auc(truth, rating), treatment, reader, case,
             data = VanDyke)
 print(est)
-print(as_tibble(roc_curves(est)))
+print(roc_curves(est))
 plot(est)
 summary(est)
 ```
