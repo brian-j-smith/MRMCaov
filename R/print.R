@@ -16,26 +16,40 @@
 #' print(curves)
 #'
 print.roc_curve <- function(x, n = 11, ...) {
-  labels <- c(
-    "binormal_curve" = "Binormal",
-    "proproc_curve" = "Proper Binormal",
-    "roc_curve" = "ROC"
-  )
-  index <- match(TRUE, mapply(inherits, list(x), names(labels)))
-  cat(labels[index], "Curve\n")
-  params <- parameters(x)
-  cat("Parameters:",
-      paste(names(params), format(params), sep = " = ", collapse = ", "), "\n")
   cat("Points:\n")
-  print(points(x, values = seq(0, 1, length = n)))
+  print(points(x, values = seq(0, 1, length = n), ...))
   invisible(x)
 }
 
 
-print.empirical_curve <- function(x, n = 11, ...) {
-  cat("Emprical Curve\nPoints:\n")
-  print(points(x, values = if (is.numeric(n)) seq(0, 1, length = n), ...))
-  invisible(x)
+print.binormal_curve <- function(x, ...) {
+  params <- parameters(x)[c("a", "b")]
+  cat("Binormal Curve\n",
+      "Parameters:",
+      paste(names(params), format(params), sep = " = ", collapse = ", "), "\n",
+      sep = "")
+  NextMethod()
+}
+
+
+print.empirical_curve <- function(x, ...) {
+  cat("Empirical Curve\n")
+  NextMethod()
+}
+
+
+print.proproc_curve <- function(x, ...) {
+  params <- parameters(x)
+  format_params <- function(names) {
+    x <- params[names]
+    paste(names(x), format(x), sep = " = ", collapse = ", ")
+  }
+  cat("Proper Binormal Curve\n",
+      "Parameters\n",
+      "  Metz and Pan: ", format_params(c("c", "d_a")), "\n",
+      "  Bi-Chi-Square: ", format_params(c("lambda", "theta")), "\n",
+      "  Binormal: ", format_params(c("a", "b")), "\n", sep = "")
+  NextMethod()
 }
 
 

@@ -122,7 +122,14 @@ proproc_curve <- function(data) {
                   auc = double(1), auc_var = double(1))
   structure(
     list(
-      params = list(d_a = roc$d_a, c = roc$c),
+      params = list(
+        d_a = roc$d_a,
+        c = roc$c,
+        lambda = ((1 - roc$c) / (1 + roc$c))^2,
+        theta = (roc$d_a * (1 + roc$c) / roc$c)^2 * (1 + roc$c^2) / 16,
+        a = roc$d_a * sqrt(1 + roc$c^2) / (1 - roc$c),
+        b = (1 + roc$c) / (1 - roc$c)
+      ),
       data = data
     ),
     class = c("proproc_curve", "roc_curve")
