@@ -389,13 +389,10 @@ partial_auc_params <- function(metric, min, max) {
   min <- as.double(min)
   max <- as.double(max)
   if (metric == "specificity") {
-    flag <- 1L
-    min <- 1 - max
-    max <- 1 - min
+    list(min = 1 - max, max = 1 - min, flag = 1L)
   } else {
-    flag <- 2L
+    list(min = min, max = max, flag = 2L)
   }
-  list(min = min, max = max, flag = flag)
 }
 
 
