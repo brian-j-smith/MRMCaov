@@ -46,6 +46,7 @@ parameters(x, ...)
   x,
   metric = c("specificity", "sensitivity"),
   values = NULL,
+  which = c("curve", "curves", "observed"),
   ties = max,
   ...
 )
@@ -54,6 +55,7 @@ parameters(x, ...)
   x,
   metric = c("specificity", "sensitivity"),
   values = NULL,
+  which = c("curve", "curves", "observed"),
   ties = max,
   ...
 )
@@ -85,8 +87,13 @@ to compute points on or to average over the curves.}
 \item{metric}{reader performance metric to which the \code{values}
 correspond.}
 
-\item{values}{numeric vector of values at which to compute the points.  If
-\code{NULL} then the intersection of all empirical points is used.}
+\item{values}{numeric vector of values at which to compute the points or
+\code{NULL} for default empirical values as determined by \code{which}.}
+
+\item{which}{character string indicating whether to used curve-specific
+observed values and 0 and 1 (\code{"curve"}), the combination of these
+values over all curves (\code{"curves"}), or only the observed
+curve-specific values (\code{"observed"}).}
 
 \item{ties}{function determining empirical roc points returned in cases of
 ties.}

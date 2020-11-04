@@ -10,9 +10,9 @@
 \alias{plot.mrmc}
 \title{Performance Plots}
 \usage{
-\method{plot}{roc_curve}(x, n = 100, ...)
+\method{plot}{roc_curve}(x, n = 100, emp_points = FALSE, ...)
 
-\method{plot}{roc_curves}(x, n = 100, ...)
+\method{plot}{roc_curves}(x, n = 100, emp_points = FALSE, ...)
 
 \method{plot}{empirical_curve}(x, ...)
 
@@ -28,6 +28,9 @@
 \item{n}{number of equally spaced false-positive rate points at which to
 calculate true-positive rates and interpolate through for display of the
 curve.}
+
+\item{emp_points}{logical indicating whether to overlay empirical ROC points
+on parametric curves.}
 
 \item{...}{arguments passed to other methods.}
 

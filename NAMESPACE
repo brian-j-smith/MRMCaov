@@ -12,7 +12,7 @@ importFrom(mvtnorm, pmvnorm)
 importFrom(stats, aov, approx, as.formula, coef, formula, model.matrix, optim,
            pnorm, pf, pt, reformulate, qnorm, qt, reshape, terms, update, vcov)
 importFrom(tibble, as_tibble, tibble)
-importFrom(utils, head, str)
+importFrom(utils, head, str, tail)
 
 
 export(

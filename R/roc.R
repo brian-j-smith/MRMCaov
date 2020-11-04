@@ -15,8 +15,12 @@
 #'   or \code{"parameters"}.
 #' @param x object returned by \code{\link{mrmc}} or \code{roc_curves} for which
 #'   to compute points on or to average over the curves.
-#' @param values numeric vector of values at which to compute the points.  If
-#'   \code{NULL} then the intersection of all empirical points is used.
+#' @param values numeric vector of values at which to compute the points or
+#'   \code{NULL} for default empirical values as determined by \code{which}.
+#' @param which character string indicating whether to used curve-specific
+#'  observed values and 0 and 1 (\code{"curve"}), the combination of these
+#'  values over all curves (\code{"curves"}), or only the observed
+#'  curve-specific values (\code{"observed"}).
 #' @param metric reader performance metric to which the \code{values}
 #'   correspond.
 #' @param ties function determining empirical roc points returned in cases of
@@ -60,8 +64,7 @@ roc_curves.default <- function(truth, rating, groups = list(),
     groups <- expand.grid(dimnames(curves))
     keep <- !is.null(curves)
     curves <- tibble(Group = groups[keep, , drop = FALSE], Curve = curves[keep])
-    structure(curves,
-              class = c(paste0(method, "_curves"), "roc_curves", class(curves)))
+    new_roc_curves(curves, method = method)
   } else {
     roc_curve(data)
   }
@@ -79,6 +82,25 @@ roc_curves.mrmc <- function(x, ...) {
   roc_curves(x$mrmc_data$truth, x$mrmc_data$rating,
              groups = structure(x$mrmc_data[names(vars)], names = vars),
              method = roc_method)
+}
+
+
+roc_curves.roc_curve <- function(x, ...) {
+  roc_curves(x$data$truth, x$data$rating, ...)
+}
+
+
+roc_curves.roc_curves <- function(x, method = "empirical", ...) {
+  x$Curve <- lapply(x$Curve, function(curve) {
+    roc_curves(curve, method = method, ...)
+  })
+  new_roc_curves(x, method = method)
+}
+
+
+new_roc_curves <- function(x, method) {
+  x <- as_tibble(x)
+  structure(x, class = c(paste0(method, "_curves"), "roc_curves", class(x)))
 }
 
 
@@ -209,11 +231,15 @@ points.roc_curves <- function(x, metric = c("specificity", "sensitivity"),
 
 #' @rdname roc_curves
 #'
-points.empirical_curve <- function(x, metric = c("specificity", "sensitivity"),
-                                   values = NULL, ties = max, ...) {
-  metric <- match.arg(metric)
+points.empirical_curve <- function(
+  x, metric = c("specificity", "sensitivity"), values = NULL,
+  which = c("curve", "curves", "observed"), ties = max, ...
+) {
 
-  new_pts <- if (!is.null(values)) {
+  metric <- match.arg(metric)
+  which <- match.arg(which)
+
+  new_pts <- if (is.numeric(values)) {
 
     switch(metric,
            "specificity" = {
@@ -239,19 +265,31 @@ points.empirical_curve <- function(x, metric = c("specificity", "sensitivity"),
     names(pts) <- c(input_name, output_name)
     pts[c("FPR", "TPR")]
 
-  } else parameters(x)
+  } else {
+
+    params <- parameters(x)
+    if (which == "observed") params <- params[-c(1, nrow(params)), ]
+    params
+
+  }
 
   structure(new_pts, metric = metric, class = c("roc_points", class(new_pts)))
+
 }
 
 
 #' @rdname roc_curves
 #'
-points.empirical_curves <- function(x, metric = c("specificity", "sensitivity"),
-                                    values = NULL, ties = max, ...) {
-  metric <- match.arg(metric)
+points.empirical_curves <- function(
+  x, metric = c("specificity", "sensitivity"), values = NULL,
+  which = c("curve", "curves", "observed"), ties = max, ...
+) {
 
-  new_pts_list <- if (is.null(values)) {
+  metric <- match.arg(metric)
+  which <- match.arg(which)
+
+  new_pts_list <- if (is.null(values) && which == "curves") {
+
     switch(metric,
            specificity = {
              input_name <- "FPR"
@@ -275,14 +313,19 @@ points.empirical_curves <- function(x, metric = c("specificity", "sensitivity"),
       pts <- rbind(pts, pts_dups)
       pts[order(pts$FPR, pts$TPR), c("FPR", "TPR")]
     })
+
   } else {
+
     lapply(x$Curve, function(curve) {
-      points(curve, metric = metric, values = values, ties = ties, ...)
+      points(curve, metric = metric, values = values, which = which,
+             ties = ties, ...)
     })
+
   }
   new_pts <- curves2tibble(new_pts_list, x$Group)
 
   structure(new_pts, metric = metric, class = c("roc_points", class(new_pts)))
+
 }
 
 
@@ -296,7 +339,7 @@ mean.roc_curve <- function(x, ...) {
 #' @rdname roc_curves
 #'
 mean.roc_curves <- function(x, ...) {
-  pts <- points(x, ...)
+  pts <- points(x, which = "curves", ...)
   metric <- attr(pts, "metric")
   switch(metric,
          specificity = {
