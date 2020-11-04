@@ -44,8 +44,8 @@ install.packages(c("ggplot2", "gtools", "mvtnorm", "pROC", "tibble"))
 
 | Operating System   | Package Archive File                                                                                                                     |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Microsoft Windows: | [MRMCaov\_0.1.10.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EQgwBVaXEk1GjnbGDw_sDcYB8bZrMBsUFvFG2eHd9__jxg)    |
-| Linux:             | [MRMCaov\_0.1.10.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EXpcjYF-qJdLiqY4NcTU9toBl6gqjLdRgCoHH1fTkzUbVQ) |
+| Microsoft Windows: | [MRMCaov\_0.1.11.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EVufHZjYutJIoa24GIkJ-dgBib_bSWhCHWr9bo682nIBVw)    |
+| Linux:             | [MRMCaov\_0.1.11.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EXz-QvvVqFtDv_Eptd_I3iUBuSO_iJoJoQCNQMqV75GVMQ) |
 
 ## Citing the Software
 
@@ -56,19 +56,21 @@ citation("MRMCaov")
 
 ``` 
 
-To cite MRMCaov in publications, please use the following two references, including the R package URL.
+To cite MRMCaov in publications, please use the following two references, including the
+R package URL.
 
-Smith BJ, Hillis SL, Pesce LL (2020). _MCMCaov: Multi-Reader Multi-Case Analysis of Variance_. R package
-version 0.1.10, <URL: https://github.com/brian-j-smith/MRMCaov>.
+Smith BJ, Hillis SL, Pesce LL (2020). _MCMCaov: Multi-Reader Multi-Case Analysis of
+Variance_. R package version 0.1.11, <URL: https://github.com/brian-j-smith/MRMCaov>.
 
-Smith BJ, Hillis SL (2020). "Multi-reader multi-case analysis of variance software for diagnostic
-performance comparison of imaging modalities." In Samuelson F, Taylor-Phillips S (eds.), _Proceedings of
-SPIE 11316, Medical Imaging 2020: Image Perception, Observer Performance, and Technology Assessment_,
-113160K. doi: 10.117/12.2549075 (URL: https://doi.org/10.117/12.2549075), <URL:
+Smith BJ, Hillis SL (2020). "Multi-reader multi-case analysis of variance software for
+diagnostic performance comparison of imaging modalities." In Samuelson F,
+Taylor-Phillips S (eds.), _Proceedings of SPIE 11316, Medical Imaging 2020: Image
+Perception, Observer Performance, and Technology Assessment_, 113160K. doi:
+10.117/12.2549075 (URL: https://doi.org/10.117/12.2549075), <URL:
 https://pubmed.ncbi.nlm.nih.gov/32351258>.
 
-To see these entries in BibTeX format, use 'print(<citation>, bibtex=TRUE)', 'toBibtex(.)', or set
-'options(citation.bibtex.max=999)'.
+To see these entries in BibTeX format, use 'print(<citation>, bibtex=TRUE)',
+'toBibtex(.)', or set 'options(citation.bibtex.max=999)'.
 ```
 
 ``` r
@@ -80,7 +82,7 @@ toBibtex(citation("MRMCaov"))
       author = {Brian J Smith and Stephen L Hillis and Lorenzo L Pesce},
       title = {MCMCaov: Multi-Reader Multi-Case Analysis of Variance},
       year = {2020},
-      note = {R package version 0.1.10},
+      note = {R package version 0.1.11},
       url = {https://github.com/brian-j-smith/MRMCaov},
     }
     

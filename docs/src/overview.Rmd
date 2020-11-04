@@ -27,8 +27,8 @@ install.packages(c("ggplot2", "gtools", "mvtnorm", "pROC", "tibble"))
 
 | Operating System      | Package Archive File | 
 |-----------------------|----------------------|
-| Microsoft Windows: | [MRMCaov_0.1.10.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EQgwBVaXEk1GjnbGDw_sDcYB8bZrMBsUFvFG2eHd9__jxg) |
-| Linux: | [MRMCaov_0.1.10.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EXpcjYF-qJdLiqY4NcTU9toBl6gqjLdRgCoHH1fTkzUbVQ) |
+| Microsoft Windows: | [MRMCaov_0.1.11.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EVufHZjYutJIoa24GIkJ-dgBib_bSWhCHWr9bo682nIBVw) |
+| Linux: | [MRMCaov_0.1.11.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EXz-QvvVqFtDv_Eptd_I3iUBuSO_iJoJoQCNQMqV75GVMQ) |
 
 
 ## Citing the Software

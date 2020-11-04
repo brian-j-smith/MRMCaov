@@ -2,6 +2,13 @@
 
 ## Version Updates
 
+## 0.1.11
+* Add support for readers nested within tests.
+* Add `smmc()` for single reader multiple case analysis.
+* Add `parameters()` function to extract ROC curve parameters from `roc_curves()` results.
+* Fix partial AUC calculation when specificity ranges are given.
+* Add plot option to overlay empirical ROC points on parametric curves.
+
 ## 0.1.10
 * Subset data in calls to `mrmc()` by event/non-event cases for `binary_sens()`/`binary_spec()` metrics.
 * Add `coord_fixed` argument to `plot()` methods.
