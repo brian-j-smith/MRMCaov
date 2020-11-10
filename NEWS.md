@@ -2,6 +2,9 @@
 
 ## Version Updates
 
+## 0.1.12
+* Fix `proproc_sens()` and `proproc_spec()` to use proproc instead of empirical curves. 
+
 ## 0.1.11
 * Add support for readers nested within tests.
 * Add `smmc()` for single reader multiple case analysis.
