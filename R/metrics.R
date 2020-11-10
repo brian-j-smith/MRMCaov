@@ -121,7 +121,7 @@ proproc_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1) {
 #' @rdname metrics
 #'
 proproc_sens <- function(truth, rating, spec) {
-  curve <- roc_curves(truth, rating, method = "empirical")
+  curve <- roc_curves(truth, rating, method = "proproc")
   sensitivity(curve, specificity = spec)
 }
 
@@ -129,7 +129,7 @@ proproc_sens <- function(truth, rating, spec) {
 #' @rdname metrics
 #'
 proproc_spec <- function(truth, rating, sens) {
-  curve <- roc_curves(truth, rating, method = "empirical")
+  curve <- roc_curves(truth, rating, method = "proproc")
   specificity(curve, sensitivity = sens)
 }
 
