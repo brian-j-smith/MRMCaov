@@ -413,21 +413,24 @@ auc <- function(x, ...) {
 }
 
 
-auc.binormal_curve <- function(x, partial = FALSE, min = 0, max = 1, ...) {
+auc.binormal_curve <- function(x, partial = FALSE, min = 0, max = 1,
+                               normalize = TRUE, ...) {
   params <- parameters(x)
   if (isFALSE(partial)) {
     pnorm(params$a / sqrt(1 + params$b^2))
   } else {
     partial <- partial_auc_params(partial, min, max)
+    normalize <- if (normalize) max - min else 1
     .Fortran("cvbmrocpartial",
              params$a, params$b,
              partial$min, partial$max, partial$flag,
-             est = double(1), err = integer(1))$est
+             est = double(1), err = integer(1))$est / normalize
   }
 }
 
 
-auc.binormalLR_curve <- function(x, partial = FALSE, min = 0, max = 1, ...) {
+auc.binormalLR_curve <- function(x, partial = FALSE, min = 0, max = 1,
+                                 normalize = TRUE, ...) {
   params <- parameters(x)
   if (isFALSE(partial)) {
     rho <- -1 * (1 - params$c^2) / (1 + params$c^2)
@@ -436,21 +439,24 @@ auc.binormalLR_curve <- function(x, partial = FALSE, min = 0, max = 1, ...) {
       2 * as.numeric(pmvnorm(upper = c(-params$d_a / sqrt(2), 0), corr = rho))
   } else {
     partial <- partial_auc_params(partial, min, max)
+    normalize <- if (normalize) max - min else 1
     .Fortran("pbmrocpartial",
              params$d_a, params$c,
              partial$min, partial$max, partial$flag,
-             est = double(1), err = integer(1))$est
+             est = double(1), err = integer(1))$est / normalize
   }
 }
 
 
-auc.empirical_curve <- function(x, partial = FALSE, min = 0, max = 1, ...) {
+auc.empirical_curve <- function(x, partial = FALSE, min = 0, max = 1,
+                                normalize = TRUE, ...) {
   data <- x$data
   args <- list(pROC::roc(data$truth, data$rating, quiet = TRUE))
   if (!isFALSE(partial)) {
     partial <- match.arg(partial, c("sensitivity", "specificity"))
     args$partial.auc <- c(min, max)
     args$partial.auc.focus <- partial
+    args$partial.auc.correct <- normalize
   }
   as.numeric(do.call(pROC::auc, args))
 }

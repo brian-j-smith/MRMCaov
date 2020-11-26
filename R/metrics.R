@@ -13,6 +13,8 @@
 #'   matching of the character strings is allowed.
 #' @param min,max minimum and maximum sensitivity or specificity values over
 #'   which to calculate partial AUC.
+#' @param normalize logical indicating whether partial AUC is divided by the
+#'   interval width (\code{max - min}) over which it is calculated.
 #' @param sens,spec numeric sensitivity/specificity at which to calculate
 #'   specificity/sensitivity.
 #'
@@ -65,9 +67,10 @@ binary_metric <- function(truth, rating, f) {
 
 #' @rdname metrics
 #'
-binormal_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1) {
+binormal_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1,
+                         normalize = TRUE) {
   curve <- roc_curves(truth, rating, method = "binormal")
-  auc(curve, partial = partial, min = min, max = max)
+  auc(curve, partial = partial, min = min, max = max, normalize = normalize)
 }
 
 
@@ -89,9 +92,10 @@ binormal_spec <- function(truth, rating, sens) {
 
 #' @rdname metrics
 #'
-binormalLR_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1) {
+binormalLR_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1,
+                           normalize = TRUE) {
   curve <- roc_curves(truth, rating, method = "binormalLR")
-  auc(curve, partial = partial, min = min, max = max)
+  auc(curve, partial = partial, min = min, max = max, normalize = normalize)
 }
 
 
@@ -113,9 +117,10 @@ binormalLR_spec <- function(truth, rating, sens) {
 
 #' @rdname metrics
 #'
-empirical_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1) {
+empirical_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1,
+                          normalize = TRUE) {
   curve <- roc_curves(truth, rating, method = "empirical")
-  auc(curve, partial = partial, min = min, max = max)
+  auc(curve, partial = partial, min = min, max = max, normalize = normalize)
 }
 
 
@@ -137,8 +142,9 @@ empirical_spec <- function(truth, rating, sens) {
 
 #' @rdname metrics
 #'
-trapezoidal_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1) {
-  empirical_auc(truth, rating, partial = partial, min = min, max = max)
+trapezoidal_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1,
+                            normalize = TRUE) {
+  do.call(empirical_auc, as.list(environment()))
 }
 
 

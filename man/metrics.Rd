@@ -22,25 +22,53 @@ binary_sens(truth, rating)
 
 binary_spec(truth, rating)
 
-binormal_auc(truth, rating, partial = FALSE, min = 0, max = 1)
+binormal_auc(
+  truth,
+  rating,
+  partial = FALSE,
+  min = 0,
+  max = 1,
+  normalize = TRUE
+)
 
 binormal_sens(truth, rating, spec)
 
 binormal_spec(truth, rating, sens)
 
-binormalLR_auc(truth, rating, partial = FALSE, min = 0, max = 1)
+binormalLR_auc(
+  truth,
+  rating,
+  partial = FALSE,
+  min = 0,
+  max = 1,
+  normalize = TRUE
+)
 
 binormalLR_sens(truth, rating, spec)
 
 binormalLR_spec(truth, rating, sens)
 
-empirical_auc(truth, rating, partial = FALSE, min = 0, max = 1)
+empirical_auc(
+  truth,
+  rating,
+  partial = FALSE,
+  min = 0,
+  max = 1,
+  normalize = TRUE
+)
 
 empirical_sens(truth, rating, spec)
 
 empirical_spec(truth, rating, sens)
 
-trapezoidal_auc(truth, rating, partial = FALSE, min = 0, max = 1)
+trapezoidal_auc(
+  truth,
+  rating,
+  partial = FALSE,
+  min = 0,
+  max = 1,
+  normalize = TRUE
+)
 
 trapezoidal_sens(truth, rating, spec)
 
@@ -58,6 +86,9 @@ matching of the character strings is allowed.}
 
 \item{min, max}{minimum and maximum sensitivity or specificity values over
 which to calculate partial AUC.}
+
+\item{normalize}{logical indicating whether partial AUC is divided by the
+interval width (\code{max - min}) over which it is calculated.}
 
 \item{sens, spec}{numeric sensitivity/specificity at which to calculate
 specificity/sensitivity.}
