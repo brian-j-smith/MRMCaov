@@ -41,12 +41,6 @@ export(
 )
 
 
-export(
-  proproc,
-  roc
-)
-
-
 S3method(mean, binormal_curves)
 S3method(mean, roc_curve)
 S3method(mean, roc_curves)
