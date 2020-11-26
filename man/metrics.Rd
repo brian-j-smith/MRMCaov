@@ -7,12 +7,12 @@
 \alias{binormal_auc}
 \alias{binormal_sens}
 \alias{binormal_spec}
+\alias{binormalLR_auc}
+\alias{binormalLR_sens}
+\alias{binormalLR_spec}
 \alias{empirical_auc}
 \alias{empirical_sens}
 \alias{empirical_spec}
-\alias{proproc_auc}
-\alias{proproc_sens}
-\alias{proproc_spec}
 \alias{trapezoidal_auc}
 \alias{trapezoidal_sens}
 \alias{trapezoidal_spec}
@@ -28,17 +28,17 @@ binormal_sens(truth, rating, spec)
 
 binormal_spec(truth, rating, sens)
 
+binormalLR_auc(truth, rating, partial = FALSE, min = 0, max = 1)
+
+binormalLR_sens(truth, rating, spec)
+
+binormalLR_spec(truth, rating, sens)
+
 empirical_auc(truth, rating, partial = FALSE, min = 0, max = 1)
 
 empirical_sens(truth, rating, spec)
 
 empirical_spec(truth, rating, sens)
-
-proproc_auc(truth, rating, partial = FALSE, min = 0, max = 1)
-
-proproc_sens(truth, rating, spec)
-
-proproc_spec(truth, rating, sens)
 
 trapezoidal_auc(truth, rating, partial = FALSE, min = 0, max = 1)
 
@@ -72,6 +72,7 @@ the highest level of \code{truth}.  Available metrics include the following.
 \describe{
 \item{empirical_auc, trapezoidal_auc:}{Area under the empirical, or
 trapezoidal, ROC curve.}
-\item{proproc_auc:}{Area under a proper ROC curve.}
+\item{binormal_auc:}{Area under a binormal ROC curve.}
+\item{binormalLR_auc:}{Area under a binormal likelihood ratio ROC curve.}
 }
 }

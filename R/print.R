@@ -32,23 +32,23 @@ print.binormal_curve <- function(x, ...) {
 }
 
 
-print.empirical_curve <- function(x, ...) {
-  cat("Empirical Curve\n")
-  NextMethod()
-}
-
-
-print.proproc_curve <- function(x, ...) {
+print.binormalLR_curve <- function(x, ...) {
   params <- parameters(x)
   format_params <- function(names) {
     x <- params[names]
     paste(names(x), format(x), sep = " = ", collapse = ", ")
   }
-  cat("Proper Binormal Curve\n",
+  cat("Binormal Likelihood Ratio Curve\n",
       "Parameters\n",
       "  Metz and Pan: ", format_params(c("c", "d_a")), "\n",
       "  Bi-Chi-Square: ", format_params(c("lambda", "theta")), "\n",
       "  Binormal: ", format_params(c("a", "b")), "\n", sep = "")
+  NextMethod()
+}
+
+
+print.empirical_curve <- function(x, ...) {
+  cat("Empirical Curve\n")
   NextMethod()
 }
 

@@ -23,7 +23,8 @@
 #' \describe{
 #' \item{empirical_auc, trapezoidal_auc:}{Area under the empirical, or
 #' trapezoidal, ROC curve.}
-#' \item{proproc_auc:}{Area under a proper ROC curve.}
+#' \item{binormal_auc:}{Area under a binormal ROC curve.}
+#' \item{binormalLR_auc:}{Area under a binormal likelihood ratio ROC curve.}
 #' }
 #'
 NULL
@@ -88,6 +89,30 @@ binormal_spec <- function(truth, rating, sens) {
 
 #' @rdname metrics
 #'
+binormalLR_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1) {
+  curve <- roc_curves(truth, rating, method = "binormalLR")
+  auc(curve, partial = partial, min = min, max = max)
+}
+
+
+#' @rdname metrics
+#'
+binormalLR_sens <- function(truth, rating, spec) {
+  curve <- roc_curves(truth, rating, method = "binormalLR")
+  sensitivity(curve, specificity = spec)
+}
+
+
+#' @rdname metrics
+#'
+binormalLR_spec <- function(truth, rating, sens) {
+  curve <- roc_curves(truth, rating, method = "binormalLR")
+  specificity(curve, sensitivity = sens)
+}
+
+
+#' @rdname metrics
+#'
 empirical_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1) {
   curve <- roc_curves(truth, rating, method = "empirical")
   auc(curve, partial = partial, min = min, max = max)
@@ -106,30 +131,6 @@ empirical_sens <- function(truth, rating, spec) {
 #'
 empirical_spec <- function(truth, rating, sens) {
   curve <- roc_curves(truth, rating, method = "empirical")
-  specificity(curve, sensitivity = sens)
-}
-
-
-#' @rdname metrics
-#'
-proproc_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1) {
-  curve <- roc_curves(truth, rating, method = "proproc")
-  auc(curve, partial = partial, min = min, max = max)
-}
-
-
-#' @rdname metrics
-#'
-proproc_sens <- function(truth, rating, spec) {
-  curve <- roc_curves(truth, rating, method = "proproc")
-  sensitivity(curve, specificity = spec)
-}
-
-
-#' @rdname metrics
-#'
-proproc_spec <- function(truth, rating, sens) {
-  curve <- roc_curves(truth, rating, method = "proproc")
   specificity(curve, sensitivity = sens)
 }
 

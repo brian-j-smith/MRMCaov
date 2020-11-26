@@ -10,9 +10,9 @@
 #' @param groups list or data frame of grouping variables of the same lengths as
 #'   \code{truth} and \code{rating}.
 #' @param method character string indicating the curve type as
-#'   \code{"binormal"}, \code{"empirical"}, \code{"trapezoidal"}, or
-#'   \code{"proproc"} or the averaging of binormal curves over \code{"points"}
-#'   or \code{"parameters"}.
+#'   \code{"binormal"}, \code{"binormalLR"}, \code{"empirical"}, or
+#'   \code{"trapezoidal"} or the averaging of binormal curves over
+#'   \code{"points"} or \code{"parameters"}.
 #' @param x object returned by \code{\link{mrmc}} or \code{roc_curves} for which
 #'   to compute points on or to average over the curves.
 #' @param values numeric vector of values at which to compute the points or
@@ -50,10 +50,14 @@ roc_curves <- function(...) {
 #'
 roc_curves.default <- function(truth, rating, groups = list(),
                                method = "empirical", ...) {
-  method <- match.arg(method,
-                      c("binormal", "empirical", "trapezoidal", "proproc"))
+  choices <- c("binormal", "binormalLR", "empirical", "proproc", "trapezoidal")
+  method <- match.arg(method, choices)
 
-  if (method == "trapezoidal") method <- "empirical"
+  method <- switch(method,
+    "proproc" = "binormalLR",
+    "trapezoidal" = "empirical",
+    method
+  )
   roc_curve <- get(paste0(method, "_curve"))
 
   data <- tibble(truth = as.factor(truth), rating = rating)
@@ -75,7 +79,7 @@ roc_curves.default <- function(truth, rating, groups = list(),
 #'
 roc_curves.mrmc <- function(x, ...) {
   roc_method <- unlist(strsplit(x$vars["metric"], "_"))[1]
-  if (!(roc_method %in% c("binormal", "empirical", "proproc"))) {
+  if (!(roc_method %in% c("binormal", "binormalLR", "proproc"))) {
     roc_method <- "empirical"
   }
   vars <- x$vars[c("reader", "test")]
@@ -122,19 +126,7 @@ binormal_curve <- function(data) {
 }
 
 
-empirical_curve <- function(data) {
-  roc <- pROC::roc(data$truth, data$rating, auc = FALSE, quiet = TRUE)
-  structure(
-    list(
-      params = tibble(FPR = 1 - roc$specificities, TPR = roc$sensitivities),
-      data = data
-    ),
-    class = c("empirical_curve", "roc_curve")
-  )
-}
-
-
-proproc_curve <- function(data) {
+binormalLR_curve <- function(data) {
   is_pos <- data$truth == levels(data$truth)[2]
   pred_pos <- as.double(data$rating[is_pos])
   pred_neg <- as.double(data$rating[!is_pos])
@@ -154,7 +146,19 @@ proproc_curve <- function(data) {
       ),
       data = data
     ),
-    class = c("proproc_curve", "roc_curve")
+    class = c("binormalLR_curve", "roc_curve")
+  )
+}
+
+
+empirical_curve <- function(data) {
+  roc <- pROC::roc(data$truth, data$rating, auc = FALSE, quiet = TRUE)
+  structure(
+    list(
+      params = tibble(FPR = 1 - roc$specificities, TPR = roc$sensitivities),
+      data = data
+    ),
+    class = c("empirical_curve", "roc_curve")
   )
 }
 
@@ -398,19 +402,7 @@ auc.binormal_curve <- function(x, partial = FALSE, min = 0, max = 1, ...) {
 }
 
 
-auc.empirical_curve <- function(x, partial = FALSE, min = 0, max = 1, ...) {
-  data <- x$data
-  args <- list(pROC::roc(data$truth, data$rating, quiet = TRUE))
-  if (!isFALSE(partial)) {
-    partial <- match.arg(partial, c("sensitivity", "specificity"))
-    args$partial.auc <- c(min, max)
-    args$partial.auc.focus <- partial
-  }
-  as.numeric(do.call(pROC::auc, args))
-}
-
-
-auc.proproc_curve <- function(x, partial = FALSE, min = 0, max = 1, ...) {
+auc.binormalLR_curve <- function(x, partial = FALSE, min = 0, max = 1, ...) {
   params <- parameters(x)
   if (isFALSE(partial)) {
     rho <- -1 * (1 - params$c^2) / (1 + params$c^2)
@@ -424,6 +416,18 @@ auc.proproc_curve <- function(x, partial = FALSE, min = 0, max = 1, ...) {
              partial$min, partial$max, partial$flag,
              est = double(1), err = integer(1))$est
   }
+}
+
+
+auc.empirical_curve <- function(x, partial = FALSE, min = 0, max = 1, ...) {
+  data <- x$data
+  args <- list(pROC::roc(data$truth, data$rating, quiet = TRUE))
+  if (!isFALSE(partial)) {
+    partial <- match.arg(partial, c("sensitivity", "specificity"))
+    args$partial.auc <- c(min, max)
+    args$partial.auc.focus <- partial
+  }
+  as.numeric(do.call(pROC::auc, args))
 }
 
 
@@ -455,13 +459,7 @@ sensitivity.binormal_curve <- function(x, specificity, ...) {
 }
 
 
-sensitivity.empirical_curve <- function(x, specificity, ties = max, ...) {
-  params <- parameters(x)
-  approx(params$FPR, params$TPR, 1 - specificity, ties = ties)$y
-}
-
-
-sensitivity.proproc_curve <- function(x, specificity, ...) {
+sensitivity.binormalLR_curve <- function(x, specificity, ...) {
   params <- parameters(x)
   sapply(specificity, function(spec) {
     fpf <- 1.0 - spec
@@ -469,6 +467,12 @@ sensitivity.proproc_curve <- function(x, specificity, ...) {
              params$d_a, params$c,
              fpf = fpf, tpf = double(1), double(1))$tpf
   })
+}
+
+
+sensitivity.empirical_curve <- function(x, specificity, ties = max, ...) {
+  params <- parameters(x)
+  approx(params$FPR, params$TPR, 1 - specificity, ties = ties)$y
 }
 
 
@@ -487,17 +491,17 @@ specificity.binormal_curve <- function(x, sensitivity, ...) {
 }
 
 
-specificity.empirical_curve <- function(x, sensitivity, ties = max, ...) {
-  params <- parameters(x)
-  1 - approx(params$TPR, params$FPR, sensitivity, ties = ties)$y
-}
-
-
-specificity.proproc_curve <- function(x, sensitivity, ...) {
+specificity.binormalLR_curve <- function(x, sensitivity, ...) {
   params <- parameters(x)
   sapply(sensitivity, function(sens) {
     1 - .Fortran("pbmroctpf2fpf",
                  params$d_a, params$c,
                  tpf = as.double(sens), fpf = as.double(1), double(1))$fpf
   })
+}
+
+
+specificity.empirical_curve <- function(x, sensitivity, ties = max, ...) {
+  params <- parameters(x)
+  1 - approx(params$TPR, params$FPR, sensitivity, ties = ties)$y
 }

@@ -23,21 +23,28 @@ export(
   binormal_auc,
   binormal_sens,
   binormal_spec,
+  binormalLR_auc,
+  binormalLR_sens,
+  binormalLR_spec,
   empirical_auc,
   empirical_sens,
   empirical_spec,
   jackknife,
   mrmc,
   parameters,
-  proproc_auc,
-  proproc_sens,
-  proproc_spec,
   roc_curves,
   srmc,
   trapezoidal_auc,
   trapezoidal_sens,
   trapezoidal_spec,
   unbiased
+)
+
+
+export(
+  proproc_auc,
+  proproc_sens,
+  proproc_spec
 )
 
 
@@ -59,9 +66,9 @@ S3method(points, roc_curve)
 S3method(points, roc_curves)
 S3method(print, cov_matrix)
 S3method(print, binormal_curve)
+S3method(print, binormalLR_curve)
 S3method(print, empirical_curve)
 S3method(print, mrmc)
-S3method(print, proproc_curve)
 S3method(print, roc_curve)
 S3method(print, roc_curves)
 S3method(print, summary.mrmc)

@@ -77,9 +77,9 @@ parameters(x, ...)
 \code{truth} and \code{rating}.}
 
 \item{method}{character string indicating the curve type as
-\code{"binormal"}, \code{"empirical"}, \code{"trapezoidal"}, or
-\code{"proproc"} or the averaging of binormal curves over \code{"points"}
-or \code{"parameters"}.}
+\code{"binormal"}, \code{"binormalLR"}, \code{"empirical"}, or
+\code{"trapezoidal"} or the averaging of binormal curves over
+\code{"points"} or \code{"parameters"}.}
 
 \item{x}{object returned by \code{\link{mrmc}} or \code{roc_curves} for which
 to compute points on or to average over the curves.}
