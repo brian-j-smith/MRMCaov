@@ -27,9 +27,15 @@ summary.srmc <- function(object, conf.level = 0.95, ...) {
 }
 
 
+summary.aov_mrmc <- function(object, ...) {
+  object$summary
+}
+
+
 new_summary_mrmc <- function(object, conf.level, vcov_comps,
                              test_equality = NULL, test_diffs = NULL,
-                             test_means = NULL, reader_means = NULL) {
+                             test_means = NULL, reader_means = NULL,
+                             reader_test_diffs = NULL) {
   cov_method <- class(object$cov)[1]
   structure(
     list(data_name = as.character(object$call$data),
@@ -42,6 +48,7 @@ new_summary_mrmc <- function(object, conf.level, vcov_comps,
          test_equality = test_equality,
          test_diffs = test_diffs,
          test_means = test_means,
+         reader_test_diffs = reader_test_diffs,
          reader_means = reader_means),
     class = "summary.mrmc"
   )
@@ -175,25 +182,13 @@ new_summary_mrmc <- function(object, conf.level, vcov_comps,
   test_levels <- levels(object)$test
   reader_levels <- levels(object)$reader
 
-  denominator <- comps$var - cov[1] + (n[["reader"]] - 1) * (cov[2] - cov[3])
-  test_equality <- data.frame(
-    `MS(T)` = MS[["T"]],
-    Cov1 = cov[1],
-    Cov2 = cov[2],
-    Cov3 = cov[3],
-    Denominator = denominator,
-    X2 = (n[["test"]] - 1) * MS[["T"]] / denominator,
-    df = n[["test"]] - 1,
-    check.names = FALSE
-  )
-  test_equality$`p-value` <- with(test_equality, 1 - pchisq(X2, df))
-
   test_means_list <- lapply(object$mrmc_tests, summary.mrmc_tests_frrc,
                             conf.level = conf.level)
   test_means <- do.call(rbind, test_means_list)
   rownames(test_means) <- names(test_means_list)
 
   estimates <- test_means$Estimate
+  denominator <- comps$var - cov[1] + (n[["reader"]] - 1) * (cov[2] - cov[3])
   combs <- combinations(length(estimates), 2)
   test_diffs <- data.frame(
     Comparison = paste(test_levels[combs[, 1]], "-", test_levels[combs[, 2]]),
@@ -201,11 +196,35 @@ new_summary_mrmc <- function(object, conf.level, vcov_comps,
     StdErr = sqrt(2 / n[["reader"]] * denominator)
   )
   test_diffs$CI <- with(test_diffs, {
-    Estimate + qnorm((1 + conf.level) / 2) * StdErr %o% c(Lower = -1, Upper = 1)
+    Estimate + qnorm((1 + conf.level) / 2) *
+      StdErr %o% c(Lower = -1, Upper = 1)
   })
   test_diffs$z <- with(test_diffs, Estimate / StdErr)
   test_diffs$`p-value` <- with(test_diffs, 2 * (1 - pnorm(abs(z))))
 
+  if (dim(object)["reader"] > 1) {
+
+    test_equality <- data.frame(
+      `MS(T)` = MS[["T"]],
+      Cov1 = cov[1],
+      Cov2 = cov[2],
+      Cov3 = cov[3],
+      Denominator = denominator,
+      X2 = (n[["test"]] - 1) * MS[["T"]] / denominator,
+      df = n[["test"]] - 1,
+      check.names = FALSE
+    )
+    test_equality$`p-value` <- with(test_equality, 1 - pchisq(X2, df))
+
+    reader_test_diffs <- reader_test_diffs(object, conf.level)
+
+  } else {
+
+    test_equality <- NULL
+    test_means <- NULL
+    reader_test_diffs <- NULL
+
+  }
 
   reader_means <- object$data
   reader_means$StdErr <- sqrt(diag(object$cov))
@@ -219,8 +238,8 @@ new_summary_mrmc <- function(object, conf.level, vcov_comps,
                           test_equality = test_equality,
                           test_diffs = test_diffs,
                           test_means = test_means,
+                          reader_test_diffs = reader_test_diffs,
                           reader_means = reader_means)
-  res$reader_test_diffs = reader_test_diffs(object, conf.level)
   structure(res, class = c("summary.mrmc_frrc", class(res)))
 }
 

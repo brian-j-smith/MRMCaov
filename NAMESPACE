@@ -9,8 +9,9 @@ importFrom(graphics, plot, points)
 importFrom(gtools, combinations)
 importFrom(methods, is)
 importFrom(mvtnorm, pmvnorm)
-importFrom(stats, aov, approx, as.formula, coef, formula, model.matrix, optim,
-           pnorm, pf, pt, reformulate, qnorm, qt, reshape, terms, update, vcov)
+importFrom(stats, anova, aov, approx, as.formula, coef, formula, model.frame,
+           model.matrix, optim, pnorm, pf, pt, reformulate, qnorm, qt, reshape,
+           terms, update, vcov)
 importFrom(tibble, as_tibble, tibble)
 importFrom(utils, head, str, tail)
 

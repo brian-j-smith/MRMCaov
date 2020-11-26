@@ -1,6 +1,37 @@
-aov_mrmc <- function(data) {
-  fo <- update(formula(data), . ~ .^2)
-  aov(fo, data = data)
+aov_mrmc <- function(fo, data) {
+
+  if (nlevels(data$reader) == 1) {
+
+    data2 <- data
+    data2[-1] <- lapply(data2[-1], paste0, ".2")
+    data2 <- rbind(data, data2)
+
+    res <- structure(
+      list(
+        xlevels = lapply(data[-1], levels),
+        terms = terms(fo),
+        model = model.frame(fo, data = data),
+        summary = suppressWarnings(anova(aov(fo, data = data2)))
+      ),
+      class = "aov_mrmc"
+    )
+
+    res$summary$`Df` <- (res$summary$`Df` + 1) / 2 - 1
+    res$summary$`Sum Sq` <- res$summary$`Mean Sq` * res$summary$`Df`
+    zero_terms <- setdiff(labels(res$terms), rownames(res$summary))
+    res$summary[zero_terms, ] <- 0
+
+  } else {
+
+    res <- aov(fo, data = data)
+    res$summary <- suppressWarnings(anova(res))
+    class(res) <- c("aov_mrmc", class(res))
+
+  }
+
+  res$summary <- res$summary[labels(res$terms), -c(4, 5)]
+  res
+
 }
 
 
@@ -79,13 +110,13 @@ meansq <- function(x, ...) {
 
 
 meansq.mrmc <- function(x, ...) {
-  res <- summary(x$aov)[[1]][["Mean Sq"]]
+  res <- summary(x$aov)[["Mean Sq"]]
   structure(res, names = head(c("T", "R", "T:R"), length(res)))
 }
 
 
 meansq.mrmc_tests <- function(x, ...) {
-  c("T" = 0, "R" = summary(x$aov)[[1]][["Mean Sq"]], "T:R" = 0)
+  c("T" = 0, "R" = summary(x$aov)[["Mean Sq"]], "T:R" = 0)
 }
 
 
@@ -152,7 +183,7 @@ vcov_comps.mrmc <- function(object, design = object$design, test = NULL,
            mean(object$cov[same_test & !same_reader & in_group]),
            mean(object$cov[!same_test & !same_reader & in_group]))
 
-  if (design == 2) {
+  if (design == 2 || dim(object)["reader"] == 1) {
     cov[2:3] <- 0
   } else if (design == 3) {
     cov[c(1, 3)] <- 0

@@ -50,6 +50,8 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
 
   mrmc_class <- if (all(object$fixed)) {
     stop("only one of reader or case may be fixed")
+  } else if (dim(object)["reader"] == 1 && !object$fixed["reader"]) {
+    stop("reader must be fixed if there is only one")
   } else if (object$fixed["reader"]) {
     "mrmc_frrc"
   } else if (object$fixed["case"]) {
@@ -141,7 +143,7 @@ new_mrmc <- function(response, test, reader, case, data, method, design,
   }
   aov_data <- cbind(y, aov_data)
   names(aov_data) <- c(terms$metric, terms$labels[var_names])
-  aovfit <- aov_mrmc(aov_data)
+  aovfit <- aov_mrmc(update(formula(aov_data), . ~ .^2), aov_data)
 
   structure(
     list(design = design,

@@ -2,12 +2,12 @@ mrmc_tests <- function(data, cov, design) {
   tests <- data[[2]]
   data <- data[-2]
   formula <- formula(data)
-  
+
   lapply(levels(tests), function(test) {
     is_test <- tests == test
     structure(
       list(design = design,
-           aov = aov(formula, data = subset(data, is_test)),
+           aov = aov_mrmc(formula, data = subset(data, is_test)),
            cov = cov[is_test, is_test]),
       class = "mrmc_tests"
     )
