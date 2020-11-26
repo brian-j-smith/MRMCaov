@@ -75,20 +75,6 @@ roc_curves.default <- function(truth, rating, groups = list(),
 }
 
 
-#' @rdname roc_curves
-#'
-roc_curves.mrmc <- function(x, ...) {
-  roc_method <- unlist(strsplit(x$vars["metric"], "_"))[1]
-  if (!(roc_method %in% c("binormal", "binormalLR", "proproc"))) {
-    roc_method <- "empirical"
-  }
-  vars <- x$vars[c("reader", "test")]
-  roc_curves(x$mrmc_data$truth, x$mrmc_data$rating,
-             groups = structure(x$mrmc_data[names(vars)], names = vars),
-             method = roc_method)
-}
-
-
 roc_curves.roc_curve <- function(x, ...) {
   roc_curves(x$data$truth, x$data$rating, ...)
 }
@@ -105,6 +91,31 @@ roc_curves.roc_curves <- function(x, method = "empirical", ...) {
 new_roc_curves <- function(x, method) {
   x <- as_tibble(x)
   structure(x, class = c(paste0(method, "_curves"), "roc_curves", class(x)))
+}
+
+
+#' @rdname roc_curves
+#'
+roc_curves.mrmc <- function(x, ...) {
+  roc_method <- unlist(strsplit(x$vars["metric"], "_"))[1]
+  if (!(roc_method %in% c("binormal", "binormalLR", "proproc"))) {
+    roc_method <- "empirical"
+  }
+  vars <- x$vars[c("reader", "test")]
+  roc_curves(x$mrmc_data$truth, x$mrmc_data$rating,
+             groups = structure(x$mrmc_data[names(vars)], names = vars),
+             method = roc_method)
+}
+
+
+#' @rdname roc_curves
+#'
+roc_curves.srmc <- function(x, ...) {
+  roc_method <- unlist(strsplit(x$metric, "_"))[1]
+  if (!(roc_method %in% c("binormal", "binormalLR", "proproc"))) {
+    roc_method <- "empirical"
+  }
+  roc_curves(x$srmc_data$truth, x$srmc_data$rating, method = roc_method)
 }
 
 
@@ -172,13 +183,6 @@ parameters <- function(x, ...) {
 
 #' @rdname roc_curves
 #'
-parameters.mrmc <- function(x, ...) {
-  parameters(roc_curves(x))
-}
-
-
-#' @rdname roc_curves
-#'
 parameters.roc_curve <- function(x, ...) {
   x$params
 }
@@ -195,6 +199,20 @@ parameters.roc_curves <- function(x, ...) {
 parameters.empirical_curves <- function(x, ...) {
   params_list <- t(mapply(parameters, x$Curve))
   tibble(Group = x$Group, as_tibble(params_list))
+}
+
+
+#' @rdname roc_curves
+#'
+parameters.mrmc <- function(x, ...) {
+  parameters(roc_curves(x))
+}
+
+
+#' @rdname roc_curves
+#'
+parameters.srmc <- function(x, ...) {
+  parameters(roc_curves(x))
 }
 
 

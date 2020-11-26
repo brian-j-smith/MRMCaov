@@ -12,6 +12,7 @@
 #'   metric covariances.
 #'
 #' @seealso \code{\link{metrics}}, \code{\link{cov_methods}},
+#' \code{\link{parameters}}, \code{\link{plot}}, \code{\link{roc_curves}},
 #' \code{\link{summary}}
 #'
 #' @examples
@@ -41,7 +42,8 @@ srmc <- function(response, case, data, method = jackknife) {
     list(
       metric = metric,
       est = eval(response_call, srmc_data),
-      se = sqrt(get_method(method)(srmc_data)[1])
+      se = sqrt(get_method(method)(srmc_data)[1]),
+      srmc_data = srmc_data
     ),
     class = "srmc"
   )

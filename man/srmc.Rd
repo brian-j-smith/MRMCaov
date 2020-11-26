@@ -30,5 +30,6 @@ summary(est)
 }
 \seealso{
 \code{\link{metrics}}, \code{\link{cov_methods}},
+\code{\link{parameters}}, \code{\link{plot}}, \code{\link{roc_curves}},
 \code{\link{summary}}
 }

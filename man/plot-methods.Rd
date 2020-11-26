@@ -8,6 +8,7 @@
 \alias{plot.empirical_curves}
 \alias{plot.roc_points}
 \alias{plot.mrmc}
+\alias{plot.srmc}
 \title{Performance Plots}
 \usage{
 \method{plot}{roc_curve}(x, n = 100, emp_points = FALSE, ...)
@@ -21,6 +22,8 @@
 \method{plot}{roc_points}(x, coord_fixed = TRUE, ...)
 
 \method{plot}{mrmc}(x, n = 100, ...)
+
+\method{plot}{srmc}(x, n = 100, ...)
 }
 \arguments{
 \item{x}{object to plot.}

@@ -115,3 +115,10 @@ make_plot_df <- function(x) {
 plot.mrmc <- function(x, n = 100, ...) {
   plot(roc_curves(x), n = n)
 }
+
+
+#' @rdname plot-methods
+#'
+plot.srmc <- function(x, n = 100, ...) {
+  plot(roc_curves(x), n = n)
+}
