@@ -24,7 +24,8 @@
 #' the reader or case variable.
 #'
 #' @seealso \code{\link{metrics}}, \code{\link{cov_methods}},
-#' \code{\link{summary}}, \code{\link{plot}}
+#' \code{\link{parameters}}, \code{\link{plot}}, \code{\link{roc_curves}},
+#' \code{\link{summary}}
 #'
 #' @examples
 #' ## Random readers and cases

@@ -5,6 +5,7 @@
 \alias{roc_curves.default}
 \alias{roc_curves.mrmc}
 \alias{parameters}
+\alias{parameters.mrmc}
 \alias{parameters.roc_curve}
 \alias{parameters.roc_curves}
 \alias{points.roc_curve}
@@ -23,6 +24,8 @@ roc_curves(...)
 \method{roc_curves}{mrmc}(x, ...)
 
 parameters(x, ...)
+
+\method{parameters}{mrmc}(x, ...)
 
 \method{parameters}{roc_curve}(x, ...)
 

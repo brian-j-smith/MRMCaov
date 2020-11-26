@@ -172,6 +172,13 @@ parameters <- function(x, ...) {
 
 #' @rdname roc_curves
 #'
+parameters.mrmc <- function(x, ...) {
+  parameters(roc_curves(x))
+}
+
+
+#' @rdname roc_curves
+#'
 parameters.roc_curve <- function(x, ...) {
   x$params
 }
