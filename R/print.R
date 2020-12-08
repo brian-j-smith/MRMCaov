@@ -23,26 +23,25 @@ print.roc_curve <- function(x, n = 11, ...) {
 
 
 print.binormal_curve <- function(x, ...) {
-  params <- parameters(x)[c("a", "b")]
+  params <- parameters(x)
   cat("Binormal Curve\n",
       "Parameters:",
-      paste(names(params), format(params), sep = " = ", collapse = ", "), "\n",
-      sep = "")
+      paste(names(params), format(c(params)), sep = " = ", collapse = ", "),
+      "\n", sep = "")
   NextMethod()
 }
 
 
 print.binormalLR_curve <- function(x, ...) {
   params <- parameters(x)
-  format_params <- function(names) {
-    x <- params[names]
-    paste(names(x), format(x), sep = " = ", collapse = ", ")
+  format_params <- function(x) {
+    paste(names(x), format(c(x)), sep = " = ", collapse = ", ")
   }
   cat("Binormal Likelihood Ratio Curve\n",
       "Parameters\n",
-      "  Metz and Pan: ", format_params(c("c", "d_a")), "\n",
-      "  Bi-Chi-Square: ", format_params(c("lambda", "theta")), "\n",
-      "  Binormal: ", format_params(c("a", "b")), "\n", sep = "")
+      "  Metz and Pan: ", format_params(params$Metz), "\n",
+      "  Bi-Chi-Square: ", format_params(params$bichisquare), "\n",
+      "  Binormal: ", format_params(params$binormal), "\n", sep = "")
   NextMethod()
 }
 

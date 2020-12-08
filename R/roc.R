@@ -129,7 +129,7 @@ binormal_curve <- function(data) {
                   auc = double(1), auc_var = double(1))
   structure(
     list(
-      params = list(a = roc$a, b = roc$b),
+      params = tibble(a = roc$a, b = roc$b),
       data = data
     ),
     class = c("binormal_curve", "roc_curve")
@@ -147,13 +147,18 @@ binormalLR_curve <- function(data) {
                   auc = double(1), auc_var = double(1))
   structure(
     list(
-      params = list(
-        d_a = roc$d_a,
-        c = roc$c,
-        lambda = ((1 - roc$c) / (1 + roc$c))^2,
-        theta = (roc$d_a * (1 + roc$c) / roc$c)^2 * (1 + roc$c^2) / 16,
-        a = roc$d_a * sqrt(1 + roc$c^2) / (1 - roc$c),
-        b = (1 + roc$c) / (1 - roc$c)
+      params = tibble(
+        Metz = tibble(
+          d_a = roc$d_a,
+          c = roc$c),
+        bichisquare = tibble(
+          lambda = ((1 - roc$c) / (1 + roc$c))^2,
+          theta = (roc$d_a * (1 + roc$c) / roc$c)^2 * (1 + roc$c^2) / 16
+        ),
+        binormal = tibble(
+          a = roc$d_a * sqrt(1 + roc$c^2) / (1 - roc$c),
+          b = (1 + roc$c) / (1 - roc$c)
+        )
       ),
       data = data
     ),
@@ -166,7 +171,10 @@ empirical_curve <- function(data) {
   roc <- pROC::roc(data$truth, data$rating, auc = FALSE, quiet = TRUE)
   structure(
     list(
-      params = tibble(FPR = 1 - roc$specificities, TPR = roc$sensitivities),
+      params = tibble(
+        FPR = 1 - roc$specificities,
+        TPR = roc$sensitivities
+      ),
       data = data
     ),
     class = c("empirical_curve", "roc_curve")
@@ -191,7 +199,7 @@ parameters.roc_curve <- function(x, ...) {
 #' @rdname roc_curves
 #'
 parameters.roc_curves <- function(x, ...) {
-  params <- t(sapply(x$Curve, function(curve) unlist(parameters(curve))))
+  params <- do.call(rbind, lapply(x$Curve, parameters))
   tibble(Group = x$Group, as_tibble(params))
 }
 
@@ -431,7 +439,7 @@ auc.binormal_curve <- function(x, partial = FALSE, min = 0, max = 1,
 
 auc.binormalLR_curve <- function(x, partial = FALSE, min = 0, max = 1,
                                  normalize = TRUE, ...) {
-  params <- parameters(x)
+  params <- parameters(x)$Metz
   if (isFALSE(partial)) {
     rho <- -1 * (1 - params$c^2) / (1 + params$c^2)
     rho <- rbind(c(1, rho), c(rho, 1))
@@ -491,7 +499,7 @@ sensitivity.binormal_curve <- function(x, specificity, ...) {
 
 
 sensitivity.binormalLR_curve <- function(x, specificity, ...) {
-  params <- parameters(x)
+  params <- parameters(x)$Metz
   sapply(specificity, function(spec) {
     fpf <- 1.0 - spec
     .Fortran("pbmrocfpf2tpf",
@@ -523,7 +531,7 @@ specificity.binormal_curve <- function(x, sensitivity, ...) {
 
 
 specificity.binormalLR_curve <- function(x, sensitivity, ...) {
-  params <- parameters(x)
+  params <- parameters(x)$Metz
   sapply(sensitivity, function(sens) {
     1 - .Fortran("pbmroctpf2fpf",
                  params$d_a, params$c,
