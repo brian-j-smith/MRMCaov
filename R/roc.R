@@ -110,12 +110,12 @@ roc_curves.mrmc <- function(x, ...) {
 
 #' @rdname roc_curves
 #'
-roc_curves.srmc <- function(x, ...) {
+roc_curves.stmc <- function(x, ...) {
   roc_method <- unlist(strsplit(x$metric, "_"))[1]
   if (!(roc_method %in% c("binormal", "binormalLR", "proproc"))) {
     roc_method <- "empirical"
   }
-  roc_curves(x$srmc_data$truth, x$srmc_data$rating, method = roc_method)
+  roc_curves(x$stmc_data$truth, x$stmc_data$rating, method = roc_method)
 }
 
 
@@ -219,7 +219,7 @@ parameters.mrmc <- function(x, ...) {
 
 #' @rdname roc_curves
 #'
-parameters.srmc <- function(x, ...) {
+parameters.stmc <- function(x, ...) {
   parameters(roc_curves(x))
 }
 

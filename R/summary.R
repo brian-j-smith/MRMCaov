@@ -17,7 +17,7 @@ summary.mrmc <- function(object, conf.level = 0.95, ...) {
 
 #' @rdname summary-methods
 #'
-summary.srmc <- function(object, conf.level = 0.95, ...) {
+summary.stmc <- function(object, conf.level = 0.95, ...) {
   z <- qnorm((1 + conf.level) / 2)
   ci <- trunc_ci(object, object$est + c(-1, 1) * z * object$se)
   structure(

@@ -33,7 +33,7 @@ export(
   mrmc,
   parameters,
   roc_curves,
-  srmc,
+  stmc,
   trapezoidal_auc,
   trapezoidal_sens,
   trapezoidal_spec,
@@ -57,12 +57,12 @@ S3method(plot, mrmc)
 S3method(plot, roc_curve)
 S3method(plot, roc_curves)
 S3method(plot, roc_points)
-S3method(plot, srmc)
+S3method(plot, stmc)
 S3method(parameters, empirical_curves)
 S3method(parameters, mrmc)
 S3method(parameters, roc_curve)
 S3method(parameters, roc_curves)
-S3method(parameters, srmc)
+S3method(parameters, stmc)
 S3method(points, empirical_curve)
 S3method(points, empirical_curves)
 S3method(points, roc_curve)
@@ -77,6 +77,6 @@ S3method(print, roc_curves)
 S3method(print, summary.mrmc)
 S3method(roc_curves, default)
 S3method(roc_curves, mrmc)
-S3method(roc_curves, srmc)
+S3method(roc_curves, stmc)
 S3method(summary, mrmc)
-S3method(summary, srmc)
+S3method(summary, stmc)

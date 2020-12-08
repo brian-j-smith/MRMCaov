@@ -154,7 +154,7 @@ trunc_ci.mrmc <- function(object, x, ...) {
 }
 
 
-trunc_ci.srmc <- function(object, x, ...) {
+trunc_ci.stmc <- function(object, x, ...) {
   c(trunc_ci(object$metric, rbind(x)))
 }
 

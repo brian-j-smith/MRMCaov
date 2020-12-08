@@ -119,6 +119,6 @@ plot.mrmc <- function(x, n = 100, ...) {
 
 #' @rdname plot-methods
 #'
-plot.srmc <- function(x, n = 100, ...) {
+plot.stmc <- function(x, n = 100, ...) {
   plot(roc_curves(x), n = n)
 }

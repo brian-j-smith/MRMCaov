@@ -4,12 +4,12 @@
 \alias{roc_curves}
 \alias{roc_curves.default}
 \alias{roc_curves.mrmc}
-\alias{roc_curves.srmc}
+\alias{roc_curves.stmc}
 \alias{parameters}
 \alias{parameters.roc_curve}
 \alias{parameters.roc_curves}
 \alias{parameters.mrmc}
-\alias{parameters.srmc}
+\alias{parameters.stmc}
 \alias{points.roc_curve}
 \alias{points.roc_curves}
 \alias{points.empirical_curve}
@@ -25,7 +25,7 @@ roc_curves(...)
 
 \method{roc_curves}{mrmc}(x, ...)
 
-\method{roc_curves}{srmc}(x, ...)
+\method{roc_curves}{stmc}(x, ...)
 
 parameters(x, ...)
 
@@ -35,7 +35,7 @@ parameters(x, ...)
 
 \method{parameters}{mrmc}(x, ...)
 
-\method{parameters}{srmc}(x, ...)
+\method{parameters}{stmc}(x, ...)
 
 \method{points}{roc_curve}(
   x,
