@@ -33,6 +33,7 @@ export(
   mrmc,
   parameters,
   roc_curves,
+  srmc,
   stmc,
   trapezoidal_auc,
   trapezoidal_sens,

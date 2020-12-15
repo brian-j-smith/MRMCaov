@@ -89,6 +89,21 @@ is_balanced <- function(data) {
 }
 
 
+is_one_reader <- function(x, ...) {
+  UseMethod("is_one_reader")
+}
+
+
+is_one_reader.mrmc <- function(x) {
+  dim(x)["reader"] == 1
+}
+
+
+is_one_reader.summary.mrmc <- function(x) {
+  is.null(x$reader_test_diffs)
+}
+
+
 levels.mrmc <- function(x) {
   structure(x$aov$xlevels, names = c("test", "reader"))
 }
@@ -183,7 +198,7 @@ vcov_comps.mrmc <- function(object, design = object$design, test = NULL,
            mean(object$cov[same_test & !same_reader & in_group]),
            mean(object$cov[!same_test & !same_reader & in_group]))
 
-  if (design == 2 || dim(object)["reader"] == 1) {
+  if (design == 2 || is_one_reader(object)) {
     cov[2:3] <- 0
   } else if (design == 3) {
     cov[c(1, 3)] <- 0

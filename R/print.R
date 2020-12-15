@@ -112,7 +112,8 @@ print.summary.mrmc <- function(x, ...) {
 
 
 .print.summary.mrmc_frrc <- function(x, ...) {
-  cat("Multi-Reader Multi-Case Analysis of Variance\n",
+  cat(if (is_one_reader(x)) "Single" else "Multi",
+      "-Reader Multi-Case Analysis of Variance\n",
       "Data: ", x$data_name, "\n",
       "Factor types: Fixed Readers and Random Cases\n",
       "Covariance method: ", x$cov_method, "\n\n",
@@ -176,10 +177,10 @@ print.summary.mrmc <- function(x, ...) {
              paste("cases nested within", x$vars["reader"]),
              paste("cases nested within", x$vars["test"]),
              paste(x$vars["reader"], "nested within", x$vars["test"])),
-      "\n\n")
+      "\n")
 
-  cat("Obuchowski-Rockette variance component and covariance estimates:\n\n")
-  print(x$vcov_comps)
+  cat("\nObuchowski-Rockette variance component and covariance estimates:\n\n")
+  print(if (is_one_reader(x)) x$vcov_comps[-(1:2), ] else x$vcov_comps)
 
   test_metric <- paste(x$vars["test"], x$vars["metric"])
 

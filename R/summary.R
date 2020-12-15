@@ -202,7 +202,7 @@ new_summary_mrmc <- function(object, conf.level, vcov_comps,
   test_diffs$z <- with(test_diffs, Estimate / StdErr)
   test_diffs$`p-value` <- with(test_diffs, 2 * (1 - pnorm(abs(z))))
 
-  if (dim(object)["reader"] > 1) {
+  if (!is_one_reader(object)) {
 
     test_equality <- data.frame(
       `MS(T)` = MS[["T"]],

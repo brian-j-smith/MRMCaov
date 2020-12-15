@@ -51,7 +51,7 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
 
   mrmc_class <- if (all(object$fixed)) {
     stop("only one of reader or case may be fixed")
-  } else if (dim(object)["reader"] == 1 && !object$fixed["reader"]) {
+  } else if (is_one_reader(object) && !object$fixed["reader"]) {
     stop("reader must be fixed if there is only one")
   } else if (object$fixed["reader"]) {
     "mrmc_frrc"
