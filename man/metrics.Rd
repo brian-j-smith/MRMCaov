@@ -82,7 +82,10 @@ of numeric ratings for the others.}
 
 \item{partial}{character string \code{"sensitivity"} or \code{"specificity"}
 for calculation of partial AUC, or \code{FALSE} for full AUC.  Partial
-matching of the character strings is allowed.}
+matching of the character strings is allowed.  \code{"specificity"}
+results in area under the ROC curve between the given \code{min} and
+\code{max} specificity values, whereas \code{"sensitivity"} results in area to
+the right of the curve between the given sensitivity values.}
 
 \item{min, max}{minimum and maximum sensitivity or specificity values over
 which to calculate partial AUC.}
