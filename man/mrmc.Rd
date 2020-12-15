@@ -44,8 +44,13 @@ the reader or case variable.
 summary(est)
 plot(est)
 
-## Fixed readers and fixed cases
+## Fixed readers and random cases
 est <- mrmc(empirical_auc(truth, rating), treatment, fixed(reader), case,
+            data = VanDyke)
+summary(est)
+
+## Random readers and fixed cases
+est <- mrmc(empirical_auc(truth, rating), treatment, reader, fixed(case),
             data = VanDyke)
 summary(est)
 
