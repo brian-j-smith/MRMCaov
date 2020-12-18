@@ -71,7 +71,7 @@ binary_metric <- function(truth, rating, f) {
 #' @rdname metrics
 #'
 binormal_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1,
-                         normalize = TRUE) {
+                         normalize = FALSE) {
   curve <- roc_curves(truth, rating, method = "binormal")
   auc(curve, partial = partial, min = min, max = max, normalize = normalize)
 }
@@ -96,7 +96,7 @@ binormal_spec <- function(truth, rating, sens) {
 #' @rdname metrics
 #'
 binormalLR_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1,
-                           normalize = TRUE) {
+                           normalize = FALSE) {
   curve <- roc_curves(truth, rating, method = "binormalLR")
   auc(curve, partial = partial, min = min, max = max, normalize = normalize)
 }
@@ -121,7 +121,7 @@ binormalLR_spec <- function(truth, rating, sens) {
 #' @rdname metrics
 #'
 empirical_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1,
-                          normalize = TRUE) {
+                          normalize = FALSE) {
   curve <- roc_curves(truth, rating, method = "empirical")
   auc(curve, partial = partial, min = min, max = max, normalize = normalize)
 }
@@ -146,7 +146,7 @@ empirical_spec <- function(truth, rating, sens) {
 #' @rdname metrics
 #'
 trapezoidal_auc <- function(truth, rating, partial = FALSE, min = 0, max = 1,
-                            normalize = TRUE) {
+                            normalize = FALSE) {
   do.call(empirical_auc, as.list(environment()))
 }
 

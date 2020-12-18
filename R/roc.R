@@ -422,7 +422,7 @@ auc <- function(x, ...) {
 
 
 auc.binormal_curve <- function(x, partial = FALSE, min = 0, max = 1,
-                               normalize = TRUE, ...) {
+                               normalize = FALSE, ...) {
   params <- parameters(x)
   if (isFALSE(partial)) {
     pnorm(params$a / sqrt(1 + params$b^2))
@@ -438,7 +438,7 @@ auc.binormal_curve <- function(x, partial = FALSE, min = 0, max = 1,
 
 
 auc.binormalLR_curve <- function(x, partial = FALSE, min = 0, max = 1,
-                                 normalize = TRUE, ...) {
+                                 normalize = FALSE, ...) {
   params <- parameters(x)$Metz
   if (isFALSE(partial)) {
     rho <- -1 * (1 - params$c^2) / (1 + params$c^2)
@@ -457,7 +457,7 @@ auc.binormalLR_curve <- function(x, partial = FALSE, min = 0, max = 1,
 
 
 auc.empirical_curve <- function(x, partial = FALSE, min = 0, max = 1,
-                                normalize = TRUE, ...) {
+                                normalize = FALSE, ...) {
   data <- x$data
   args <- list(pROC::roc(data$truth, data$rating, quiet = TRUE))
   if (!isFALSE(partial)) {

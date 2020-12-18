@@ -28,7 +28,7 @@ binormal_auc(
   partial = FALSE,
   min = 0,
   max = 1,
-  normalize = TRUE
+  normalize = FALSE
 )
 
 binormal_sens(truth, rating, spec)
@@ -41,7 +41,7 @@ binormalLR_auc(
   partial = FALSE,
   min = 0,
   max = 1,
-  normalize = TRUE
+  normalize = FALSE
 )
 
 binormalLR_sens(truth, rating, spec)
@@ -54,7 +54,7 @@ empirical_auc(
   partial = FALSE,
   min = 0,
   max = 1,
-  normalize = TRUE
+  normalize = FALSE
 )
 
 empirical_sens(truth, rating, spec)
@@ -67,7 +67,7 @@ trapezoidal_auc(
   partial = FALSE,
   min = 0,
   max = 1,
-  normalize = TRUE
+  normalize = FALSE
 )
 
 trapezoidal_sens(truth, rating, spec)
