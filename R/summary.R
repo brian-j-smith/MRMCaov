@@ -32,7 +32,7 @@ summary.aov_mrmc <- function(object, ...) {
 }
 
 
-new_summary_mrmc <- function(object, conf.level, vcov_comps,
+new_summary_mrmc <- function(object, conf.level, vcov_comps = NULL,
                              test_equality = NULL, test_diffs = NULL,
                              test_means = NULL, reader_means = NULL,
                              reader_test_diffs = NULL) {
@@ -340,10 +340,8 @@ reader_test_diffs <- function(object, conf.level) {
 
 
 .summary.mrmc_rrfc <- function(object, conf.level, ...) {
-  comps <- vcov_comps(object)
-  n <- comps$n
-  MS <- comps$MS
-  cov <- comps$cov
+  n <- dim(object)
+  MS <- meansq(object)
 
   test_levels <- levels(object)$test
 
@@ -378,7 +376,6 @@ reader_test_diffs <- function(object, conf.level) {
 
   res <- new_summary_mrmc(object,
                           conf.level = conf.level,
-                          vcov_comps = summary(comps),
                           test_equality = test_equality,
                           test_diffs = test_diffs,
                           test_means = test_means)
@@ -387,12 +384,11 @@ reader_test_diffs <- function(object, conf.level) {
 
 
 .summary_nested.mrmc_rrfc <- function(object, conf.level, ...) {
-  comps <- vcov_comps(object)
-  n_test <- nrow(comps$n_mat)
-  n_readers <- rowSums(comps$n_mat)
+  n_mat <- dim_mat(object)
+  n_test <- nrow(n_mat)
+  n_readers <- rowSums(n_mat)
   n_reader <- sum(n_readers)
-  MS <- comps$MS
-  cov <- comps$cov
+  MS <- meansq(object)
 
   test_levels <- levels(object)$test
 
@@ -429,7 +425,6 @@ reader_test_diffs <- function(object, conf.level) {
 
   res <- new_summary_mrmc(object,
                           conf.level = conf.level,
-                          vcov_comps = summary(comps),
                           test_equality = test_equality,
                           test_diffs = test_diffs,
                           test_means = test_means)

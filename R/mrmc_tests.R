@@ -65,10 +65,8 @@ summary.mrmc_tests_frrc <- function(object, conf.level = 0.95, ...) {
 
 
 summary.mrmc_tests_rrfc <- function(object, conf.level = 0.95, ...) {
-  comps <- vcov_comps(object)
-  n <- comps$n
-  MS <- comps$MS
-  cov <- comps$cov
+  n <- dim(object)
+  MS <- meansq(object)
 
   df <- data.frame(
     Estimate = mean(object),

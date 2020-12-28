@@ -88,14 +88,18 @@ print.mrmc <- function(x, ...) {
   print(summary(x$aov))
 
   cat("\n\nObuchowski-Rockette error variance and covariance estimates:\n\n")
-  comps <- vcov_comps(x, design = 1)
-  vcov_comps <- data.frame(
-    Estimate = c(comps$var, comps$cov),
-    row.names = c("Error", "Cov1", "Cov2", "Cov3")
-  )
-  vcov_comps$Correlation = vcov_comps$Estimate / vcov_comps$Estimate[1]
-  vcov_comps$Correlation[1] <- NA
-  print(vcov_comps)
+  if (is.null(x$cov)) {
+    cat("Not applicable\n")
+  } else {
+    comps <- vcov_comps(x, design = 1)
+    vcov_comps <- data.frame(
+      Estimate = c(comps$var, comps$cov),
+      row.names = c("Error", "Cov1", "Cov2", "Cov3")
+    )
+    vcov_comps$Correlation = vcov_comps$Estimate / vcov_comps$Estimate[1]
+    vcov_comps$Correlation[1] <- NA
+    print(vcov_comps)
+  }
 
   invisible(x)
 }
@@ -141,7 +145,6 @@ print.summary.mrmc <- function(x, ...) {
   cat("Multi-Reader Multi-Case Analysis of Variance\n",
       "Data: ", x$data_name, "\n",
       "Factor types: Random Readers and Fixed Cases\n",
-      "Covariance method: ", x$cov_method, "\n\n",
       sep = "")
 
   .print.summary.mrmc(x)
@@ -180,7 +183,11 @@ print.summary.mrmc <- function(x, ...) {
       "\n")
 
   cat("\nObuchowski-Rockette variance component and covariance estimates:\n\n")
-  print(if (is_one_reader(x)) x$vcov_comps[-(1:2), ] else x$vcov_comps)
+  if (is.null(x$vcov_comps)) {
+    cat("Not applicable\n")
+  } else {
+    print(if (is_one_reader(x)) x$vcov_comps[-(1:2), ] else x$vcov_comps)
+  }
 
   test_metric <- paste(x$vars["test"], x$vars["metric"])
 

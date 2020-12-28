@@ -135,7 +135,7 @@ new_mrmc <- function(response, test, reader, case, data, method, design,
     stop("data factor codings do not match study design ", design)
   }
 
-  cov <- get_method(method)(mrmc_data)
+  cov <- if (!terms$fixed["case"]) get_method(method)(mrmc_data)
 
   var_names <- c("test", "reader")
   aov_data <- unique(mrmc_data[var_names])

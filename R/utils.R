@@ -58,6 +58,13 @@ dim.mrmc_tests <- function(x) {
 }
 
 
+dim_mat <- function(x) {
+  res <- table(x$data[2:3])
+  names(dimnames(res)) <- c("test", "reader")
+  res
+}
+
+
 get_design <- function(data) {
   crosstab <- function(...) table(data[c(...)]) > 0
 
@@ -206,13 +213,10 @@ vcov_comps.mrmc <- function(object, design = object$design, test = NULL,
     cov[1] <- 0
   }
 
-  n_mat <- table(data[2:3])
-  names(dimnames(n_mat)) <- c("test", "reader")
-
   structure(
     list(vars = object$vars,
          n = dim(object),
-         n_mat = n_mat,
+         n_mat = dim_mat(object),
          MS = meansq(object),
          var = mean(diag(object$cov[is_group, is_group])),
          cov = cov),
