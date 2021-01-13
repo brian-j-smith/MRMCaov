@@ -89,7 +89,7 @@ print.mrmc <- function(x, ...) {
 
   cat("\n\nObuchowski-Rockette error variance and covariance estimates:\n\n")
   if (is.null(x$cov)) {
-    cat("Not applicable\n")
+    cat("Not applicable because cases are fixed\n")
   } else {
     comps <- vcov_comps(x, design = 1)
     vcov_comps <- data.frame(
@@ -184,7 +184,7 @@ print.summary.mrmc <- function(x, ...) {
 
   cat("\nObuchowski-Rockette variance component and covariance estimates:\n\n")
   if (is.null(x$vcov_comps)) {
-    cat("Not applicable\n")
+    cat("Not applicable because cases are fixed\n")
   } else {
     print(if (is_one_reader(x)) x$vcov_comps[-(1:2), ] else x$vcov_comps)
   }
