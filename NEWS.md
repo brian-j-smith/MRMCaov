@@ -2,6 +2,15 @@
 
 ## Version Updates
 
+## 0.1.13
+* Add `mrmc()` support for single readers.
+* Rename `proproc` functions to `binormalLR`.
+* Add `parameters()` method function for `mrmc` output.
+* Add `roc_curves()` method function for `srmc` output.
+* Add `normalize` argument to `auc()` metrics.
+* Redefine `srmc()` function for single-reader (multi-test) multi-case analysis.
+* Add `stmc()` function for single-reader (single-test) multi-case analysis.
+
 ## 0.1.12
 * Fix `proproc_sens()` and `proproc_spec()` to use proproc instead of empirical curves. 
 

@@ -44,8 +44,8 @@ install.packages(c("ggplot2", "gtools", "mvtnorm", "pROC", "tibble"))
 
 | Operating System   | Package Archive File                                                                                                                     |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Microsoft Windows: | [MRMCaov\_0.1.12.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EZvSfeD6QEBKstoYf3ffWDwBlPS_CNBhuTkqKEGcHZt93w)    |
-| Linux:             | [MRMCaov\_0.1.12.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/ERjzWoVL-E9HkW893DLwY3EBD-PQzGK8iBQ9yzN7ocHt2Q) |
+| Microsoft Windows: | [MRMCaov\_0.1.13.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/Ebpgd5dMPg5Gis5PDX7Ic3AB9Ele-lEi7d9jjsBylBTXqg)    |
+| Linux:             | [MRMCaov\_0.1.13.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/ESWlswNxJClKmdVX5e9ncvoB_e643njNgLFL5FhAKkT6Cw) |
 
 ## Citing the Software
 
@@ -59,8 +59,8 @@ citation("MRMCaov")
 To cite MRMCaov in publications, please use the following two references, including the R
 package URL.
 
-Smith BJ, Hillis SL, Pesce LL (2020). _MCMCaov: Multi-Reader Multi-Case Analysis of
-Variance_. R package version 0.1.12, <URL: https://github.com/brian-j-smith/MRMCaov>.
+Smith BJ, Hillis SL, Pesce LL (2021). _MCMCaov: Multi-Reader Multi-Case Analysis of
+Variance_. R package version 0.1.13, <URL: https://github.com/brian-j-smith/MRMCaov>.
 
 Smith BJ, Hillis SL (2020). "Multi-reader multi-case analysis of variance software for
 diagnostic performance comparison of imaging modalities." In Samuelson F, Taylor-Phillips
@@ -80,8 +80,8 @@ toBibtex(citation("MRMCaov"))
     @Manual{MRMCaov-package,
       author = {Brian J Smith and Stephen L Hillis and Lorenzo L Pesce},
       title = {MCMCaov: Multi-Reader Multi-Case Analysis of Variance},
-      year = {2020},
-      note = {R package version 0.1.12},
+      year = {2021},
+      note = {R package version 0.1.13},
       url = {https://github.com/brian-j-smith/MRMCaov},
     }
     
