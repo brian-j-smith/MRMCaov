@@ -18,7 +18,7 @@ Author: Brian J Smith [aut, cre],
 Maintainer: Brian J Smith <brian-j-smith@uiowa.edu>
 Description: A package for multi-reader and multi-case analysis of variance.
 Depends: R (>= 3.5.0)
-Imports: ggplot2, gtools, methods, mvtnorm, pROC, tibble
+Imports: ggplot2, gtools, methods, mvtnorm, progress, pROC, tibble
 NeedsCompilation: yes
 LazyData: true
 License: GPL-3
