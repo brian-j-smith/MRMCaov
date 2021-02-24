@@ -8,7 +8,8 @@ mrmc_tests <- function(data, cov, design) {
     structure(
       list(design = design,
            aov = aov_mrmc(formula, data = subset(data, is_test)),
-           cov = cov[is_test, is_test]),
+           cov = cov[is_test, is_test],
+           data = data),
       class = "mrmc_tests"
     )
   })
@@ -33,7 +34,7 @@ summary.mrmc_tests_rrrc <- function(object, conf.level = 0.95, ...) {
   df$CI <- with(df, {
     ci <- Estimate +
       qt((1 + conf.level) / 2, df) * StdErr %o% c(Lower = -1, Upper = 1)
-    pmin(pmax(ci, 0), 1)
+    trunc_ci(object, ci)
   })
 
   df
@@ -57,7 +58,7 @@ summary.mrmc_tests_frrc <- function(object, conf.level = 0.95, ...) {
   df$CI <- with(df, {
     ci <- Estimate +
       qnorm((1 + conf.level) / 2) * StdErr %o% c(Lower = -1, Upper = 1)
-    pmin(pmax(ci, 0), 1)
+    trunc_ci(object, ci)
   })
 
   df
@@ -78,7 +79,7 @@ summary.mrmc_tests_rrfc <- function(object, conf.level = 0.95, ...) {
   df$CI <- with(df, {
     ci <- Estimate +
       qt((1 + conf.level) / 2, df) * StdErr %o% c(Lower = -1, Upper = 1)
-    pmin(pmax(ci, 0), 1)
+    trunc_ci(object, ci)
   })
 
   df

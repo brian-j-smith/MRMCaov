@@ -176,6 +176,11 @@ trunc_ci.mrmc <- function(object, x, ...) {
 }
 
 
+trunc_ci.mrmc_tests <- function(object, x, ...) {
+  trunc_ci(names(object$data)[1], x)
+}
+
+
 trunc_ci.stmc <- function(object, x, ...) {
   c(trunc_ci(object$metric, rbind(x)))
 }
