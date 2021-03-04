@@ -168,7 +168,8 @@ binormalLR_curve <- function(data) {
 
 
 empirical_curve <- function(data) {
-  roc <- pROC::roc(data$truth, data$rating, auc = FALSE, quiet = TRUE)
+  roc <- pROC::roc(data$truth, data$rating, auc = FALSE, quiet = TRUE,
+                   direction = "<")
   structure(
     list(
       params = tibble(
@@ -459,7 +460,8 @@ auc.binormalLR_curve <- function(x, partial = FALSE, min = 0, max = 1,
 auc.empirical_curve <- function(x, partial = FALSE, min = 0, max = 1,
                                 normalize = FALSE, ...) {
   data <- x$data
-  args <- list(pROC::roc(data$truth, data$rating, quiet = TRUE))
+  args <- list(pROC::roc(data$truth, data$rating, quiet = TRUE,
+                         direction = "<"))
   if (!isFALSE(partial)) {
     partial <- match.arg(partial, c("sensitivity", "specificity"))
     args$partial.auc <- c(min, max)
