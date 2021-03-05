@@ -13,12 +13,22 @@
 
 <title>Using MRMCaov</title>
 
+<script src="site_libs/header-attrs-2.7/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
@@ -27,8 +37,6 @@
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
-<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
-<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -42,11 +50,6 @@
     </style>
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -59,30 +62,27 @@ if (window.hljs) {
 
 
 
+
 <style type="text/css">
-h1 {
-  font-size: 34px;
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
 }
-h1.title {
-  font-size: 38px;
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
 }
-h2 {
-  font-size: 30px;
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
 }
-h3 {
-  font-size: 24px;
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
 }
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
+div.csl-indent {
+  margin-left: 2em;
 }
 </style>
 
@@ -94,10 +94,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -114,40 +110,13 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -175,7 +144,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -187,7 +156,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -198,10 +167,23 @@ $(document).ready(function () {
   var menuAnchor = $('a[href="' + href + '"]');
 
   // mark it active
-  menuAnchor.parent().addClass('active');
+  menuAnchor.tab('show');
 
   // if it's got a parent navbar menu mark it active as well
   menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -213,7 +195,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -339,13 +320,13 @@ div.tocify {
 
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
-<div class="col-xs-12 col-sm-4 col-md-3">
+<div class="row">
+<div class="col-sm-12 col-md-4 col-lg-3">
 <div id="TOC" class="tocify">
 </div>
 </div>
 
-<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+<div class="toc-content col-sm-12 col-md-8 col-lg-9">
 
 
 
@@ -372,7 +353,7 @@ div.tocify {
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/brian-j-smith/MRMCaov">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -381,7 +362,7 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
@@ -628,10 +609,10 @@ print(est)</code></pre>
 ## 
 ## ANOVA Table:
 ## 
-##                  Df   Sum Sq  Mean Sq
-## treatment         1 0.004796 0.004796
-## reader            4 0.015345 0.003836
-## treatment:reader  4 0.002204 0.000551
+##                  Df    Sum Sq   Mean Sq
+## treatment         1 0.0047962 0.0047962
+## reader            4 0.0153448 0.0038362
+## treatment:reader  4 0.0022041 0.0005510
 ## 
 ## 
 ## Obuchowski-Rockette error variance and covariance estimates:
@@ -812,10 +793,10 @@ print(est)</code></pre>
 ## 
 ## ANOVA Table:
 ## 
-##                  Df  Sum Sq  Mean Sq
-## treatment         1 0.02390 0.023901
-## reader            4 0.04968 0.012420
-## treatment:reader  4 0.00721 0.001802
+##                  Df   Sum Sq   Mean Sq
+## treatment         1 0.023901 0.0239012
+## reader            4 0.049679 0.0124198
+## treatment:reader  4 0.007210 0.0018025
 ## 
 ## 
 ## Obuchowski-Rockette error variance and covariance estimates:
@@ -1040,19 +1021,11 @@ summary(est)</code></pre>
 <pre><code>## Multi-Reader Multi-Case Analysis of Variance
 ## Data: VanDyke
 ## Factor types: Random Readers and Fixed Cases
-## Covariance method: jackknife
-## 
 ## Experimental design: factorial 
 ## 
 ## Obuchowski-Rockette variance component and covariance estimates:
 ## 
-##                      Estimate Correlation
-## reader           0.0015349993          NA
-## treatment:reader 0.0002004025          NA
-## Error            0.0008022883          NA
-## Cov1             0.0003466137   0.4320314
-## Cov2             0.0003440748   0.4288668
-## Cov3             0.0002390284   0.2979333
+## Not applicable because cases are fixed
 ## 
 ## 
 ## ANOVA global test of equal treatment empirical_auc:
@@ -1077,13 +1050,13 @@ summary(est)</code></pre>
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">
-<h1>References</h1>
-<div id="refs" class="references">
-<div id="ref-MRMCaov-SPIE2020">
-<p>Smith, Brian J., and Stephen L. Hillis. 2020. “Multi-Reader Multi-Case Analysis of Variance Software for Diagnostic Performance Comparison of Imaging Modalities.” In <em>Proceedings of Spie 11316, Medical Imaging 2020: Image Perception, Observer Performance, and Technology Assessment</em>, edited by Frank Samuelson and Sian Taylor-Phillips, 113160K. <a href="https://doi.org/10.117/12.2549075">https://doi.org/10.117/12.2549075</a>.</p>
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-MRMCaov-SPIE2020" class="csl-entry">
+Smith, Brian J., and Stephen L. Hillis. 2020. <span>“Multi-Reader Multi-Case Analysis of Variance Software for Diagnostic Performance Comparison of Imaging Modalities.”</span> In <em>Proceedings of SPIE 11316, Medical Imaging 2020: Image Perception, Observer Performance, and Technology Assessment</em>, edited by Frank Samuelson and Sian Taylor-Phillips, 113160K. <a href="https://doi.org/10.117/12.2549075">https://doi.org/10.117/12.2549075</a>.
 </div>
-<div id="ref-MRMCaov-package">
-<p>Smith, Brian J, Stephen L Hillis, and Lorenzo L Pesce. 2020. <em>MCMCaov: Multi-Reader Multi-Case Analysis of Variance</em>. <a href="https://github.com/brian-j-smith/MRMCaov">https://github.com/brian-j-smith/MRMCaov</a>.</p>
+<div id="ref-MRMCaov-package" class="csl-entry">
+Smith, Brian J, Stephen L Hillis, and Lorenzo L Pesce. 2020. <em>MCMCaov: Multi-Reader Multi-Case Analysis of Variance</em>. <a href="https://github.com/brian-j-smith/MRMCaov">https://github.com/brian-j-smith/MRMCaov</a>.
 </div>
 </div>
 </div>
@@ -1117,7 +1090,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
