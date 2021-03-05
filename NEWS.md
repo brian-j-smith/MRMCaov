@@ -2,6 +2,11 @@
 
 ## Version Updates
 
+## 0.1.14
+* Add progress bar for unbiased covariance calculation.
+* Truncate confidence intervals only for `sens`, `spec`, and `auc` metrics.
+* Fix direction of ratings in `pROC` calculation of empirical ROC AUC to allow values < 0.5.
+
 ## 0.1.13
 * Add `mrmc()` support for single readers.
 * Rename `proproc` functions to `binormalLR`.

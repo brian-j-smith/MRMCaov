@@ -22,13 +22,13 @@ To install the package, do the following:
 5. Install the packages below with the given command submitted at the R console, if they have not been installed previously.
 
 ```{r eval = FALSE}
-install.packages(c("ggplot2", "gtools", "mvtnorm", "pROC", "tibble"))
+install.packages(c("ggplot2", "gtools", "mvtnorm", "progress", "pROC", "tibble"))
 ```
 
 | Operating System      | Package Archive File | 
 |-----------------------|----------------------|
-| Microsoft Windows: | [MRMCaov_0.1.13.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/Ebpgd5dMPg5Gis5PDX7Ic3AB9Ele-lEi7d9jjsBylBTXqg) |
-| Linux: | [MRMCaov_0.1.13.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/ESWlswNxJClKmdVX5e9ncvoB_e643njNgLFL5FhAKkT6Cw) |
+| Microsoft Windows: | [MRMCaov_0.1.14.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/Efw1nYQFXVVDhK2mDzeLfZMBiGUdDBARc4KPwW6sktEdzg) |
+| Linux: | [MRMCaov_0.1.14.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EakmIRX_OTBBsnAC7i6hCJIBpacjyoumt5Uiv3nfUgHkeA) |
 
 
 ## Citing the Software
