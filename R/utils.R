@@ -106,8 +106,8 @@ is_one_reader.mrmc <- function(x) {
 }
 
 
-is_one_reader.summary.mrmc <- function(x) {
-  is.null(x$reader_test_diffs)
+is_one_reader.vcov_comps <- function(x) {
+  x$n["reader"] == 1
 }
 
 
@@ -257,13 +257,14 @@ summary.vcov_comps <- function(object, ...) {
   var_error <- object$var
   cov <- object$cov
 
-  if ("T:R" %in% names(MS)) {
+  if (is_one_reader(object)) {
+    est <- numeric()
+  } else if ("T:R" %in% names(MS)) {
     est <- c((MS[["R"]] - MS[["T:R"]]) / n[["test"]] - cov[1] + cov[3],
              MS[["T:R"]] - var_error + cov[1] + (cov[2] - cov[3]))
     names(est) <- c(object$vars["reader"],
                     paste0(object$vars[c("test", "reader")], collapse = ":"))
   } else {
-    cat(str(object))
     est <- MS[["R"]] - var_error + cov[2]
     names(est) <- object$vars["reader"]
   }
@@ -273,7 +274,7 @@ summary.vcov_comps <- function(object, ...) {
   vcov_comps <- data.frame(Estimate = est)
   vcov_comps$Correlation <- vcov_comps$Estimate /
     vcov_comps["Error", "Estimate"]
-  vcov_comps$Correlation[1:3] <- NA
+  vcov_comps$Correlation[-(nrow(vcov_comps) - 2:0)] <- NA
 
   vcov_comps
 }

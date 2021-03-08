@@ -116,7 +116,9 @@ print.summary.mrmc <- function(x, ...) {
 
 
 .print.summary.mrmc_frrc <- function(x, ...) {
-  cat(if (is_one_reader(x)) "Single" else "Multi",
+  is_one_reader <- is.null(x$reader_test_diffs)
+
+  cat(if (is_one_reader) "Single" else "Multi",
       "-Reader Multi-Case Analysis of Variance\n",
       "Data: ", x$data_name, "\n",
       "Factor types: Fixed Readers and Random Cases\n",
@@ -125,7 +127,7 @@ print.summary.mrmc <- function(x, ...) {
 
   .print.summary.mrmc(x)
 
-  if (!is.null(x$reader_test_diffs)) {
+  if (!is_one_reader) {
     cat("\n\nReader-specific ", 100 * x$conf.level, "% CIs and tests for ",
         x$vars["metric"], " pairwise differences (each analysis based only on",
         " data for the specified reader):\n\n", sep = "")
@@ -186,7 +188,7 @@ print.summary.mrmc <- function(x, ...) {
   if (is.null(x$vcov_comps)) {
     cat("Not applicable because cases are fixed\n")
   } else {
-    print(if (is_one_reader(x)) x$vcov_comps[-(1:2), ] else x$vcov_comps)
+    print(x$vcov_comps)
   }
 
   test_metric <- paste(x$vars["test"], x$vars["metric"])
