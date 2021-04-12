@@ -35,8 +35,10 @@ export(
   empirical_spec,
   jackknife,
   mrmc,
+  OR_to_RM,
   parameters,
   roc_curves,
+  RM_to_OR,
   srmc,
   stmc,
   trapezoidal_auc,
@@ -56,6 +58,12 @@ export(
 S3method(mean, binormal_curves)
 S3method(mean, roc_curve)
 S3method(mean, roc_curves)
+S3method(OR_to_RM, default)
+S3method(OR_to_RM, data.frame)
+S3method(OR_to_RM, list)
+S3method(RM_to_OR, default)
+S3method(RM_to_OR, data.frame)
+S3method(RM_to_OR, list)
 S3method(plot, empirical_curve)
 S3method(plot, empirical_curves)
 S3method(plot, mrmc)
