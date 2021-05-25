@@ -11,8 +11,8 @@ importFrom(methods, is)
 importFrom(mvtnorm, pmvnorm)
 importFrom(progress, progress_bar)
 importFrom(stats, anova, aov, approx, as.formula, coef, formula, model.frame,
-           model.matrix, optim, pnorm, pf, pt, reformulate, qnorm, qt, reshape,
-           terms, update, vcov)
+           model.matrix, optim, optimize, pnorm, pf, pt, reformulate, qnorm, qt,
+           reshape, terms, update, vcov)
 importFrom(tibble, as_tibble, tibble)
 importFrom(utils, head, str, tail)
 
@@ -22,12 +22,15 @@ export(
   binary_sens,
   binary_spec,
   binormal_auc,
+  binormal_eu,
   binormal_sens,
   binormal_spec,
   binormalLR_auc,
+  binormalLR_eu,
   binormalLR_sens,
   binormalLR_spec,
   empirical_auc,
+  empirical_eu,
   empirical_sens,
   empirical_spec,
   jackknife,

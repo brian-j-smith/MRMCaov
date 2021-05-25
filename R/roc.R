@@ -484,6 +484,26 @@ partial_auc_params <- function(metric, min, max) {
 }
 
 
+roc_eu <- function(x, ...) {
+  UseMethod("roc_eu")
+}
+
+
+roc_eu.roc_curve <- function(x, slope = 1, ...) {
+  f <- function(sens) {
+    spec <- specificity(x, sens)
+    sens - slope * (1 - spec)
+  }
+  optimize(f, c(0, 1), maximum = TRUE)$objective
+}
+
+
+roc_eu.empirical_curve <- function(x, slope = 1, ...) {
+  pts <- points(x)
+  max(pts$TPR - slope * pts$FPR)
+}
+
+
 sensitivity <- function(x, ...) {
   UseMethod("sensitivity")
 }

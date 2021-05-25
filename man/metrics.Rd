@@ -5,12 +5,15 @@
 \alias{binary_sens}
 \alias{binary_spec}
 \alias{binormal_auc}
+\alias{binormal_eu}
 \alias{binormal_sens}
 \alias{binormal_spec}
 \alias{binormalLR_auc}
+\alias{binormalLR_eu}
 \alias{binormalLR_sens}
 \alias{binormalLR_spec}
 \alias{empirical_auc}
+\alias{empirical_eu}
 \alias{empirical_sens}
 \alias{empirical_spec}
 \alias{trapezoidal_auc}
@@ -31,6 +34,8 @@ binormal_auc(
   normalize = FALSE
 )
 
+binormal_eu(truth, rating, slope = 1)
+
 binormal_sens(truth, rating, spec)
 
 binormal_spec(truth, rating, sens)
@@ -44,6 +49,8 @@ binormalLR_auc(
   normalize = FALSE
 )
 
+binormalLR_eu(truth, rating, slope = 1)
+
 binormalLR_sens(truth, rating, spec)
 
 binormalLR_spec(truth, rating, sens)
@@ -56,6 +63,8 @@ empirical_auc(
   max = 1,
   normalize = FALSE
 )
+
+empirical_eu(truth, rating, slope = 1)
 
 empirical_sens(truth, rating, spec)
 
@@ -93,6 +102,9 @@ which to calculate partial AUC.}
 \item{normalize}{logical indicating whether partial AUC is divided by the
 interval width (\code{max - min}) over which it is calculated.}
 
+\item{slope}{slope of the iso-utility line at which to compute expected
+utility of the ROC curve.}
+
 \item{sens, spec}{numeric sensitivity/specificity at which to calculate
 specificity/sensitivity.}
 }
@@ -102,11 +114,13 @@ Estimated performance metrics from ROC curves.
 \details{
 Performance metrics measure the degree to which higher case ratings are
 associated with positive case statuses, where positive status is taken to be
-the highest level of \code{truth}.  Available metrics include the following.
-\describe{
-\item{empirical_auc, trapezoidal_auc:}{Area under the empirical, or
-trapezoidal, ROC curve.}
-\item{binormal_auc:}{Area under a binormal ROC curve.}
-\item{binormalLR_auc:}{Area under a binormal likelihood ratio ROC curve.}
+the highest level of \code{truth}.  Available metrics include area under the
+ROC curve (auc), expected utility of the ROC curve (eu) at a given
+iso-utility line (Abbey, 2013), sensitivity (sens) at a given specificity,
+and specificity (spec) at a given sensitivity.
 }
+\references{
+Abbey CK, Samuelson FW and Gallas BD (2013). Statistical power considerations
+for a utility endpoint in observer performance studies.  Academic Radiology,
+20: 798-806.
 }
