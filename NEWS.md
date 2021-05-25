@@ -2,6 +2,9 @@
 
 ## Version Updates
 
+## 0.1.15
+* Implement ROC expected utility metrics `binormal_eu()`, `binormalLR_eu()`, and `empirical_eu()`.
+
 ## 0.1.14
 * Add progress bar for unbiased covariance calculation.
 * Truncate confidence intervals only for `sens`, `spec`, and `auc` metrics.
