@@ -23,9 +23,8 @@
 #' @param corr1,corr2,corr3 OR fixed reader correlations.
 #' @param error_var OR fixed reader error variance.
 #' @param n0,n1 number of nondiseased and diseased cases.
-#' @param precision precision for estimation of RM using numerical methods.
 #' @param b_method method of estimating RM binormal b parameter (= 1, 2, or 3).
-#' @param mean_to_sig mean-to-sigma ratio (Hillis & Berbaum, 2011), required
+#' @param mean_sig_input mean-to-sigma ratio (Hillis & Berbaum, 2011), required
 #'   only if \code{b_method = 2}.
 #' @param b_input binormal b value, required only if \code{b_method = 3}.
 #' @param params dataframe of OR parameter values in the columns or a list of
@@ -33,11 +32,6 @@
 #' @param ... arguments passed to the default method.
 #'
 #' @details
-#' \code{precision} indicates the numerical accuracy of the algorithm.
-#' Typically, values less than 0.0001 will result in little difference.  For
-#' final results we recommend using 0.00001, with smaller values (e.g., 0.001,
-#' 0.0001) used for preliminary results to speed up the algorithm.
-#'
 #' \code{b_method} indicates the method for estimating the RM binormal \emph{b}
 #' parameter. \code{b_method = 1} results in RM simulated data for which
 #' expected OR estimates are equal to those specified in \code{params}.
@@ -109,17 +103,18 @@
 #'                corr1 = 0.433, corr2 = 0.430, corr3 = 0.299,
 #'                var_R = 0.00154, var_TR = 0.000208,
 #'                error_var = 0.00788)
-#'                RM
+#' RM
+#'
 #'
 #'#' ## Example 1aa: Computing RM parms --identical test model
 #' RM <- OR_to_RM(n0 = 69, n1 = 45, AUC1 = 0.919, AUC2 = 0.919,
 #'                corr1 = 0.433, corr2 = (0.430 + .299)/2, corr3 = (0.430 + .299)/2,
 #'                var_R = 0.00154, var_TR = 0.0,
 #'                error_var = 0.000788)
-#'                RM
+#' RM
 #'
 #'
-#'  RM_to_OR(RM)
+#' RM_to_OR(RM)
 #'
 #'
 #' ## Example 1b: Computing RM parameters from a list of OR parameters
@@ -128,17 +123,8 @@
 #'                    var_R = 0.00154, var_TR = 0.000208, error_var = 0.000788)
 #' vandyke_RM <- OR_to_RM(vandyke_OR)
 #' vandyke_RM
-#' RM_to_OR(vandyke_RM) ##Brian -- does not work ##
-#'
-#'
-#' vandyke_OR <- data.frame(n0 = 69, n1 = 45, AUC1 = 0.897, AUC2 = 0.941,
-#'                    corr1 = 0.433, corr2 = 0.430, corr3 = 0.299,
-#'                    var_R = 0.00154, var_TR = 0.000208, error_var = 0.000788)
-#' vandyke_RM <- OR_to_RM(vandyke_OR)
-#' vandyke_RM
 #' RM_to_OR(vandyke_RM)
 #'
-
 #'
 #' ## Example 1c: Computing RM parameters from a data frame of OR parameters
 #' three_studies_OR <- data.frame(
@@ -156,7 +142,7 @@
 #' three_studies_RM <- OR_to_RM(three_studies_OR)
 #' three_studies_RM
 #'
-#' RM_to_OR(three_studies_RM)  ##BRIAN -- DOES NOT WORK##
+#' RM_to_OR(three_studies_RM)
 OR_to_RM <- function(...) {
   UseMethod("OR_to_RM")
 }
@@ -178,13 +164,19 @@ OR_to_RM.default <- function(
   corr2_OR <- corr2
   corr3_OR <- corr3
   error_var_OR <- error_var # can be NA if use b_method 2
-  # increment <- precision
-  increment1 = .001 #initial search step increment for b_method = 1;
-  increment2 = .000001 #search step increment for b_method = 1 after using increment1 steps;
-  lower_bd = 0.01 #lower bound for unspecified method b search
-  step_no = 30 #number of times interval is split in 2 when searching for solution
-  flag1 = 0 #becomes 1 when an x value (x1 -- x7) or b is NA
-  b = NA; x1 = NA; x2 = NA; x3 = NA; x4 = NA; x5 = NA; x6 =  NA; x7 =NA
+  increment1 <- .001 #initial search step increment for b_method = 1;
+  increment2 <- .000001 #search step increment for b_method = 1 after using increment1 steps;
+  lower_bd <- 0.01 #lower bound for unspecified method b search
+  step_no <- 30 #number of times interval is split in 2 when searching for solution
+  flag1 <- 0 #becomes 1 when an x value (x1 -- x7) or b is NA
+  b <- NA
+  x1 <- NA
+  x2 <- NA
+  x3 <- NA
+  x4 <- NA
+  x5 <- NA
+  x6 <- NA
+  x7 <- NA
 
   # check for out of bounds values
   inbounds <- c(
@@ -197,8 +189,7 @@ OR_to_RM.default <- function(
     corr1 = (0 <= corr1_OR & corr1_OR <= 1),
     corr2 = (0 <= corr2_OR & corr2_OR <= 1),
     corr3 = (0 <= corr3_OR & corr3_OR <= 1),
-    error_var = (0 <= error_var_OR | is.na(error_var_OR)) #,
-    # precision = (0 < precision & precision < .1)
+    error_var = (0 <= error_var_OR | is.na(error_var_OR))
   )
   invalid_params <- names(inbounds)[!inbounds]
   if (length(invalid_params)) {
@@ -214,35 +205,43 @@ OR_to_RM.default <- function(
   c4 <- (1-n0-n1)/(n0*n1)
 
   # STEP 2: Compute x3 (= 2*sigma_R_OR**2/V)
-  x = .5;
+  x <- .5
   for (step in 2:step_no) {
     temp <- multnorm (x1,x2,x) -  pnorm(x1)*pnorm(x2)
-    x <- x - sign(temp - var_R_OR)*.5^step;
+    x <- x - sign(temp - var_R_OR)*.5^step
   }
-  x3 <-  x
+  x3 <- x
   temp1 <- multnorm (x1,x2,1) -  pnorm(x1)*pnorm(x2)
-  if (x3 > 1 - .5^(step_no - 1) )
-  {x3 = NA
-  flag1 = 1
+  if (x3 > 1 - .5^(step_no - 1)) {
+    x3 <- NA
+    flag1 <- 1
   }
   #STEP 3: Compute x4 (= 2(sigma_R_OR**2 + sigma_TR_OR**2)/V)
 
-  if (flag1 == 1) {x4 = NA}
+  if (flag1 == 1) {
+    x4 <- NA
+  }
   if (flag1 == 0){
-    x = .5
+    x <- .5
     for (step in 2:step_no) {
       temp <- .5*(multnorm(x1,x1,x) - (pnorm(x1))**2 + multnorm(x2,x2,x) - (pnorm(x2))**2) - var_R_OR
       x <- x - sign(temp - var_TR_OR)*.5^step
     }
-    x4 <- max(x, x3);
-    if (x4 > 1 - .5**(step_no - 1) )
-    {x4 = NA
-    flag1 = 1
-    }}
+    x4 <- max(x, x3)
+    if (x4 > 1 - .5**(step_no - 1)) {
+      x4 <- NA
+      flag1 <- 1
+    }
+  }
 
 
   # STEP 4 Compute b
-  if (flag1 == 1) {b = NA;cov1 =NA; cov2 = NA; cov3 =NA }
+  if (flag1 == 1) {
+    b <- NA
+    cov1 <- NA
+    cov2 <- NA
+    cov3 <- NA
+  }
   if (flag1 == 0) {
     if (b_method == "mean_to_sigma") { # Determine b for given mean-to-sigma ratio
       min_AUC_OR <- min(AUC1_OR,AUC2_OR) #desired median AUC across readers
@@ -325,33 +324,32 @@ OR_to_RM.default <- function(
       }
 
 
-
       if (is.na(b)) {
         x <- 1
         while (flag == 0 & x <= 4) {
-          r1 = 1
-          r2 = x**2/(1 + x**2)
-          r3 = 1/(1 + x**2)
-          r4 = 0
-          a1 = multnorm(x1,x1,r1*(1 - x4) + x4)
-          a2 = multnorm(x1,x1,r2*(1 - x4) + x4)
-          a3 = multnorm(x1,x1,r3*(1 - x4) + x4)
-          a4 = multnorm(x1,x1,r4*(1 - x4) + x4)
-          error_var_mod1 = c1*a1 + c2*a2 + c3*a3 + c4*a4
-          a1 = multnorm(x2,x2,r1*(1 - x4) + x4)
-          a2 = multnorm(x2,x2,r2*(1 - x4) + x4)
-          a3 = multnorm(x2,x2,r3*(1 - x4) + x4)
-          a4 = multnorm(x2,x2,r4*(1 - x4) + x4)
-          error_var_mod2 = c1*a1 + c2*a2 + c3*a3 + c4*a4
-          error_var_formula = (error_var_mod1 + error_var_mod2)/2
+          r1 <- 1
+          r2 <- x**2/(1 + x**2)
+          r3 <- 1/(1 + x**2)
+          r4 <- 0
+          a1 <- multnorm(x1,x1,r1*(1 - x4) + x4)
+          a2 <- multnorm(x1,x1,r2*(1 - x4) + x4)
+          a3 <- multnorm(x1,x1,r3*(1 - x4) + x4)
+          a4 <- multnorm(x1,x1,r4*(1 - x4) + x4)
+          error_var_mod1 <- c1*a1 + c2*a2 + c3*a3 + c4*a4
+          a1 <- multnorm(x2,x2,r1*(1 - x4) + x4)
+          a2 <- multnorm(x2,x2,r2*(1 - x4) + x4)
+          a3 <- multnorm(x2,x2,r3*(1 - x4) + x4)
+          a4 <- multnorm(x2,x2,r4*(1 - x4) + x4)
+          error_var_mod2 <- c1*a1 + c2*a2 + c3*a3 + c4*a4
+          error_var_formula <- (error_var_mod1 + error_var_mod2)/2
 
           if (x == 1) {
-            sign = sign(error_var_formula - error_var_OR)
+            sign <- sign(error_var_formula - error_var_OR)
           }
-          sign1 = sign(error_var_formula - error_var_OR)
+          sign1 <- sign(error_var_formula - error_var_OR)
           if (sign1 != sign) {
-            flag =1
-            b = x
+            flag <- 1
+            b <- x
           } else {
             x <- x + increment1
           }
@@ -361,15 +359,14 @@ OR_to_RM.default <- function(
 
 
     if (b_method == "specified") { # use b_input as b value
-      b <- b_input}
-    #   print(b)
+      b <- b_input
+    }
     if (is.na(b)) {
       b <- NA
-      flag1 = 1}
-    print(flag1)
-    #   stop()
+      flag1 <- 1
+    }
 
-    if (flag1 ==0){
+    if (flag1 == 0) {
       # Now compute covariances from inputted correlations and the previously
       # computed error variance.
       r1 <- 1
@@ -400,36 +397,47 @@ OR_to_RM.default <- function(
     }
   }
   # STEP 5: Solve for x5 = RM case variance
-  if (flag1 == 1) {x5 =NA}
+  if (flag1 == 1) {
+    x5 <- NA
+  }
   if (flag1 == 0) {
     c1 <- 1/(n0*n1)
     c2 <- (n1-1)/(n0*n1)
     c3 <- (n0-1)/(n0*n1)
     c4 <- (1-n0-n1)/(n0*n1)
     flag <- 0
-    x <- .5;
+    x <- .5
     for (step in 2:step_no) {
-      r1 <- x;   r2 <- x/(1 + 1/b^2);  r3 <- x/(1+b^2);  r4 <- 0
+      r1 <- x
+      r2 <- x/(1 + 1/b^2)
+      r3 <- x/(1+b^2)
+      r4 <- 0
       a1 <- multnorm(x1,x2,r1*(1 - x4))
       a2 <-  multnorm(x1,x2,r2*(1 - x4))
       a3 <-  multnorm(x1,x2,r3*(1 - x4))
       a4 <-  multnorm(x1,x2,r4*(1 - x4))
-      cov3_formula <- c1*a1 + c2*a2 + c3*a3 + c4*a4  ;
+      cov3_formula <- c1*a1 + c2*a2 + c3*a3 + c4*a4
       x <- x - sign(cov3_formula - cov3)*.5^step
     }
     x5 <- x
     if ((x5 > 1 - .5^(step_no - 1))) {
-      x5 = NA
-      flag1 == 1
-    }}
+      x5 <- NA
+      flag1 <- 1
+    }
+  }
 
   #  STEP 6: Solve for x6 = RM case + treatment-by-case variances
 
-  if (flag1 == 1) {x6 = NA}
+  if (flag1 == 1) {
+    x6 <- NA
+  }
   if (flag1 == 0) {
-    x <= .5
+    x <- .5
     for (step in 2:step_no) {
-      r1 <- x;   r2 <- x/(1 + 1/b^2);  r3 <- x/(1+b^2);  r4 <- 0
+      r1 <- x
+      r2 <- x/(1 + 1/b^2)
+      r3 <- x/(1+b^2)
+      r4 <- 0
       a1 <- multnorm(x1,x1,r1*(1 - x4))
       a2 <- multnorm(x1,x1,r2*(1 - x4))
       a3 <- multnorm(x1,x1,r3*(1 - x4))
@@ -445,14 +453,17 @@ OR_to_RM.default <- function(
     }
     x6 <- max(x, x5)
     if (x6 > 1 - .5^(step_no - 1))  {
-      x6 = NA
-      flag1 = 1
-    }}
+      x6 <- NA
+      flag1 <- 1
+    }
+  }
 
 
   # STEP 7: Compute x7 = RM case + reader-by-case variances*
 
-  if (flag1 == 1) {x7 = NA}
+  if (flag1 == 1) {
+    x7 <- NA
+  }
   if (flag1 == 0) {
     x <- .5
     for (step in 2:step_no) {
@@ -469,8 +480,8 @@ OR_to_RM.default <- function(
     }
     x7 <- min(max(x, x5), 1-x6+x5)
     if (x7 > 1 - .5^(step_no - 1)) {
-      x7 = NA
-      flag1 = 1
+      x7 <- NA
+      flag1 <- 1
     }}
 
   #### Compute RM parameters from x1-x7 and b****
@@ -507,7 +518,7 @@ OR_to_RM.default <- function(
     mean_sig2 = mean_sig2,
     mean_sig1_025 = mean_sig1_025,
     mean_sig2_025 = mean_sig2_025,
-    x1 = x1, x2=x2,x3=x3,x4=x4,b=b, x5=x5,x6=x6,x7=x7
+    x1 = x1, x2 = x2, x3 = x3, x4 = x4, b = b, x5 = x5, x6 = x6, x7 = x7
   )
 
 }

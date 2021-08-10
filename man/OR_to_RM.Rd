@@ -20,10 +20,9 @@ OR_to_RM(...)
   error_var,
   n0,
   n1,
-  precision = 1e-04,
-  b_option = 1,
-  mean_to_sig = 4.5,
-  b_input = 1,
+  b_method = c("unspecified", "mean_to_sigma", "specified"),
+  mean_sig_input,
+  b_input,
   ...
 )
 
@@ -44,21 +43,19 @@ OR_to_RM(...)
 
 \item{n0, n1}{number of nondiseased and diseased cases.}
 
-\item{precision}{precision for estimation of RM using numerical methods.}
+\item{b_method}{method of estimating RM binormal b parameter (= 1, 2, or 3).}
 
-\item{b_option}{method of estimating RM binormal b parameter (= 1, 2, or 3).}
+\item{mean_sig_input}{mean-to-sigma ratio (Hillis & Berbaum, 2011), required
+only if \code{b_method = 2}.}
 
-\item{mean_to_sig}{mean-to-sigma ratio (Hillis & Berbaum, 2011), required
-only if \code{b_option = 2}.}
-
-\item{b_input}{binormal b value, required only if \code{b_option = 3}.}
+\item{b_input}{binormal b value, required only if \code{b_method = 3}.}
 
 \item{params}{dataframe of OR parameter values in the columns or a list of
 OR parameter values.}
 }
 \value{
-The RM model parameters and relevant inputs are returned as a data frame with
-the following elements.
+The RM model parameters are returned as a data frame with the following
+elements.
 \describe{
   \item{n0}{}
   \item{n1}{}
@@ -71,7 +68,7 @@ the following elements.
   \item{var_TC}{test-by-case variance.}
   \item{var_RC}{reader-by-case variance.}
   \item{var_error}{}
-  \item{b_option}{}
+  \item{b_method}{}
 }
 }
 \description{
@@ -83,7 +80,7 @@ is for the constrained unequal-variance RM model (Hillis, 2012), which
 generalizes the orginal RM model (Roe and Metz, 1997) by allowing the
 diseased and nondiseased decision-variable distributions to have unequal
 variances for each reader.  Parameter values for the the original RM model
-can be computed by setting \code{b_option = 3} and \code{b_input = 1}.
+can be computed by setting \code{b_method = 3} and \code{b_input = 1}.
 }
 \details{
 Hillis (2018) derived formulas expressing OR parameters that describe the
@@ -93,28 +90,23 @@ transformation that determines the corresponding RM parameters.  The
 algorithm is described in Hillis (2020).
 
 
-\code{precision} indicates the numerical accuracy of the algorithm.
-Typically, values less than 0.0001 will result in little difference.  For
-final results we recommend using 0.00001, with smaller values (e.g., 0.001,
-0.0001) used for preliminary results to speed up the algorithm.
-
-\code{b_option} indicates the method for estimating the RM binormal \emph{b}
-parameter. \code{b_option = 1} results in RM simulated data for which
+\code{b_method} indicates the method for estimating the RM binormal \emph{b}
+parameter. \code{b_method = 1} results in RM simulated data for which
 expected OR estimates are equal to those specified in \code{params}.
-\code{b_option = 2} results in RM parameters such that the median
+\code{b_method = 2} results in RM parameters such that the median
 mean-to-sigma ratio across readers for the RM binormal distributions
 corresponding to the lowest OR AUC is equal to \code{mean-to_sig}.
-\code{b_option = 3} allows the user to input the desired value of \emph{b}
+\code{b_method = 3} allows the user to input the desired value of \emph{b}
 (e.g., set \code{b_input = 1} to obtain original RM parameter estimates.
-For \code{b_option = 2,3}, the simulated data empirical AUC estimate
+For \code{b_method = 2,3}, the simulated data empirical AUC estimate
 distribution is specified by the parameter values specified in
-\code{OR_params}, \emph{except} for error_var_OR. Thus for b_options 2 & 3,
+\code{OR_params}, \emph{except} for error_var_OR. Thus for b_methods 2 & 3,
 \code{error_var_OR} can be equal to \code{NA} or excluded from \code{params}.
 
 \code{mean_to_sig} is the inputted mean-to-sigma ratio needed for
-\code{b_option = 2}.
+\code{b_method = 2}.
 
-\code{b_input} is the inputted \emph{b} value needed for \code{b_option = 3}.
+\code{b_input} is the inputted \emph{b} value needed for \code{b_method = 3}.
 
 The OR model includes the following constraints:  \code{corr1_OR >= corr3_OR}
 and \code{corr2_OR >= corr3_OR}. These constraints are  included in the
@@ -125,23 +117,37 @@ algorithm by setting \code{corr2_OR = corr3_OR} if \code{corr2_OR < corr3_OR}
 ## Example 1a: Computing RM parameters from OR parameters directly
 RM <- OR_to_RM(n0 = 69, n1 = 45, AUC1 = 0.897, AUC2 = 0.941,
                corr1 = 0.433, corr2 = 0.430, corr3 = 0.299,
-               var_R = 0.00154, var_TR = 0.000208, error_var = 0.000788,
-               precision = 0.0001)
+               var_R = 0.00154, var_TR = 0.000208,
+               error_var = 0.00788)
 RM
+
+
+#' ## Example 1aa: Computing RM parms --identical test model
+RM <- OR_to_RM(n0 = 69, n1 = 45, AUC1 = 0.919, AUC2 = 0.919,
+               corr1 = 0.433, corr2 = (0.430 + .299)/2, corr3 = (0.430 + .299)/2,
+               var_R = 0.00154, var_TR = 0.0,
+               error_var = 0.000788)
+RM
+
+
+RM_to_OR(RM)
+
 
 ## Example 1b: Computing RM parameters from a list of OR parameters
 vandyke_OR <- list(n0 = 69, n1 = 45, AUC1 = 0.897, AUC2 = 0.941,
                    corr1 = 0.433, corr2 = 0.430, corr3 = 0.299,
                    var_R = 0.00154, var_TR = 0.000208, error_var = 0.000788)
-vandyke_RM <- OR_to_RM(vandyke_OR, precision = 0.0001)
+vandyke_RM <- OR_to_RM(vandyke_OR)
 vandyke_RM
+RM_to_OR(vandyke_RM)
+
 
 ## Example 1c: Computing RM parameters from a data frame of OR parameters
 three_studies_OR <- data.frame(
   rbind(
     vandyke = c(69, 45, 0.89793704, 0.94083736, 0.432, 0.429, 0.298, 0.00154,
                 0.0002, 0.00080229),
-    franken = c(67, 33, .8477498869, 0.8368950701, 0.521430051, 0.319691199,
+    franken = c(33, 67, .8477498869, 0.8368950701, 0.521430051, 0.319691199,
                 0.3386375697, 0.0000433385, 0.0, 0.0014967254),
     kundel = c(66, 29, 0.8038793103, 0.8413662487, 0.507695244, 0.3843523762,
                0.4035662578, 0.0007340122, 0, 0.002148844)
@@ -149,9 +155,10 @@ three_studies_OR <- data.frame(
 )
 colnames(three_studies_OR) <- c("n0", "n1", "AUC1", "AUC2", "corr1", "corr2",
                                 "corr3", "var_R", "var_TR", "error_var")
-three_studies_RM <- OR_to_RM(three_studies_OR, precision = 0.0001)
+three_studies_RM <- OR_to_RM(three_studies_OR)
 three_studies_RM
 
+RM_to_OR(three_studies_RM)
 }
 \references{
 Hillis, Stephen. 2020. "Determining Roe and Metz model parameters for
