@@ -154,9 +154,9 @@ OR_to_RM <- function(...) {
 #'
 OR_to_RM.default <- function(
   AUC1, AUC2, var_R, var_TR, corr1, corr2, corr3, error_var, n0, n1,
-  b_method = "unspecified", mean_sig_input, b_input,
-  ...
-) {
+  b_method = c("unspecified", "mean_to_sigma", "specified"), mean_sig_input,
+  b_input, ...
+  ) {
 
   AUC1_OR <- AUC1
   AUC2_OR <- AUC2
@@ -179,6 +179,8 @@ OR_to_RM.default <- function(
   x5 <- NA
   x6 <- NA
   x7 <- NA
+
+  b_method <- match.arg(b_method)
 
   # check for out of bounds values
   inbounds <- c(
