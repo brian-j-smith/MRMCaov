@@ -60,8 +60,8 @@ elements.
   \item{n0}{}
   \item{n1}{}
   \item{b}{}
-  \item{mu1}{}
-  \item{mu2}{}
+  \item{delta1}{}
+  \item{delta2}{}
   \item{var_R}{}
   \item{var_TR}{}
   \item{var_C}{}
@@ -122,9 +122,11 @@ RM <- OR_to_RM(n0 = 69, n1 = 45, AUC1 = 0.897, AUC2 = 0.941,
 RM
 
 
-#' ## Example 1aa: Computing RM parms --identical test model
+## Example 1aa: Computing RM parameters -- identical test model
 RM <- OR_to_RM(n0 = 69, n1 = 45, AUC1 = 0.919, AUC2 = 0.919,
-               corr1 = 0.433, corr2 = (0.430 + .299)/2, corr3 = (0.430 + .299)/2,
+               corr1 = 0.433,
+               corr2 = (0.430 + .299)/2,
+               corr3 = (0.430 + .299)/2,
                var_R = 0.00154, var_TR = 0.0,
                error_var = 0.000788)
 RM

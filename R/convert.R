@@ -62,8 +62,8 @@
 #'   \item{n0}{}
 #'   \item{n1}{}
 #'   \item{b}{}
-#'   \item{mu1}{}
-#'   \item{mu2}{}
+#'   \item{delta1}{}
+#'   \item{delta2}{}
 #'   \item{var_R}{}
 #'   \item{var_TR}{}
 #'   \item{var_C}{}
@@ -106,9 +106,11 @@
 #' RM
 #'
 #'
-#'#' ## Example 1aa: Computing RM parms --identical test model
+#' ## Example 1aa: Computing RM parameters -- identical test model
 #' RM <- OR_to_RM(n0 = 69, n1 = 45, AUC1 = 0.919, AUC2 = 0.919,
-#'                corr1 = 0.433, corr2 = (0.430 + .299)/2, corr3 = (0.430 + .299)/2,
+#'                corr1 = 0.433,
+#'                corr2 = (0.430 + .299)/2,
+#'                corr3 = (0.430 + .299)/2,
 #'                var_R = 0.00154, var_TR = 0.0,
 #'                error_var = 0.000788)
 #' RM
@@ -224,7 +226,8 @@ OR_to_RM.default <- function(
   if (flag1 == 0){
     x <- .5
     for (step in 2:step_no) {
-      temp <- .5*(multnorm(x1,x1,x) - (pnorm(x1))**2 + multnorm(x2,x2,x) - (pnorm(x2))**2) - var_R_OR
+      temp <- .5*(multnorm(x1,x1,x) - (pnorm(x1))**2 + multnorm(x2,x2,x) -
+                    (pnorm(x2))**2) - var_R_OR
       x <- x - sign(temp - var_TR_OR)*.5^step
     }
     x4 <- max(x, x3)
@@ -486,27 +489,29 @@ OR_to_RM.default <- function(
 
   #### Compute RM parameters from x1-x7 and b****
   V_RM <- (1 + 1/b^2)/(1 - x4)
-  mu1_RM <- x1*sqrt(V_RM)
-  mu2_RM <- x2*sqrt(V_RM)
+  delta1_RM <- x1*sqrt(V_RM)
+  delta2_RM <- x2*sqrt(V_RM)
   var_R_RM <- .5*x3*V_RM
   var_TR_RM <- .5*x4*V_RM - .5*x3*V_RM
   var_C_RM <- x5
   var_TC_RM <- x6-x5
   var_RC_RM <- x7 - x5
   var_error_RM <- 1 - (x6 + x7 -x5)
-  r_temp <- mu1_RM/(1/b - 1)
-  AUC1_pred_RM <- pnorm(mu1_RM/sqrt(V_RM))
-  AUC2_pred_RM <- pnorm(mu2_RM/sqrt(V_RM))
-  mean_sig1 <- mu1_RM/(1/b - 1)
-  mean_sig2 <- mu2_RM/(1/b - 1)
-  mean_sig1_025 <- max(0,mu1_RM - 1.96*sqrt(2*(var_R_RM + var_TR_RM)))/(b^-1 - 1)
-  mean_sig2_025 <- max(0,mu2_RM - 1.96*sqrt(2*(var_R_RM + var_TR_RM)))/(b^-1 - 1)
+  r_temp <- delta1_RM/(1/b - 1)
+  AUC1_pred_RM <- pnorm(delta1_RM/sqrt(V_RM))
+  AUC2_pred_RM <- pnorm(delta2_RM/sqrt(V_RM))
+  mean_sig1 <- delta1_RM/(1/b - 1)
+  mean_sig2 <- delta2_RM/(1/b - 1)
+  mean_sig1_025 <- max(0,delta1_RM - 1.96*sqrt(2*(var_R_RM + var_TR_RM))) /
+    (b^-1 - 1)
+  mean_sig2_025 <- max(0,delta2_RM - 1.96*sqrt(2*(var_R_RM + var_TR_RM))) /
+    (b^-1 - 1)
 
-  data.frame(
+  res <- data.frame(
     n0 = n0,
     n1 = n1,
-    mu1 = mu1_RM,
-    mu2 = mu2_RM,
+    delta1 = delta1_RM,
+    delta2 = delta2_RM,
     var_R = var_R_RM,
     var_TR = var_TR_RM,
     var_C = var_C_RM,
@@ -521,6 +526,31 @@ OR_to_RM.default <- function(
     x1 = x1, x2 = x2, x3 = x3, x4 = x4, b = b, x5 = x5, x6 = x6, x7 = x7
   )
 
+  NA_fixes <- c(
+    "x3" = "Try reducing the value of var_R.",
+    "x4" = "Try reducing the value of var_TR.",
+    "b" = paste0(
+      "If using b_method = \"unspecified\", there are two possible solutions:\n",
+      "  a) Try changing (reduce or increase) the value of var_error.\n",
+      "  b) Try using one of the other two b_method options, which should always work."
+    ),
+    "x5" = "Try reducing the value of corr3.",
+    "x6" = "Try reducing the value of corr2.",
+    "x7" = "Try reducing the value of corr1."
+  )
+  ind <- match(NA, as.numeric(res[names(NA_fixes)]))
+  if (!is.na(ind)) {
+    warning("Conversion failed.\n", NA_fixes[ind])
+  }
+
+  structure(res, class = c("RMparams", class(res)))
+
+}
+
+
+print.RMparams <- function(x, all = FALSE, ...) {
+  if (!all) x <- x[setdiff(names(x), paste0("x", 1:7))]
+  print(as.data.frame(x))
 }
 
 
@@ -548,11 +578,12 @@ RM_to_OR <- function(...) {
 
 
 RM_to_OR.default <- function(
-  n0, n1, b, mu1, mu2, var_R, var_TR, var_C, var_TC, var_RC, var_error, ...
+  n0, n1, b, delta1, delta2, var_R, var_TR, var_C, var_TC, var_RC, var_error,
+  ...
 ) {
 
-  mu1_RM <- mu1
-  mu2_RM <- mu2
+  delta1_RM <- delta1
+  delta2_RM <- delta2
   var_R_RM <- var_R
   var_TR_RM <- var_TR
   var_C_RM <- var_C
@@ -567,8 +598,8 @@ RM_to_OR.default <- function(
 
   # compute x1-x7
   V <- 1 + b^-2 + 2*(var_R_RM + var_TR_RM)
-  x1 <- mu1_RM/sqrt(V)
-  x2 <- mu2_RM/sqrt(V)
+  x1 <- delta1_RM/sqrt(V)
+  x2 <- delta2_RM/sqrt(V)
   x3 <- 2*var_R_RM/V
   x4 <- 2*(var_R_RM + var_TR_RM)/V
   x5 <- var_C_RM
@@ -579,17 +610,20 @@ RM_to_OR.default <- function(
 
   # compute reader and reader-by-test variance components#
   var_R_OR <- multnorm(x1,x2,x3) - AUC1_OR*AUC2_OR
-  var_TR_OR <- .5*(multnorm(x1,x1,x4)-AUC1_OR^2 + multnorm(x2,x2,x4)-AUC2_OR^2) -var_R_OR
+  var_TR_OR <- .5*(multnorm(x1,x1,x4)-AUC1_OR^2 + multnorm(x2,x2,x4) -
+                     AUC2_OR^2) - var_R_OR
 
   V_RM <- (1 + 1/b^2)/(1 - x4)
-  mu1_RM <- x1*sqrt(V_RM)
-  mu2_RM <- x2*sqrt(V_RM)
-  a1 <- mu1_RM/(1/b)
-  a2 <- mu2_RM/(1/b)
+  delta1_RM <- x1*sqrt(V_RM)
+  delta2_RM <- x2*sqrt(V_RM)
+  a1 <- delta1_RM/(1/b)
+  a2 <- delta2_RM/(1/b)
   mean_to_sig1 <- a1/(1- b)
   mean_to_sig2 <- a2/(1 - b)
-  mean_sig1_025 = max(0,mu1_RM - 1.96*sqrt(2*(var_R_RM + var_TR_RM)))/(b^-1 - 1)
-  mean_sig2_025 = max(0,mu2_RM - 1.96*sqrt(2*(var_R_RM + var_TR_RM)))/(b^-1 - 1)
+  mean_sig1_025 = max(0,delta1_RM - 1.96*sqrt(2*(var_R_RM + var_TR_RM))) /
+    (b^-1 - 1)
+  mean_sig2_025 = max(0,delta2_RM - 1.96*sqrt(2*(var_R_RM + var_TR_RM))) /
+    (b^-1 - 1)
 
   # compute Cov3 #
   r1 <- x5
@@ -652,7 +686,7 @@ RM_to_OR.default <- function(
   corr2_OR<- cov2_OR/error_var_OR
   corr3_OR <- cov3_OR/error_var_OR
 
-  data.frame(
+  res <- data.frame(
     n0 = n0,
     n1 = n1,
     AUC1 = AUC1_OR,
@@ -671,6 +705,7 @@ RM_to_OR.default <- function(
     mean_sig1_025 = mean_sig1_025,
     mean_sig2_025 = mean_sig2_025
   )
+  structure(res, class = c("ORparams", class(res)))
 
 }
 
