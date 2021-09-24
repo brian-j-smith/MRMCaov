@@ -525,7 +525,8 @@ OR_to_RM.default <- function(
     mean_sig2 = mean_sig2,
     mean_sig1_025 = mean_sig1_025,
     mean_sig2_025 = mean_sig2_025,
-    x1 = x1, x2 = x2, x3 = x3, x4 = x4, b = b, x5 = x5, x6 = x6, x7 = x7
+    x1 = x1, x2 = x2, x3 = x3, x4 = x4, b = b, x5 = x5, x6 = x6, x7 = x7,
+    stringsAsFactors = FALSE
   )
 
   NA_fixes <- c(
