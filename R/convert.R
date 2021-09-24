@@ -153,10 +153,10 @@ OR_to_RM <- function(...) {
 #' @rdname OR_to_RM
 #'
 OR_to_RM.default <- function(
-  AUC1, AUC2, var_R, var_TR, corr1, corr2, corr3, error_var, n0, n1,
-  b_method = c("unspecified", "mean_to_sigma", "specified"), mean_sig_input,
-  b_input, ...
-  ) {
+  AUC1, AUC2, var_R, var_TR, corr1, corr2, corr3, error_var = NULL, n0, n1,
+  b_method = c("unspecified", "mean_to_sigma", "specified"), mean_sig_input =NULL,
+  b_input = NULL, b_le_1 = "yes", ...
+) {
 
   AUC1_OR <- AUC1
   AUC2_OR <- AUC2
@@ -165,7 +165,7 @@ OR_to_RM.default <- function(
   corr1_OR <- corr1
   corr2_OR <- corr2
   corr3_OR <- corr3
-  error_var_OR <- error_var # can be NA if use b_method 2
+  error_var_OR <- error_var # can be NA if use b_method = "unspecified" or "mean_to_sigma"
   increment1 <- .001 #initial search step increment for b_method = 1;
   increment2 <- .000001 #search step increment for b_method = 1 after using increment1 steps;
   lower_bd <- 0.01 #lower bound for unspecified method b search
@@ -265,41 +265,12 @@ OR_to_RM.default <- function(
       x <- 1
       b <- NA #   this value will indicate b_method 2 does not work for
       # these data
-      while (flag == 0 & x >= lower_bd) {
-        # first assume increment1 = .001 <= b <= 1.  There may also be a solution for b > 1, but
-        # we do compute it if a solution exists for b <= 1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 onsider that
-        r1 <- 1
-        r2 <- x^2/(1 + x^2)
-        r3 <- 1/(1 + x^2)
-        r4 <- 0
-        a1 <- multnorm(x1,x1,r1*(1 - x4) + x4)
-        a2 <- multnorm(x1,x1,r2*(1 - x4) + x4)
-        a3 <- multnorm(x1,x1,r3*(1 - x4) + x4)
-        a4 <- multnorm(x1,x1,r4*(1 - x4) + x4)
-        error_var_mod1 <- c1*a1 + c2*a2 + c3*a3 + c4*a4
-        a1 <- multnorm(x2,x2,r1*(1 - x4) + x4)
-        a2 <- multnorm(x2,x2,r2*(1 - x4) + x4)
-        a3 <- multnorm(x2,x2,r3*(1 - x4) + x4)
-        a4 <- multnorm(x2,x2,r4*(1 - x4) + x4)
-        error_var_mod2 <- c1*a1 + c2*a2 + c3*a3 + c4*a4
-        error_var_formula <- (error_var_mod1 + error_var_mod2)/2
-        if (x == 1) {
-          sign <- sign(error_var_formula - error_var_OR)
-        }
-        sign1 <- sign(error_var_formula - error_var_OR)
-        if (sign1 != sign) {
-          flag <- 1
-          b <- x
-          temp_b <- b + increment1
-        } else {
-          x <- x - increment1
-        }
-      }
-
-      if (!is.na(b)) { #now compute higher precision solution
-        flag <- 0
-        x <- temp_b
-        while (flag == 0 & x >= temp_b - increment1) {
+      if (b_le_1 == "yes")
+      { # if (b_le_1 = "yes") then the algorithm does searches
+        # for a value of b < 1. Otherwise, it searches only for b >=1
+        while (flag == 0 & x > lower_bd) {
+          # first assume increment1 = .001 <= b <= 1.  There may also be a solution for b > 1, but
+          # we do not compute it if a solution exists for b <= 1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 onsider that
           r1 <- 1
           r2 <- x^2/(1 + x^2)
           r3 <- 1/(1 + x^2)
@@ -315,19 +286,51 @@ OR_to_RM.default <- function(
           a4 <- multnorm(x2,x2,r4*(1 - x4) + x4)
           error_var_mod2 <- c1*a1 + c2*a2 + c3*a3 + c4*a4
           error_var_formula <- (error_var_mod1 + error_var_mod2)/2
-          if (x >= (temp_b - increment2/2)) {
+          if (x == 1) {
             sign <- sign(error_var_formula - error_var_OR)
           }
           sign1 <- sign(error_var_formula - error_var_OR)
           if (sign1 != sign) {
             flag <- 1
             b <- x
+            temp_b <- b + increment1
           } else {
-            x <- x - increment2
+            x <- x - increment1
           }
         }
-      }
 
+        if (!is.na(b)) { #now compute higher precision solution
+          flag <- 0
+          x <- temp_b
+          while (flag == 0 & x >= temp_b - increment1) {
+            r1 <- 1
+            r2 <- x^2/(1 + x^2)
+            r3 <- 1/(1 + x^2)
+            r4 <- 0
+            a1 <- multnorm(x1,x1,r1*(1 - x4) + x4)
+            a2 <- multnorm(x1,x1,r2*(1 - x4) + x4)
+            a3 <- multnorm(x1,x1,r3*(1 - x4) + x4)
+            a4 <- multnorm(x1,x1,r4*(1 - x4) + x4)
+            error_var_mod1 <- c1*a1 + c2*a2 + c3*a3 + c4*a4
+            a1 <- multnorm(x2,x2,r1*(1 - x4) + x4)
+            a2 <- multnorm(x2,x2,r2*(1 - x4) + x4)
+            a3 <- multnorm(x2,x2,r3*(1 - x4) + x4)
+            a4 <- multnorm(x2,x2,r4*(1 - x4) + x4)
+            error_var_mod2 <- c1*a1 + c2*a2 + c3*a3 + c4*a4
+            error_var_formula <- (error_var_mod1 + error_var_mod2)/2
+            if (x >= (temp_b - increment2/2)) {
+              sign <- sign(error_var_formula - error_var_OR)
+            }
+            sign1 <- sign(error_var_formula - error_var_OR)
+            if (sign1 != sign) {
+              flag <- 1
+              b <- x
+            } else {
+              x <- x - increment2
+            }
+          }
+        }
+      } # end of if (b_ge_1 != "yes")
 
       if (is.na(b)) {
         x <- 1
@@ -355,10 +358,48 @@ OR_to_RM.default <- function(
           if (sign1 != sign) {
             flag <- 1
             b <- x
+            temp_b <- b - increment1
           } else {
             x <- x + increment1
           }
         }
+
+        if (!is.na(b)) { #now compute higher precision solution
+          flag <- 0
+          x <- temp_b
+          while (flag == 0 & x <= temp_b + increment1) {
+            r1 <- 1
+            r2 <- x^2/(1 + x^2)
+            r3 <- 1/(1 + x^2)
+            r4 <- 0
+            a1 <- multnorm(x1,x1,r1*(1 - x4) + x4)
+            a2 <- multnorm(x1,x1,r2*(1 - x4) + x4)
+            a3 <- multnorm(x1,x1,r3*(1 - x4) + x4)
+            a4 <- multnorm(x1,x1,r4*(1 - x4) + x4)
+            error_var_mod1 <- c1*a1 + c2*a2 + c3*a3 + c4*a4
+            a1 <- multnorm(x2,x2,r1*(1 - x4) + x4)
+            a2 <- multnorm(x2,x2,r2*(1 - x4) + x4)
+            a3 <- multnorm(x2,x2,r3*(1 - x4) + x4)
+            a4 <- multnorm(x2,x2,r4*(1 - x4) + x4)
+            error_var_mod2 <- c1*a1 + c2*a2 + c3*a3 + c4*a4
+            error_var_formula <- (error_var_mod1 + error_var_mod2)/2
+            if (x <= (temp_b + increment2/2)) {
+              sign <- sign(error_var_formula - error_var_OR)
+            }
+            sign1 <- sign(error_var_formula - error_var_OR)
+            if (sign1 != sign) {
+              flag <- 1
+              b <- x
+
+            } else {
+              x <- x + increment2
+            }
+          }
+        }
+
+
+
+
       }
     }
 
@@ -502,12 +543,15 @@ OR_to_RM.default <- function(
   r_temp <- delta1_RM/(1/b - 1)
   AUC1_pred_RM <- pnorm(delta1_RM/sqrt(V_RM))
   AUC2_pred_RM <- pnorm(delta2_RM/sqrt(V_RM))
-  mean_sig1 <- delta1_RM/(1/b - 1)
-  mean_sig2 <- delta2_RM/(1/b - 1)
-  mean_sig1_025 <- max(0,delta1_RM - 1.96*sqrt(2*(var_R_RM + var_TR_RM))) /
-    (b^-1 - 1)
-  mean_sig2_025 <- max(0,delta2_RM - 1.96*sqrt(2*(var_R_RM + var_TR_RM))) /
-    (b^-1 - 1)
+  mean_to_sig1 <- delta1_RM/(1/b - 1)
+  mean_to_sig2 <- delta2_RM/(1/b - 1)
+  sigma_tilda = sqrt(2*var_R_RM + 2*var_TR_RM)/(1/b - 1);
+  Pr1_improper = pnorm((2-mean_to_sig1)/sigma_tilda) - pnorm((-3-mean_to_sig1)/sigma_tilda);
+  Pr2_improper = pnorm((2-mean_to_sig2)/sigma_tilda) - pnorm((-3-mean_to_sig2)/sigma_tilda);
+  if (!is.na(b)){
+    if (b == 1) {Pr1_improper = 0
+    Pr2_improper = 0}
+  }
 
   res <- data.frame(
     n0 = n0,
@@ -520,13 +564,13 @@ OR_to_RM.default <- function(
     var_TC = var_TC_RM,
     var_RC = var_RC_RM,
     var_error = var_error_RM,
+    b = b,
     b_method = b_method,
-    mean_sig1 = mean_sig1,
-    mean_sig2 = mean_sig2,
-    mean_sig1_025 = mean_sig1_025,
-    mean_sig2_025 = mean_sig2_025,
-    x1 = x1, x2 = x2, x3 = x3, x4 = x4, b = b, x5 = x5, x6 = x6, x7 = x7,
-    stringsAsFactors = FALSE
+    mean_to_sig1 = mean_to_sig1,
+    mean_to_sig2 = mean_to_sig2,
+    Pr1_improper = Pr1_improper,
+    Pr2_improper = Pr2_improper,
+    x1 = x1, x2 = x2, x3 = x3, x4 = x4, x5 = x5, x6 = x6, x7 = x7
   )
 
   NA_fixes <- c(
@@ -623,10 +667,12 @@ RM_to_OR.default <- function(
   a2 <- delta2_RM/(1/b)
   mean_to_sig1 <- a1/(1- b)
   mean_to_sig2 <- a2/(1 - b)
-  mean_sig1_025 = max(0,delta1_RM - 1.96*sqrt(2*(var_R_RM + var_TR_RM))) /
-    (b^-1 - 1)
-  mean_sig2_025 = max(0,delta2_RM - 1.96*sqrt(2*(var_R_RM + var_TR_RM))) /
-    (b^-1 - 1)
+  sigma_tilda = sqrt(2*var_R_RM + 2*var_TR_RM)/(1/b - 1)
+  Pr1_improper = pnorm((2-mean_to_sig1)/sigma_tilda) - pnorm((-3-mean_to_sig1)/sigma_tilda)
+  Pr2_improper = pnorm((2-mean_to_sig2)/sigma_tilda) - pnorm((-3-mean_to_sig2)/sigma_tilda)
+  if (b == 1) {Pr1_improper = 0
+  Pr2_improper = 0}
+
 
   # compute Cov3 #
   r1 <- x5
@@ -703,10 +749,12 @@ RM_to_OR.default <- function(
     corr1 = corr1_OR,
     corr2 = corr2_OR,
     corr3 = corr3_OR,
+    b = b,
     mean_to_sig1 = mean_to_sig1,
     mean_to_sig2 = mean_to_sig2,
-    mean_sig1_025 = mean_sig1_025,
-    mean_sig2_025 = mean_sig2_025
+    Pr1_improper = Pr1_improper,
+    Pr2_improper = Pr2_improper
+
   )
   structure(res, class = c("ORparams", class(res)))
 
