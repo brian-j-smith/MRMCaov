@@ -56,4 +56,9 @@
 #'   \code{\link{plot}}       \tab Plot curves \cr
 #' }
 #'
+#' @note
+#' This research was supported by the National Institute of Biomedical Imaging
+#' and Bioengineering (NIBIB) of the National Institutes of Health under Award
+#' Number R01EB025174
+#'
 "_PACKAGE"
