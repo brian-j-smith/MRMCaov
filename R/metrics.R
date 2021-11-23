@@ -194,5 +194,5 @@ trapezoidal_spec <- function(truth, rating, sens) {
 
 
 psi <- function(x_pos, x_neg) {
-  (x_pos > x_neg) + 0.5 * (x_pos == x_neg)
+  (sign(x_pos - x_neg) + 1) / 2
 }
