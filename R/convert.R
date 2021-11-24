@@ -12,12 +12,12 @@
 #' corresponding variance components involving nondiseased cases. This algorithm
 #' is described in Hillis (2020).
 #'
-#' A related function is the  RM_to_OR function, which determines OR parameters
+#' A related function is the  RMH_to_OR function, which determines OR parameters
 #' that describe the distribution of empirical AUC estimates computed from
 #' inputted RM model parameter values, based on the analytical mapping provided
 #' by Hillis (2018).
 #'
-#' @rdname OR_to_RM
+#' @rdname OR_to_RMH
 #'
 #' @param AUC1,AUC2 test 1 and 2 expected empirical AUCs.
 #' @param var_R,var_TR OR reader and test-by-reader variance components.
@@ -45,11 +45,11 @@
 #' model, that express OR parameters describing the distribution of empirical
 #' AUC outcomes computed from RM simulated data as functions of the RM
 #' parameters. This mapping from the RM parameters to the OR parameters is
-#' implemented in \R by the  RM_to_OR function.
+#' implemented in \R by the  RMH_to_OR function.
 #'
 #' For the constrained unequal-variance RM model, the OR-to-RM algorithm
 #' provides the reverse transformation that determines the corresponding RM
-#' parameters.  This algorithm is described in Hillis (2020).  The OR_to_RM
+#' parameters.  This algorithm is described in Hillis (2020).  The OR_to_RMH
 #' function implements this algorithm using an iterative search procedure.
 #'
 #' \code{b_method} indicates the method for estimating the RM binormal \emph{b}
@@ -159,22 +159,22 @@
 #' Brian J. Smith, Department of Biostatistics, University of Iowa,
 #' \email{brian-j-smith@uiowa.edu}
 #'
-#' @seealso \code{\link{RM_to_OR}}
+#' @seealso \code{\link{RMH_to_OR}}
 #'
 #' @examples
 #' ## Example 1: Computing RM parameters from OR parameters directly
 #' ##--------------------------------------------------------------
 #' ## Example 1a: Using b_method ="unspecified" (the default)
-#' RM <- OR_to_RM(n0 = 69, n1 = 45, AUC1 = 0.897, AUC2 = 0.941,
-#'                corr1 = 0.433, corr2 = 0.430, corr3 = 0.299,
-#'                var_R = 0.00154, var_TR = 0.000208, var_error = 0.000788)
+#' RM <- OR_to_RMH(n0 = 69, n1 = 45, AUC1 = 0.897, AUC2 = 0.941,
+#'                 corr1 = 0.433, corr2 = 0.430, corr3 = 0.299,
+#'                 var_R = 0.00154, var_TR = 0.000208, var_error = 0.000788)
 #' RM
 #' ##  We recommend also computing the OR parameter values ("true values")
 #' # that describe the distribution of simulated data based on above RM parameters,
-#' # using the RM_to_OR function. Ideally the true values will be the same as the
+#' # using the RMH_to_OR function. Ideally the true values will be the same as the
 #' # inputted OR values used for deriving the RM parameter values. We recommend
 #' # always performing this check.  This check is carried out below, as shown below.
-#' true_values = RM_to_OR(RM)
+#' true_values = RMH_to_OR(RM)
 #' true_values
 #' #   From the output we see, for this example, that the true OR values are identical to the
 #' # inputted OR values
@@ -183,12 +183,12 @@
 #' # Example 1b: Using b_method = "specified" with b_input = 1
 #' #   Note that the error variance does not need to be specified since this b_method
 #' # does not utilize it.
-#' RM <- OR_to_RM(n0 = 69, n1 = 45, AUC1 = 0.897, AUC2 = 0.941,
-#'                corr1 = 0.433, corr2 = 0.430, corr3 = 0.299,
-#'                var_R = 0.00154, var_TR = 0.000208,
-#'                b_method = "specified", b_input = 1)
+#' RM <- OR_to_RMH(n0 = 69, n1 = 45, AUC1 = 0.897, AUC2 = 0.941,
+#'                 corr1 = 0.433, corr2 = 0.430, corr3 = 0.299,
+#'                 var_R = 0.00154, var_TR = 0.000208,
+#'                 b_method = "specified", b_input = 1)
 #' RM
-#' true_values <- RM_to_OR(RM)
+#' true_values <- RMH_to_OR(RM)
 #' true_values
 #'
 #' #  From the output we see, for this example, that the true values are identical
@@ -198,12 +198,12 @@
 #' ## Example 1c: Using b_method = "mean_to_sigma" with mean_to_sig_input = 4.5
 #' #   Note the error variance does not need to be  specified since this b_method
 #' # does not utilize it.
-#' RM <- OR_to_RM(n0 = 69, n1 = 45, AUC1 = 0.897, AUC2 = 0.941,
-#'                corr1 = 0.433, corr2 = 0.430, corr3 = 0.299,
-#'                var_R = 0.00154, var_TR = 0.000208,
-#'                b_method = "mean_to_sigma", mean_sig_input = 4.5)
+#' RM <- OR_to_RMH(n0 = 69, n1 = 45, AUC1 = 0.897, AUC2 = 0.941,
+#'                 corr1 = 0.433, corr2 = 0.430, corr3 = 0.299,
+#'                 var_R = 0.00154, var_TR = 0.000208,
+#'                 b_method = "mean_to_sigma", mean_sig_input = 4.5)
 #' RM
-#' true_values <- RM_to_OR(RM)
+#' true_values <- RMH_to_OR(RM)
 #' true_values
 #' #   From the output we see for this example that the true OR values are identical
 #' # (within rounding error) to the inputted OR values (but note that var_error was
@@ -217,9 +217,9 @@
 #' vandyke_OR <- data.frame(n0 = 69, n1 = 45, AUC1 = 0.897, AUC2 = 0.941,
 #'                          corr1 = 0.433, corr2 = 0.430, corr3 = 0.299,
 #'                          var_R = 0.00154, var_TR = 0.000208, var_error = 0.000788)
-#' vandyke_RM <- OR_to_RM(vandyke_OR)
+#' vandyke_RM <- OR_to_RMH(vandyke_OR)
 #' vandyke_RM
-#' true_values <- RM_to_OR(vandyke_RM)
+#' true_values <- RMH_to_OR(vandyke_RM)
 #' true_values
 #'
 #' ## Example 2b: Three studies
@@ -236,9 +236,9 @@
 #' colnames(three_studies_OR) <- c("n0", "n1", "AUC1", "AUC2", "corr1", "corr2",
 #'                                 "corr3", "var_R", "var_TR", "var_error")
 #' three_studies_OR
-#' three_studies_RM <- OR_to_RM(three_studies_OR)
+#' three_studies_RM <- OR_to_RMH(three_studies_OR)
 #' three_studies_RM
-#' true_values <- RM_to_OR(three_studies_RM)
+#' true_values <- RMH_to_OR(three_studies_RM)
 #' true_values
 #' ##   Note above that the true values for corr2 and corr3 for the Franken study
 #' # differ slightly from the inputted values; this is because corr2 < corr3 for the
@@ -254,15 +254,15 @@
 #' b_input = c(NA,NA,1)
 #' vandyke_OR_3ex <- cbind(vandyke_OR_x3,b_method,mean_sig_input,b_input)
 #' vandyke_OR_3ex
-#' vandyke_OR_3ex_RM <- OR_to_RM(vandyke_OR_3ex)
+#' vandyke_OR_3ex_RM <- OR_to_RMH(vandyke_OR_3ex)
 #' vandyke_OR_3ex_RM
-#' true_values <- RM_to_OR(vandyke_OR_3ex_RM)
+#' true_values <- RMH_to_OR(vandyke_OR_3ex_RM)
 #' true_values
 #'
 #'
 #' ## Example 3: Printing the alternative x1 -- x7 parameter values
 #' ## ---------------------------------------------------
-#' ## The OR_to_RM function first finds the solutions using the alternative RM
+#' ## The OR_to_RMH function first finds the solutions using the alternative RM
 #' ## parameterization consisting of b and the alternative parameters
 #' ## x1, x2, x3, x4, x5, x6, and x7, and then solves for the conventional RM
 #' ## parameters in terms of these alternative parameters.  (See Hillis (2020) for details.)
@@ -270,19 +270,19 @@
 #' ## can be printed out using the all = TRUE print option, as shown below
 #' ## using Example 1a:
 #'
-#' RM <- OR_to_RM(n0 = 69, n1 = 45, AUC1 = 0.897, AUC2 = 0.941,
+#' RM <- OR_to_RMH(n0 = 69, n1 = 45, AUC1 = 0.897, AUC2 = 0.941,
 #'                corr1 = 0.433, corr2 = 0.430, corr3 = 0.299,
 #'                var_R = 0.00154, var_TR = 0.000208, var_error = 0.000788)
 #' print(RM,all = TRUE)
 #'
-OR_to_RM <- function(...) {
-  UseMethod("OR_to_RM")
+OR_to_RMH <- function(...) {
+  UseMethod("OR_to_RMH")
 }
 
 
-#' @rdname OR_to_RM
+#' @rdname OR_to_RMH
 #'
-OR_to_RM.default <- function(...,
+OR_to_RMH.default <- function(...,
   AUC1, AUC2, var_R, var_TR, corr1, corr2, corr3, var_error = NULL, n0, n1,
   b_method = c("unspecified", "mean_to_sigma", "specified"),
   mean_sig_input = NULL, b_input = NULL, b_le_1 = TRUE
@@ -327,7 +327,7 @@ OR_to_RM.default <- function(...,
   )
   invalid_params <- names(inbounds)[!inbounds]
   if (length(invalid_params)) {
-    stop("OR_to_RM parameter values out of bound for ",
+    stop("OR_to_RMH parameter values out of bound for ",
          toString(invalid_params), call. = FALSE)
   }
 
@@ -734,10 +734,10 @@ print.RMparams <- function(x, all = FALSE, ...) {
 }
 
 
-#' @rdname OR_to_RM
+#' @rdname OR_to_RMH
 #'
-OR_to_RM.data.frame <- function(params, ...) {
-  f <- function(row) do.call(OR_to_RM, c(as.list(row), ...))
+OR_to_RMH.data.frame <- function(params, ...) {
+  f <- function(row) do.call(OR_to_RMH, c(as.list(row), ...))
   res <- by(params, seq_len(nrow(params)), f)
   names(res) <- rownames(params)
   do.call(rbind, res)
@@ -757,13 +757,13 @@ OR_to_RM.data.frame <- function(params, ...) {
 #' involving diseased cases constrained to differ by a factor of 1/b^2, b>0,
 #' from corresponding variance components involing nondiseased cases.
 #'
-#' A related function is the OR_to_RM function, which determines RM parameter
+#' A related function is the OR_to_RMH function, which determines RM parameter
 #' values for simulating multireader multicase confidence-of-disease rating data
 #' based on real-data or conjectured Obuchowski-Rockette (OR) parameter
 #' estimates that describe the distribution of the empirical AUC reader
 #' performance measures.
 #'
-#' @rdname RM_to_OR
+#' @rdname RMH_to_OR
 #'
 #' @param ... arguments passed to the default method.
 #' @param n0,n1 numbers of nondiseased and diseased cases.
@@ -789,7 +789,7 @@ OR_to_RM.data.frame <- function(params, ...) {
 #' parameters that describe the distribution of empirical AUC outcomes computed
 #' from RM=model simulated data as functions of the RM parameters. This mapping
 #' from the RM parameters to the OR parameters is implemented in R by the
-#' RM_to_OR function.
+#' RMH_to_OR function.
 #'
 #' @return
 #' The OR model parameters are returned in a data frame with the following
@@ -842,15 +842,15 @@ OR_to_RM.data.frame <- function(params, ...) {
 #' Brian J. Smith, Department of Biostatistics, University of Iowa,
 #' \email{brian-j-smith@uiowa.edu}
 #'
-#' @seealso \code{\link{OR_to_RM}}
+#' @seealso \code{\link{OR_to_RMH}}
 #'
 #' @examples
 #' ##  Example 1: Computing OR parameters from RM parameters directly
 #' # RM parameters from first line (A_z = 0.702) of Table 1 in Roe & Metz (1997)
 #' # with 50 diseased and 50 nondiseased cases.
-#' OR <- RM_to_OR(n0 = 50, n1 = 50, delta1 = 0.75, delta2 = 0.75,
-#'                var_R = 0.0055, var_TR = 0.0055, var_C = 0.3, var_TC = 0.3,
-#'                var_RC = 0.2, var_error = 0.2, b = 1)
+#' OR <- RMH_to_OR(n0 = 50, n1 = 50, delta1 = 0.75, delta2 = 0.75,
+#'                 var_R = 0.0055, var_TR = 0.0055, var_C = 0.3, var_TC = 0.3,
+#'                 var_RC = 0.2, var_error = 0.2, b = 1)
 #' OR
 #'
 #' ##  Example 2: Computing RM parameters from a data frame of RM parameters
@@ -860,11 +860,11 @@ OR_to_RM.data.frame <- function(params, ...) {
 #' RM_parms_line1 <- data.frame(n0 = 50, n1 = 50, delta1 = 0.75, delta2 = 0.75,
 #'                              var_R = 0.0055, var_TR = 0.0055, var_C = 0.3, var_TC = 0.3,
 #'                              var_RC = 0.2, var_error = 0.2, b = 1)
-#' OR <- RM_to_OR(RM_parms_line1)
+#' OR <- RMH_to_OR(RM_parms_line1)
 #' OR
-#' ## Note below that applying the OR_to_RM function to the above OR parameters
+#' ## Note below that applying the OR_to_RMH function to the above OR parameters
 #' # results in the original RM parameters within rounding error:
-#' check <- OR_to_RM(OR)
+#' check <- OR_to_RMH(OR)
 #' check
 #'
 #' ## Example 2b: RM parameters from last 3 lines of Table 1 in Roe & Metz (1997)
@@ -879,7 +879,7 @@ OR_to_RM.data.frame <- function(params, ...) {
 #' colnames(RM_3_models) <- c("n0", "n1", "delta1", "delta2", "var_R", "var_TR",
 #'                            "var_C", "var_TC", "var_RC", "var_error", "b")
 #' RM_3_models
-#' OR_3_models <- RM_to_OR(RM_3_models)
+#' OR_3_models <- RMH_to_OR(RM_3_models)
 #' OR_3_models
 #'
 #' ## Example 2c: RM parameters from last 3 lines of Table 1 in Hillis (2012)
@@ -894,17 +894,17 @@ OR_to_RM.data.frame <- function(params, ...) {
 #' colnames(RM_3_models_Hillis) <- c("n0", "n1", "delta1", "delta2", "var_R", "var_TR",
 #'                                   "var_C", "var_TC", "var_RC", "var_error", "b")
 #' RM_3_models_Hillis
-#' OR_3_models_Hillis <- RM_to_OR(RM_3_models_Hillis)
+#' OR_3_models_Hillis <- RMH_to_OR(RM_3_models_Hillis)
 #' OR_3_models_Hillis
 #'
-RM_to_OR <- function(...) {
-  UseMethod("RM_to_OR")
+RMH_to_OR <- function(...) {
+  UseMethod("RMH_to_OR")
 }
 
 
-#' @rdname RM_to_OR
+#' @rdname RMH_to_OR
 #'
-RM_to_OR.default <- function(
+RMH_to_OR.default <- function(
   ..., n0, n1, b, delta1, delta2, var_R, var_TR, var_C, var_TC, var_RC,
   var_error
 ) {
@@ -1045,10 +1045,10 @@ RM_to_OR.default <- function(
 }
 
 
-#' @rdname RM_to_OR
+#' @rdname RMH_to_OR
 #'
-RM_to_OR.data.frame <- function(params, ...) {
-  f <- function(row) do.call(RM_to_OR, c(as.list(row), ...))
+RMH_to_OR.data.frame <- function(params, ...) {
+  f <- function(row) do.call(RMH_to_OR, c(as.list(row), ...))
   res <- by(params, seq_len(nrow(params)), f)
   names(res) <- rownames(params)
   do.call(rbind, res)
