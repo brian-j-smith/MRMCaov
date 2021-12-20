@@ -350,8 +350,8 @@ OR_to_RMH.default <- function(...,
     x3 <- NA
     flag1 <- 1
   }
-  #STEP 3: Compute x4 (= 2(sigma_R_OR**2 + sigma_TR_OR**2)/V)
 
+  #STEP 3: Compute x4 (= 2(sigma_R_OR**2 + sigma_TR_OR**2)/V)
   if (flag1 == 1) {
     x4 <- NA
   }
@@ -368,7 +368,6 @@ OR_to_RMH.default <- function(...,
       flag1 <- 1
     }
   }
-
 
   # STEP 4 Compute b
   if (flag1 == 1) {
@@ -525,13 +524,8 @@ OR_to_RMH.default <- function(...,
             }
           }
         }
-
-
-
-
       }
     }
-
 
     if (b_method == "specified") { # use b_input as b value
       b <- b_input
@@ -602,7 +596,6 @@ OR_to_RMH.default <- function(...,
   }
 
   #  STEP 6: Solve for x6 = RM case + treatment-by-case variances
-
   if (flag1 == 1) {
     x6 <- NA
   }
@@ -633,9 +626,7 @@ OR_to_RMH.default <- function(...,
     }
   }
 
-
   # STEP 7: Compute x7 = RM case + reader-by-case variances*
-
   if (flag1 == 1) {
     x7 <- NA
   }
