@@ -22,5 +22,5 @@ Imports: ggplot2, gtools, methods, mvtnorm, progress, pROC, tibble
 NeedsCompilation: yes
 LazyData: true
 License: GPL-3
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Encoding: UTF-8

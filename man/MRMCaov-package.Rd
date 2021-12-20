@@ -9,9 +9,10 @@
 A package for multi-reader and multi-case analysis of variance.
 }
 \details{
-The following functions are available in \pkg{MRMCaov} for estimation and
+The functions below are available in \pkg{MRMCaov} for estimation and
 comparison of test performance metrics in studies involving multiple cases
-and one or more readers.
+and one or more readers.  Examples of their use can be found in the online
+guide at \url{https://brian-j-smith.github.io/MRMCaov/}.
 
 Statistical Inference:
 \tabular{ll}{
@@ -65,6 +66,17 @@ ROC Curves:
   \code{\link{mean}}       \tab Compute the mean of multiple curves \cr
   \code{\link{plot}}       \tab Plot curves \cr
 }
+
+Conversion of MRMC Model Parameters:
+\tabular{ll}{
+  \code{\link{OR_to_RMH}} \tab Obuchowski-Rockette to Roe, Metz & Hillis parameters \cr
+  \code{\link{RMH_to_OR}} \tab Roe, Metz & Hillis to Obuchowski-Rockette parameters \cr
+}
+}
+\note{
+This research was supported by the National Institute of Biomedical Imaging
+and Bioengineering (NIBIB) of the National Institutes of Health under Award
+Number R01EB025174
 }
 \author{
 \strong{Maintainer}: Brian J Smith \email{brian-j-smith@uiowa.edu}

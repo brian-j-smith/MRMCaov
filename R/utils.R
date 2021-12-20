@@ -68,7 +68,7 @@ dim_mat <- function(x) {
 get_design <- function(data) {
   crosstab <- function(...) table(data[c(...)]) > 0
 
-  test_x_reader <- crosstab("test", "reader") > 0
+  test_x_reader <- crosstab("test", "reader")
   if (all(test_x_reader)) {
     if (all(colSums(crosstab("reader", "case")) == 1)) {
       2

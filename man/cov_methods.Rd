@@ -11,7 +11,10 @@ DeLong()
 
 jackknife()
 
-unbiased()
+unbiased(abar = FALSE)
+}
+\arguments{
+\item{abar}{logical indicating whether to compute mean covariance components.}
 }
 \description{
 Performance Metric Covariance Estimation
