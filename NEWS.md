@@ -2,6 +2,9 @@
 
 ## Version Updates
 
+## 0.1.16
+* Add functions `OR_to_RMH()` and `RMH_to_OR()` for conversion from Obuchowski-Rockette to Roe, Metz & Hillis model parameters and vice versa.
+
 ## 0.1.15
 * Implement ROC expected utility metrics `binormal_eu()`, `binormalLR_eu()`, and `empirical_eu()`.
 

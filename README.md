@@ -19,7 +19,9 @@ the package include the following.
 -   Support for factorial and nested study designs
 -   DeLong, jackknife, and unbiased covariance estimation
 -   Inference for random or fixed readers and cases
--   Compatibility with Microsoft Windows, Mac OS, and Linux
+-   Conversion of Obuchowski-Rockette to Roe, Metz & Hillis model
+    parameters and vice versa.
+-   Compatibility with Microsoft Windows and Linux
 
 ## Download and Installation
 
@@ -40,10 +42,10 @@ To install the package, do the following:
 install.packages(c("ggplot2", "gtools", "mvtnorm", "progress", "pROC", "tibble"))
 ```
 
-| Operating System   | Package Archive File                                                                                                                     |
-|--------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| Microsoft Windows: | [MRMCaov\_0.1.15.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EQZcnku1ZepEiH--Zrm5BAUBPBU3maMtQpVZMTXfHC9Jjw)    |
-| Linux:             | [MRMCaov\_0.1.15.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EX18FFKad6ZGgIx5XpRzwVQBYRv33iLWSBuelXp9nk0MHw) |
+| Operating System   | Package Archive File                                                                                                                    |
+|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| Microsoft Windows: | [MRMCaov_0.1.16.zip](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EWEWBQYcJc9BiizKq7aL2FcBcowh8wFyfM3Y6SZJF1cSlQ)    |
+| Linux:             | [MRMCaov_0.1.16.tar.gz](https://iowa-my.sharepoint.com/:u:/g/personal/bjsmith_uiowa_edu/EdfP3epbG3NOnsJdsHIljZYBHkPiPc4TyIa-cT1Vrc8QVg) |
 
 ## Citing the Software
 
@@ -53,20 +55,23 @@ citation("MRMCaov")
 ```
 
 
-    To cite MRMCaov in publications, please use the following two references, including the R
-    package URL.
+    To cite MRMCaov in publications, please use the following two references,
+    including the R package URL.
 
-    Smith BJ, Hillis SL, Pesce LL (2021). _MCMCaov: Multi-Reader Multi-Case Analysis of
-    Variance_. R package version 0.1.15, <URL: https://github.com/brian-j-smith/MRMCaov>.
+    Smith BJ, Hillis SL, Pesce LL (2022). _MCMCaov: Multi-Reader Multi-Case Analysis
+    of Variance_. R package version 0.1.16, <URL:
+    https://github.com/brian-j-smith/MRMCaov>.
 
-    Smith BJ, Hillis SL (2020). "Multi-reader multi-case analysis of variance software for
-    diagnostic performance comparison of imaging modalities." In Samuelson F, Taylor-Phillips S
-    (eds.), _Proceedings of SPIE 11316, Medical Imaging 2020: Image Perception, Observer
-    Performance, and Technology Assessment_, 113160K. doi: 10.117/12.2549075 (URL:
-    https://doi.org/10.117/12.2549075), <URL: https://pubmed.ncbi.nlm.nih.gov/32351258>.
+    Smith BJ, Hillis SL (2020). "Multi-reader multi-case analysis of variance
+    software for diagnostic performance comparison of imaging modalities." In
+    Samuelson F, Taylor-Phillips S (eds.), _Proceedings of SPIE 11316, Medical
+    Imaging 2020: Image Perception, Observer Performance, and Technology
+    Assessment_, 113160K. doi: 10.117/12.2549075 (URL:
+    https://doi.org/10.117/12.2549075), <URL:
+    https://pubmed.ncbi.nlm.nih.gov/32351258>.
 
-    To see these entries in BibTeX format, use 'print(<citation>, bibtex=TRUE)', 'toBibtex(.)',
-    or set 'options(citation.bibtex.max=999)'.
+    To see these entries in BibTeX format, use 'print(<citation>, bibtex=TRUE)',
+    'toBibtex(.)', or set 'options(citation.bibtex.max=999)'.
 
 ``` r
 ## Bibtex format
@@ -75,9 +80,9 @@ toBibtex(citation("MRMCaov"))
 
     @Manual{MRMCaov-package,
       author = {Brian J Smith and Stephen L Hillis and Lorenzo L Pesce},
-      title = {MCMCaov: Multi-Reader Multi-Case Analysis of Variance},
-      year = {2021},
-      note = {R package version 0.1.15},
+      title = {{MCMCaov}: Multi-Reader Multi-Case Analysis of Variance},
+      year = {2022},
+      note = {R package version 0.1.16},
       url = {https://github.com/brian-j-smith/MRMCaov},
     }
 
