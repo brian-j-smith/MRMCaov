@@ -4,7 +4,7 @@
 \alias{OR_to_RMH}
 \alias{OR_to_RMH.default}
 \alias{OR_to_RMH.data.frame}
-\title{Convert Obuchowski-Rockette to Roe & Metz Parameters}
+\title{Convert Obuchowski-Rockette Parameters to Roe & Metz Parameters}
 \usage{
 OR_to_RMH(...)
 
@@ -41,7 +41,7 @@ OR_to_RMH(...)
 
 \item{n0, n1}{number of nondiseased and diseased cases.}
 
-\item{b_method}{method of estimating RM b parameter.}
+\item{b_method}{method of estimating RMH b parameter.}
 
 \item{mean_sig_input}{mean-to-sigma ratio, required only if
 \code{b_method = "mean_to_sigma"}.}
@@ -57,7 +57,7 @@ searches only for for b >= 1. Required only if
 \item{params}{data frame of above OR parameter values in the columns.}
 }
 \value{
-The RM model parameters are returned in a data frame with the following
+The RMH model parameters are returned in a data frame with the following
 elements.
 
 \describe{
@@ -65,12 +65,12 @@ elements.
     distributions for test 1 across reader population.}
   \item{delta2}{mean separation of nondiseased and diseased decision-variable
     distributions for test 2 across reader population.}
-  \item{var_R}{RM reader variance  compnent.}
-  \item{var_TR}{RM text-by-reader variance component.}
-  \item{var_C}{RM case variance component.}
-  \item{var_TC}{RM test-by-case variance.}
-  \item{var_RC}{RM reader-by-case variance.}
-  \item{var_error}{RM error variance.}
+  \item{var_R}{RMH reader variance  compnent.}
+  \item{var_TR}{RMH text-by-reader variance component.}
+  \item{var_C}{RMH case variance component.}
+  \item{var_TC}{RMH test-by-case variance.}
+  \item{var_RC}{RMH reader-by-case variance.}
+  \item{var_error}{RMH error variance.}
   \item{b}{variance components involving diseased cases are constrained to
     differ by a factor of 1/b^2 from corresponding variance components
     involving nondiseased cases.}
@@ -86,9 +86,9 @@ Related quantities that are also returned in the data frame:
   \item{mean_to_sig2}{expected mean-to-sigma ratio across readers for test
     2.}
   \item{Pr1_improper}{probability that the test 1 ROC curve for a random
-    reader will be visually improper (i.e, |mean-to-sigma ratio| < 3).}
+    reader will be noticeably improper (i.e, |mean-to-sigma ratio| < 2).}
   \item{Pr2_improper}{probability that the test 2 ROC curve for a random
-    reader will be visually improper (i.e, |mean-to-sigma ratio| < 3).}
+    reader will be noticeably improper (i.e, |mean-to-sigma ratio| < 2).}
 }
 }
 \description{
@@ -96,38 +96,30 @@ Determines Roe & Metz (RM) simulation model parameters for simulating
 multireader multicase likelihood-of-disease rating data based on real-data or
 conjectured Obuchowski-Rockette (OR) parameter estimates that describe the
 distribution of the empirical AUC reader performance measure. The algorithm
-assumes the constrained unequal-variance RM model (Hillis, 2012), which
+assumes the constrained unequal-variance RM model (Hillis, 2012) which
 generalizes the original RM model (Roe and Metz, 1997) by allowing the
 diseased and nondiseased decision-variable distributions to have unequal
-variances for each reader with the variance components
+variances for each reader, with the variance components
 involving diseased cases constrained to differ by a factor of 1/b^2 from
 corresponding variance components involving nondiseased cases. This algorithm
-is described in Hillis (2020).
+is described in Hillis (2020). \emph{Throughout we refer to the Hillis (2012)
+RM model as the \bold{RMH model}.}
 }
 \details{
-A related function is the  RMH_to_OR function, which determines OR parameters
-that describe the distribution of empirical AUC estimates computed from
-inputted RM model parameter values, based on the analytical mapping provided
-by Hillis (2018).
-
-
 Hillis (2012) modified the original RM model (Roe and Metz, 1997) by allowing
 variance components involving case to depend on truth (diseased/nondiseased),
 with variance components involving diseased cases set equal to those
-involving nondiseased cases multiplied by the factor 1/b^2, b>0.  Hillis
-(2018) derived analytical formulas, which apply to the Hillis (2012) RM
-model, that express OR parameters describing the distribution of empirical
-AUC outcomes computed from RM simulated data as functions of the RM
-parameters. This mapping from the RM parameters to the OR parameters is
-implemented in \R by the  RMH_to_OR function.
+involving nondiseased cases multiplied by the factor 1/b^2, b>0.  \emph{We
+refer to the Hillis (2012) model as the \bold{RMH} model}.  Hillis (2018)
+derived analytical formulas that express OR parameters describing the
+distribution of empirical AUC outcomes computed from RMH simulated data as
+functions of the RMH model parameters.  The reverse mapping from the RMH
+parameters to the OR parameters is implemented in \R by the  RMH_to_OR
+function. The OR_to_RMH function uses an iterative search procedure.
 
-For the constrained unequal-variance RM model, the OR-to-RM algorithm
-provides the reverse transformation that determines the corresponding RM
-parameters.  This algorithm is described in Hillis (2020).  The OR_to_RMH
-function implements this algorithm using an iterative search procedure.
-
-\code{b_method} indicates the method for estimating the RM binormal \emph{b}
-parameter.
+\code{b_method} indicates the method for estimating the RMH \emph{b}
+parameter. Note that \emph{b} is the conventional binormal-curve slope, i.e.,
+the slope of each reader's true ROC curve plotted in probit space.
 \itemize{
   \item \code{b_method = "unspecified"} should be used when the goal is to
     determine RM parameters that result in simulated data for which the
@@ -165,6 +157,11 @@ Parameter \code{b_input} is the inputted binormal \emph{b} value needed for
 There may not be a solution for a set of OR parameters values.  When this
 occurs, the function will either produce an approximate solution or indicate
 what OR input needs to be changed.
+
+A related function is the RMH_to_OR function, which determines OR parameters
+that describe the distribution of empirical AUC estimates computed from
+inputted RM model parameter values, based on the analytical mapping provided
+by Hillis (2018).
 }
 \examples{
 ## Example 1: Computing RM parameters from OR parameters directly
@@ -195,7 +192,6 @@ RM <- OR_to_RMH(n0 = 69, n1 = 45, AUC1 = 0.897, AUC2 = 0.941,
 RM
 true_values <- RMH_to_OR(RM)
 true_values
-
 #  From the output we see, for this example, that the true values are identical
 # (within rounding error) to the inputted OR values (but note that var_error was
 # not inputted)

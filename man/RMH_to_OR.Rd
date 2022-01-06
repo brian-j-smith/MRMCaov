@@ -4,7 +4,7 @@
 \alias{RMH_to_OR}
 \alias{RMH_to_OR.default}
 \alias{RMH_to_OR.data.frame}
-\title{Convert Roe & Metz Parameters to Corresponding Obuchowski-Rockette Parameters}
+\title{Convert Roe & Metz Parameters to Obuchowski-Rockette Parameters}
 \usage{
 RMH_to_OR(...)
 
@@ -35,13 +35,13 @@ the corresponding diseased-case variance component. It follows that b is
 also the conventional binormal-curve slope, i.e., the slope of each
 reader's true ROC curve plotted in probit space.}
 
-\item{delta1, delta2}{test 1 and test 2 separations of the RM-model
+\item{delta1, delta2}{test 1 and test 2 separations of the RMH-model
 nondiseased and diseased latent likelihood-of-disease rating distribution
 means.}
 
-\item{var_R, var_TR}{RM-model reader and test-by-reader variance components.}
+\item{var_R, var_TR}{RMH-model reader and test-by-reader variance components.}
 
-\item{var_C, var_TC, var_RC, var_error}{RM-model case, test-by-case,
+\item{var_C, var_TC, var_RC, var_error}{RMH-model case, test-by-case,
 reader-by-case and error variance components for nondiseased cases.}
 
 \item{params}{data frame of above RM parameter values in the columns.}
@@ -70,9 +70,9 @@ returned in the data frame:
   \item{mean_to_sig2}{expected mean-to-sigma ratio across readers for test
     2.}
   \item{Pr1_improper}{probability that the test 1 ROC curve for a random
-    reader will be visually improper (i.e, |mean-to-sigma ratio| < 3).}
+    reader will be noticeably improper (i.e, |mean-to-sigma ratio| < 2).}
   \item{Pr2_improper}{probability that the test 2 ROC curve for a random
-    reader will be visually improper (i.e, |mean-to-sigma ratio| < 3).}
+    reader will be noticeably improper (i.e, |mean-to-sigma ratio| < 2).}
 }
 }
 \description{
@@ -85,39 +85,38 @@ which generalizes the orginal RM model (Roe and Metz, 1997) by allowing the
 latent confidence-of-disease rating distributions to have unequal
 diseased-case and nondiseased-case variances, with the variance components
 involving diseased cases constrained to differ by a factor of 1/b^2, b>0,
-from corresponding variance components involing nondiseased cases.
+from corresponding variance components involving nondiseased cases.
+\emph{Throughout we refer to the Hillis (2012) RM model as the
+\bold{RMH model}.}
 }
 \details{
-A related function is the OR_to_RMH function, which determines RM parameter
-values for simulating multireader multicase confidence-of-disease rating data
-based on real-data or conjectured Obuchowski-Rockette (OR) parameter
-estimates that describe the distribution of the empirical AUC reader
-performance measures.
-
-
-
 Hillis (2012) modified the original RM model (Roe and Metz, 1997) by allowing
 variance components involving case to depend on truth (diseased/nondiseased),
 with variance components involving diseased cases set equal to those
 involving nondiseased cases multiplied by the factor 1/b^2, b>0. Assuming
-this model, Hillis (2018) derived analytical formulas expressing OR
+this model, \emph{which we refer to as the \bold{RMH model}},
+Hillis (2018) derived analytical formulas expressing OR
 parameters that describe the distribution of empirical AUC outcomes computed
-from RM=model simulated data as functions of the RM parameters. This mapping
-from the RM parameters to the OR parameters is implemented in R by the
+from RMH model simulated data as functions of the RMH parameters. This mapping
+from the RMH parameters to the OR parameters is implemented in \R by the
 RMH_to_OR function.
+
+A related function is the OR_to_RMH function, which determines RM parameter
+values corresponding to real-data or conjectured Obuchowski-Rockette (OR) parameter
+estimates.
 }
 \examples{
-##  Example 1: Computing OR parameters from RM parameters directly
-# RM parameters from first line (A_z = 0.702) of Table 1 in Roe & Metz (1997)
+##  Example 1: Computing OR parameters from RMH parameters directly
+# RMH parameters from first line (A_z = 0.702) of Table 1 in Roe & Metz (1997)
 # with 50 diseased and 50 nondiseased cases.
 OR <- RMH_to_OR(n0 = 50, n1 = 50, delta1 = 0.75, delta2 = 0.75,
                 var_R = 0.0055, var_TR = 0.0055, var_C = 0.3, var_TC = 0.3,
                 var_RC = 0.2, var_error = 0.2, b = 1)
 OR
 
-##  Example 2: Computing RM parameters from a data frame of RM parameters
+##  Example 2: Computing OR parameters from a data frame of RMH parameters
 ##  ---------------------------------------------------------------------
-## Example 2a:  RM parameters from first line (A_z = 0.702) of Table 1 in
+## Example 2a:  RMH parameters from first line (A_z = 0.702) of Table 1 in
 # Roe & Metz (1997) with 50 diseased and 50 nondiseased cases
 RM_parms_line1 <- data.frame(n0 = 50, n1 = 50, delta1 = 0.75, delta2 = 0.75,
                              var_R = 0.0055, var_TR = 0.0055, var_C = 0.3, var_TC = 0.3,
@@ -125,11 +124,11 @@ RM_parms_line1 <- data.frame(n0 = 50, n1 = 50, delta1 = 0.75, delta2 = 0.75,
 OR <- RMH_to_OR(RM_parms_line1)
 OR
 ## Note below that applying the OR_to_RMH function to the above OR parameters
-# results in the original RM parameters within rounding error:
+# results in the original RMH parameters within rounding error:
 check <- OR_to_RMH(OR)
 check
 
-## Example 2b: RM parameters from last 3 lines of Table 1 in Roe & Metz (1997)
+## Example 2b: RMH parameters from last 3 lines of Table 1 in Roe & Metz (1997)
 # using 10 diseased and 25 nondiseased cases
 RM_3_models <- data.frame(
   rbind(
@@ -144,7 +143,7 @@ RM_3_models
 OR_3_models <- RMH_to_OR(RM_3_models)
 OR_3_models
 
-## Example 2c: RM parameters from last 3 lines of Table 1 in Hillis (2012)
+## Example 2c: RMH parameters from last 3 lines of Table 1 in Hillis (2012)
 # using 10 diseased and 25 nondiseased cases
 RM_3_models_Hillis <- data.frame(
   rbind(
