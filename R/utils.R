@@ -83,7 +83,7 @@ get_design <- function(data) {
 }
 
 
-get_method <- function(x) {
+get_cov_method <- function(x) {
   if (is(x, "character")) x <- get(x, mode = "function")
   if (!is(x, "cov_method")) x <- x()
   if (!is(x, "cov_method")) stop("invalid covariance method")

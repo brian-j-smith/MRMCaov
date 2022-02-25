@@ -10,9 +10,11 @@
 #' @param case variable of case identifiers.
 #' @param data data frame containing the \code{response}, \code{test},
 #'   \code{reader}, and \code{case} variables.
-#' @param method function, function call, or character string naming the
+#' @param cov function, function call, or character string naming the
 #'   \code{\link[=cov_methods]{method}} to use in calculating performance
 #'   metric covariances.
+#' @param method deprecated argument that will be removed in a future package
+#'   version; use \code{cov} instead.
 #' @param design one of the following study designs: 1 = factorial, 2 = cases
 #'   nested within readers, 3 = cases nested within tests, or \code{NULL} to
 #'   automatically set the design based on variable codings in data.
@@ -44,12 +46,15 @@
 #'             data = VanDyke)
 #' summary(est)
 #'
-mrmc <- function(response, test, reader, case, data, method = jackknife,
-                 design = NULL) {
+mrmc <- function(
+  response, test, reader, case, data, cov = method, method = jackknife,
+  design = NULL
+) {
+
+  dep_methodarg(method)
 
   object <- eval(substitute(
-    new_mrmc(response, test, reader, case, data, method = method,
-             design = design)
+    new_mrmc(response, test, reader, case, data, cov = cov, design = design)
   ))
   object$mrmc_tests <- mrmc_tests(object$data, object$cov, object$design)
   object$call <- match.call()
@@ -71,16 +76,20 @@ mrmc <- function(response, test, reader, case, data, method = jackknife,
 }
 
 
-mrmc_lme <- function(formula, test, reader, case, data, method = jackknife,
-                     design = NULL) {
+mrmc_lme <- function(
+  formula, test, reader, case, data, cov = method, method = jackknife,
+  design = NULL
+) {
 
   stopifnot(is(formula, "formula"))
   if (length(formula) != 3) stop("formula requires left and right terms")
 
+  dep_methodarg(method)
+
   response <- formula[[2]]
   object <- eval(substitute(
-    new_mrmc(response, test, reader, case, data, method = method,
-             design = design, types = "random")
+    new_mrmc(response, test, reader, case, data, cov = cov, design = design,
+             types = "random")
   ))
 
   args <- get_lme_args(formula, object, data)
@@ -106,7 +115,7 @@ mrmc_lme <- function(formula, test, reader, case, data, method = jackknife,
 }
 
 
-new_mrmc <- function(response, test, reader, case, data, method, design,
+new_mrmc <- function(response, test, reader, case, data, cov, design,
                      types = c("random", "fixed")) {
 
   terms <- eval(substitute(
@@ -135,7 +144,7 @@ new_mrmc <- function(response, test, reader, case, data, method, design,
     stop("data factor codings do not match study design ", design)
   }
 
-  cov <- if (!terms$fixed["case"]) get_method(method)(mrmc_data)
+  covmat <- if (!terms$fixed["case"]) get_cov_method(cov)(mrmc_data)
 
   var_names <- c("test", "reader")
   aov_data <- unique(mrmc_data[var_names])
@@ -158,7 +167,7 @@ new_mrmc <- function(response, test, reader, case, data, method, design,
          aov = aovfit,
          data = aov_data,
          num_obs = num_obs,
-         cov = cov,
+         cov = covmat,
          mrmc_data = mrmc_data,
          levels = levels(mrmc_data$truth)),
     class = "mrmc"

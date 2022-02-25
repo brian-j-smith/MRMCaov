@@ -34,13 +34,13 @@ summary(est)
 ## DeLong method
 est <- mrmc(empirical_auc(truth, rating), treatment, reader, case,
             data = VanDyke,
-            method = DeLong)
+            cov = DeLong)
 summary(est)
 
 ## Unbiased method
 est <- mrmc(empirical_auc(truth, rating), treatment, reader, case,
             data = VanDyke,
-            method = unbiased)
+            cov = unbiased)
 summary(est)
 ```
 
