@@ -18,12 +18,11 @@ unbiased <- function(abar = FALSE) {
         stop("unbiased covariance method not available for partial AUC")
       }
 
-      df <- data[c("truth", "rating", "case")]
-      df$group <- interaction(data$test, data$reader)
+      data$group <- interaction(data$test, data$reader)
 
-      f <- if (is_balanced(data)) .unbiased_balanced else .unbiased_unbalanced
-      covmat <- f(df)
-      dimnames(covmat) <- list(levels(df$group), levels(df$group))
+      f <- if (is_balanced(data)) unbiased_balanced else unbiased_default
+      covmat <- f(data$truth, data$rating, data$group, data$case)
+      dimnames(covmat) <- list(levels(data$group), levels(data$group))
 
       a <- attr(covmat, "a")
       class(covmat) <- c("cov_unbiased", "cov_matrix")
@@ -49,118 +48,109 @@ unbiased <- function(abar = FALSE) {
 }
 
 
-.unbiased_balanced <- function(data) {
+unbiased_default <- function(truth, rating, group, case) {
 
-  df <- reshape(data, idvar = "case", v.names = "rating",
-                timevar = "group", direction = "wide")
-  subset_indices <- -match(c("case", "truth"), names(df))
+  n <- nlevels(group)
+  is_pos <- truth == levels(truth)[2]
 
-  is_pos <- df$truth == levels(df$truth)[2]
-  df_pos <- df[is_pos, subset_indices, drop = FALSE]
-  df_neg <- df[!is_pos, subset_indices, drop = FALSE]
-
-  n_pos <- nrow(df_pos)
-  n_neg <- nrow(df_neg)
-
-  var_unbiased <- function(x, n_pos, n_neg) {
-    q1 <- sum(x^2)
-    m1 <- q1 / (n_pos * n_neg)
-    q2 <- sum(rowSums(x)^2)
-    m2 <- (q2 - q1) / (n_pos * n_neg * (n_neg - 1))
-    q3 <- sum(colSums(x)^2)
-    m3 <- (q3 - q1) / (n_neg * n_pos * (n_pos - 1))
-    q4 <- sum(x)^2
-    m4 <- (q4 - q2 - q3 + q1) / (n_neg * n_pos * (n_neg - 1) * (n_pos - 1))
-
-    m1 / (n_neg * n_pos) +
-      m2 * (n_neg - 1) / (n_neg * n_pos) +
-      m3 * (n_pos - 1) / (n_neg * n_pos) +
-      m4 * ((n_neg - 1) * (n_pos - 1) / (n_neg * n_pos) - 1)
-  }
-
-  n <- nlevels(data$group)
-  covmat <- matrix(NA, n, n)
-
-  psi_list <- NULL
+  V <- matrix(0, n, n)
+  x <- list()
   for (i in 1:n) {
-    x <- outer(df_pos[, i], df_neg[, i], psi)
-    psi_list[[i]] <- x
-    covmat[i, i] <- var_unbiased(x, n_pos, n_neg)
-  }
-
-  for (i in seq_len(n)) {
-    for (j in seq_len(i - 1)) {
-      var_diff <- var_unbiased(psi_list[[i]] - psi_list[[j]], n_pos, n_neg)
-      cov <- (covmat[i, i] + covmat[j, j] - var_diff) / 2
-      covmat[i, j] <- covmat[j, i] <- cov
-    }
-  }
-
-  covmat
-
-}
-
-
-.unbiased_unbalanced <- function(data) {
-
-  subset_indices <- -match("truth", names(data))
-
-  is_pos <- data$truth == levels(data$truth)[2]
-  df_pos <- data[is_pos, subset_indices, drop = FALSE]
-  df_neg <- data[!is_pos, subset_indices, drop = FALSE]
-
-  df_list <- lapply(levels(data$group), function(group) {
-    .unbiased_psi(df_pos, df_neg, group)
-  })
-
-  n <- nlevels(data$group)
-  A1 <- A2 <- A3 <- A4 <- matrix(NA, n, n)
-
-  pb <- progress_bar$new(
-    format = "Computing unbiased covariance: [:bar] :percent | :eta",
-    total = n * (n + 1) / 2
-  )
-  for (i in 1:n) {
+    x[[i]] <- get_scores(rating, group == levels(group)[i], is_pos, case)
     for (j in 1:i) {
-      psi_cross <- tcrossprod(df_list[[i]]$psi, df_list[[j]]$psi)
-      same_case_pos <- outer(df_list[[i]]$case_pos, df_list[[j]]$case_pos, "==")
-      same_case_neg <- outer(df_list[[i]]$case_neg, df_list[[j]]$case_neg, "==")
-
-      mean_of <- function(keep) mean(psi_cross[keep])
-      A1[i, j] <- A1[j, i] <- mean_of(same_case_pos & same_case_neg)
-      A2[i, j] <- A2[j, i] <- mean_of(same_case_pos & !same_case_neg)
-      A3[i, j] <- A3[j, i] <- mean_of(!same_case_pos & same_case_neg)
-      A4[i, j] <- A4[j, i] <- mean_of(!same_case_pos & !same_case_neg)
-      pb$tick()
+      V[i, j] <- get_cov(x[[i]], x[[j]])
+      V[j, i] <- V[i, j]
     }
   }
-  pb$terminate()
-
-  n_pos <- sum(!duplicated(df_pos$case))
-  n_neg <- sum(!duplicated(df_neg$case))
-  covmat <- (A1 + (n_neg - 1) * A2 + (n_pos - 1) * A3 +
-               (1 - n_pos - n_neg) * A4) / (n_pos * n_neg)
-
-  structure(covmat, a = list(A1, A2, A3, A4))
+  V
 
 }
 
 
-.unbiased_psi <- function(df_pos, df_neg, group) {
+get_scores <- function(rating, is_group, is_pos, case) {
+  res <- list()
+  is_group_pos <- is_group & is_pos
+  is_group_neg <- is_group & !is_pos
+  res$id_pos <- case[is_group_pos]
+  res$id_neg <- case[is_group_neg]
+  res$scores <- outer(rating[is_group_pos], rating[is_group_neg], psi)
+  res$sum_scores_pos <- rowSums(res$scores)
+  res$sum_scores_neg <- colSums(res$scores)
+  res$sum_scores <- sum(res$sum_scores_neg)
+  res
+}
 
-  is_group_pos <- df_pos$group == group
-  ratings_pos <- df_pos$rating[is_group_pos]
-  cases_pos <- df_pos$case[is_group_pos]
 
-  is_group_neg <- df_neg$group == group
-  ratings_neg <- df_neg$rating[is_group_neg]
-  cases_neg <- df_neg$case[is_group_neg]
+get_cov <- function(x, y) {
 
-  indices <- expand.grid(pos = seq_along(ratings_pos),
-                         neg = seq_along(ratings_neg))
+  id_pos <- intersect(x$id_pos, y$id_pos)
+  id_neg <- intersect(x$id_neg, y$id_neg)
+  nxny <- length(x$scores) * length(y$scores)
+  n_pos <- length(id_pos)
+  n_neg <- length(id_neg)
 
-  data.frame(psi = psi(ratings_pos[indices$pos], ratings_neg[indices$neg]),
-             case_pos = cases_pos[indices$pos],
-             case_neg = cases_neg[indices$neg])
+  delta <- nxny / (
+    nxny -
+    nrow(x$scores) * n_neg * nrow(y$scores) -
+    ncol(x$scores) * n_pos * ncol(y$scores) +
+    n_pos * n_neg
+  )
+
+  inds_pos <- match(id_pos, x$id_pos)
+  inds_neg <- match(id_neg, x$id_neg)
+  x$sum_scores_pos <- x$sum_scores_pos[inds_pos]
+  x$sum_scores_neg <- x$sum_scores_neg[inds_neg]
+  x$scores <- x$scores[inds_pos, inds_neg]
+
+  inds_pos <- match(id_pos, y$id_pos)
+  inds_neg <- match(id_neg, y$id_neg)
+  y$sum_scores_pos <- y$sum_scores_pos[inds_pos]
+  y$sum_scores_neg <- y$sum_scores_neg[inds_neg]
+  y$scores <- y$scores[inds_pos, inds_neg]
+
+  (
+    (1 - delta) * (x$sum_scores * y$sum_scores) +
+    delta * (sum(x$sum_scores_pos * y$sum_scores_pos) +
+             sum(x$sum_scores_neg * y$sum_scores_neg) -
+             sum(x$scores * y$scores))
+  ) / nxny
+
+}
+
+
+unbiased_balanced <- function(truth, rating, group, case) {
+
+  sort_inds <- order(group, case)
+
+  m <- nlevels(case)
+  n <- nlevels(group)
+  rating_mat <- matrix(rating[sort_inds], m, n)
+  truth <- truth[sort_inds[1:m]]
+
+  is_pos <- truth == levels(truth)[2]
+  rating_mat_pos <- rating_mat[is_pos, ]
+  rating_mat_neg <- rating_mat[!is_pos, ]
+  n_pos <- nrow(rating_mat_pos)
+  n_neg <- nrow(rating_mat_neg)
+
+  scores <- matrix(0, n_pos * n_neg, n)
+  sum_scores_pos <- matrix(0, n_pos, n)
+  sum_scores_neg <- matrix(0, n_neg, n)
+
+  for (i in 1:n) {
+    x <- outer(rating_mat_pos[, i], rating_mat_neg[, i], psi)
+    scores[, i] <- c(x)
+    sum_scores_pos[, i] <- rowSums(x)
+    sum_scores_neg[, i] <- colSums(x)
+  }
+
+  delta <- (n_neg * n_pos)^2 / (n_neg * (n_neg - 1) * n_pos * (n_pos - 1))
+  sum_scores <- rbind(colSums(scores))
+  (
+    (1 - delta) * (t(sum_scores) %*% sum_scores) +
+    delta * (t(sum_scores_pos) %*% sum_scores_pos +
+             t(sum_scores_neg) %*% sum_scores_neg -
+             t(scores) %*% scores)
+  ) / (n_neg * n_pos)^2
 
 }
