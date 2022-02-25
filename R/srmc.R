@@ -9,15 +9,19 @@
 #' @param case variable of case identifiers.
 #' @param data data frame containing the \code{response}, \code{test}, and
 #'   \code{case} variables.
-#' @param method function, function call, or character string naming the
+#' @param cov function, function call, or character string naming the
 #'   \code{\link[=cov_methods]{method}} to use in calculating performance
 #'   metric covariances.
+#' @param method deprecated argument that will be removed in a future package
+#'   version; use \code{cov} instead.
 #'
 #' @seealso \code{\link{metrics}}, \code{\link{cov_methods}},
 #' \code{\link{parameters}}, \code{\link{plot}}, \code{\link{roc_curves}},
 #' \code{\link{summary}}
 #'
-srmc <- function(response, test, case, data, method = jackknife) {
+srmc <- function(
+  response, test, case, data, cov = method, method = jackknife
+) {
 
   args <- c(substitute(response), substitute(test), substitute(case))
   data <- data[unique(unlist(mapply(all.vars, args)))]
@@ -25,9 +29,11 @@ srmc <- function(response, test, case, data, method = jackknife) {
   names(data) <- make.unique(names(data), sep = "_")
   reader <- as.name(tail(names(data), 1))
 
+  dep_methodarg(missing(method))
+
   object <- eval(substitute(
     mrmc(response = response, test = test, reader = fixed(reader), case = case,
-         data = data, method = method)
+         data = data, cov = cov)
   ))
   object$call <- match.call()
   object

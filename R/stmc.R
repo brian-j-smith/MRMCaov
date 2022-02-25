@@ -7,9 +7,11 @@
 #' @param case optional variable of case identifiers.
 #' @param data data frame containing the \code{response}, \code{test},
 #'   \code{reader}, and \code{case} variables.
-#' @param method function, function call, or character string naming the
+#' @param cov function, function call, or character string naming the
 #'   \code{\link[=cov_methods]{method}} to use in calculating performance
 #'   metric covariances.
+#' @param method deprecated argument that will be removed in a future package
+#'   version; use \code{cov} instead.
 #'
 #' @seealso \code{\link{metrics}}, \code{\link{cov_methods}},
 #' \code{\link{parameters}}, \code{\link{plot}}, \code{\link{roc_curves}},
@@ -20,7 +22,7 @@
 #' est <- stmc(empirical_auc(truth, rating), data = VanDyke1)
 #' summary(est)
 #'
-stmc <- function(response, case, data, method = jackknife) {
+stmc <- function(response, case, data, cov = method, method = jackknife) {
 
   response_call <- substitute(response)
   metric <- as.character(response_call[[1]])
@@ -38,11 +40,13 @@ stmc <- function(response, case, data, method = jackknife) {
   response_call[c(2, 3)] <- c(quote(truth), quote(rating))
   attr(stmc_data, "metric_call") <- response_call
 
+  dep_methodarg(missing(method))
+
   structure(
     list(
       metric = metric,
       est = eval(response_call, stmc_data),
-      se = sqrt(get_method(method)(stmc_data)[1]),
+      se = sqrt(get_cov_method(cov)(stmc_data)[1]),
       stmc_data = stmc_data
     ),
     class = "stmc"

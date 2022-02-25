@@ -4,7 +4,7 @@
 \alias{srmc}
 \title{Single-Reader Multi-Case ROC Analysis}
 \usage{
-srmc(response, test, case, data, method = jackknife)
+srmc(response, test, case, data, cov = method, method = jackknife)
 }
 \arguments{
 \item{response}{response metric expressed in terms of a package-supplied
@@ -17,9 +17,12 @@ performance \code{\link[=metrics]{metric}}.}
 \item{data}{data frame containing the \code{response}, \code{test}, and
 \code{case} variables.}
 
-\item{method}{function, function call, or character string naming the
+\item{cov}{function, function call, or character string naming the
 \code{\link[=cov_methods]{method}} to use in calculating performance
 metric covariances.}
+
+\item{method}{deprecated argument that will be removed in a future package
+version; use \code{cov} instead.}
 }
 \description{
 Estimation and comparison of ROC performance metrics for single-reader

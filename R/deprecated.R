@@ -44,3 +44,11 @@ proproc_spec <- function(...) {
   warning("proproc_spec() is deprecated; use binormalLR_spec() instead")
   binormalLR_spec(...)
 }
+
+
+dep_methodarg <- function(missing) {
+  if (!missing) {
+    warning("Argument 'method' is deprecated; use 'cov' instead.",
+            call. = FALSE)
+  }
+}

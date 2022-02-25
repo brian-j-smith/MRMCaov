@@ -4,7 +4,16 @@
 \alias{mrmc}
 \title{Multi-Reader Multi-Case ROC Analysis}
 \usage{
-mrmc(response, test, reader, case, data, method = jackknife, design = NULL)
+mrmc(
+  response,
+  test,
+  reader,
+  case,
+  data,
+  cov = method,
+  method = jackknife,
+  design = NULL
+)
 }
 \arguments{
 \item{response}{response metric expressed in terms of a package-supplied
@@ -19,9 +28,12 @@ performance \code{\link[=metrics]{metric}}.}
 \item{data}{data frame containing the \code{response}, \code{test},
 \code{reader}, and \code{case} variables.}
 
-\item{method}{function, function call, or character string naming the
+\item{cov}{function, function call, or character string naming the
 \code{\link[=cov_methods]{method}} to use in calculating performance
 metric covariances.}
+
+\item{method}{deprecated argument that will be removed in a future package
+version; use \code{cov} instead.}
 
 \item{design}{one of the following study designs: 1 = factorial, 2 = cases
 nested within readers, 3 = cases nested within tests, or \code{NULL} to
