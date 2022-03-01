@@ -13,7 +13,6 @@
 
 <title>Using MRMCaov</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -63,28 +62,6 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-/* for pandoc --citeproc since 2.11 */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-}
-.hanging div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}
-</style>
 
 
 
@@ -583,8 +560,9 @@ library(tibble)
 
 ## Compare ROC AUC treatment means for the VanDyke Example
 est &lt;- mrmc(empirical_auc(truth, rating), treatment, reader, case,
-            data = VanDyke)
-print(est)</code></pre>
+            data = VanDyke)</code></pre>
+<pre><code>## Warning: Argument &#39;method&#39; is deprecated; use &#39;cov&#39; instead.</code></pre>
+<pre class="r"><code>print(est)</code></pre>
 <pre><code>## Call:
 ## mrmc(response = empirical_auc(truth, rating), test = treatment, 
 ##     reader = reader, case = case, data = VanDyke)
@@ -767,8 +745,9 @@ print(est)</code></pre>
 <h2>Binary Metrics</h2>
 <pre class="r"><code>## Compare sensitivity for binary classification
 est &lt;- mrmc(binary_sens(truth, binary_rating), treatment, reader, case,
-            data = VanDyke)
-print(est)</code></pre>
+            data = VanDyke)</code></pre>
+<pre><code>## Warning: Argument &#39;method&#39; is deprecated; use &#39;cov&#39; instead.</code></pre>
+<pre class="r"><code>print(est)</code></pre>
 <pre><code>## Call:
 ## mrmc(response = binary_sens(truth, binary_rating), test = treatment, 
 ##     reader = reader, case = case, data = VanDyke)
@@ -852,8 +831,9 @@ print(est)</code></pre>
 <pre class="r"><code>## DeLong method
 est &lt;- mrmc(empirical_auc(truth, rating), treatment, reader, case,
             data = VanDyke,
-            method = DeLong)
-summary(est)</code></pre>
+            cov = DeLong)</code></pre>
+<pre><code>## Warning: Argument &#39;method&#39; is deprecated; use &#39;cov&#39; instead.</code></pre>
+<pre class="r"><code>summary(est)</code></pre>
 <pre><code>## Multi-Reader Multi-Case Analysis of Variance
 ## Data: VanDyke
 ## Factor types: Random Readers and Random Cases
@@ -896,8 +876,9 @@ summary(est)</code></pre>
 <pre class="r"><code>## Unbiased method
 est &lt;- mrmc(empirical_auc(truth, rating), treatment, reader, case,
             data = VanDyke,
-            method = unbiased)
-summary(est)</code></pre>
+            cov = unbiased)</code></pre>
+<pre><code>## Warning: Argument &#39;method&#39; is deprecated; use &#39;cov&#39; instead.</code></pre>
+<pre class="r"><code>summary(est)</code></pre>
 <pre><code>## Multi-Reader Multi-Case Analysis of Variance
 ## Data: VanDyke
 ## Factor types: Random Readers and Random Cases
@@ -942,8 +923,9 @@ summary(est)</code></pre>
 <h2>Fixed Factors</h2>
 <pre class="r"><code>## Fixed readers
 est &lt;- mrmc(empirical_auc(truth, rating), treatment, fixed(reader), case,
-            data = VanDyke)
-summary(est)</code></pre>
+            data = VanDyke)</code></pre>
+<pre><code>## Warning: Argument &#39;method&#39; is deprecated; use &#39;cov&#39; instead.</code></pre>
+<pre class="r"><code>summary(est)</code></pre>
 <pre><code>## Multi-Reader Multi-Case Analysis of Variance
 ## Data: VanDyke
 ## Factor types: Fixed Readers and Random Cases
@@ -1016,8 +998,9 @@ summary(est)</code></pre>
 ## 10     0.9299517         2      5 0.0262023046 0.8785961 0.9813073</code></pre>
 <pre class="r"><code>## Fixed cases
 est &lt;- mrmc(empirical_auc(truth, rating), treatment, reader, fixed(case),
-            data = VanDyke)
-summary(est)</code></pre>
+            data = VanDyke)</code></pre>
+<pre><code>## Warning: Argument &#39;method&#39; is deprecated; use &#39;cov&#39; instead.</code></pre>
+<pre class="r"><code>summary(est)</code></pre>
 <pre><code>## Multi-Reader Multi-Case Analysis of Variance
 ## Data: VanDyke
 ## Factor types: Random Readers and Fixed Cases
@@ -1050,13 +1033,13 @@ summary(est)</code></pre>
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">
-<h1 class="unnumbered">References</h1>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-MRMCaov-SPIE2020" class="csl-entry">
-Smith, Brian J., and Stephen L. Hillis. 2020. <span>“Multi-Reader Multi-Case Analysis of Variance Software for Diagnostic Performance Comparison of Imaging Modalities.”</span> In <em>Proceedings of SPIE 11316, Medical Imaging 2020: Image Perception, Observer Performance, and Technology Assessment</em>, edited by Frank Samuelson and Sian Taylor-Phillips, 113160K. <a href="https://doi.org/10.117/12.2549075">https://doi.org/10.117/12.2549075</a>.
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-MRMCaov-SPIE2020">
+<p>Smith, Brian J., and Stephen L. Hillis. 2020. “Multi-Reader Multi-Case Analysis of Variance Software for Diagnostic Performance Comparison of Imaging Modalities.” In <em>Proceedings of Spie 11316, Medical Imaging 2020: Image Perception, Observer Performance, and Technology Assessment</em>, edited by Frank Samuelson and Sian Taylor-Phillips, 113160K. <a href="https://doi.org/10.117/12.2549075">https://doi.org/10.117/12.2549075</a>.</p>
 </div>
-<div id="ref-MRMCaov-package" class="csl-entry">
-Smith, Brian J, Stephen L Hillis, and Lorenzo L Pesce. 2020. <em>MCMCaov: Multi-Reader Multi-Case Analysis of Variance</em>. <a href="https://github.com/brian-j-smith/MRMCaov">https://github.com/brian-j-smith/MRMCaov</a>.
+<div id="ref-MRMCaov-package">
+<p>Smith, Brian J, Stephen L Hillis, and Lorenzo L Pesce. 2022. <em>MCMCaov: Multi-Reader Multi-Case Analysis of Variance</em>. <a href="https://github.com/brian-j-smith/MRMCaov">https://github.com/brian-j-smith/MRMCaov</a>.</p>
 </div>
 </div>
 </div>
