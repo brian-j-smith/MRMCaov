@@ -2,6 +2,11 @@
 
 ## Version Updates
 
+## 0.2.0
+* Implement fast algorithm for unbiased covariance estimation.
+* Remove deprecated functions `proproc_roc()`, `proproc_sens()`, and `proproc_spec()`.
+* Rename argument `method` to `cov` in `mrmc()`, `srmc()`, and `stmc()`.
+
 ## 0.1.16
 * Add functions `OR_to_RMH()` and `RMH_to_OR()` for conversion from Obuchowski-Rockette to Roe, Metz & Hillis model parameters and vice versa.
 
@@ -23,7 +28,7 @@
 * Add `stmc()` function for single-reader (single-test) multi-case analysis.
 
 ## 0.1.12
-* Fix `proproc_sens()` and `proproc_spec()` to use proproc instead of empirical curves. 
+* Fix `proproc_sens()` and `proproc_spec()` to use proproc instead of empirical curves.
 
 ## 0.1.11
 * Add support for readers nested within tests.
