@@ -11,10 +11,12 @@
 \alias{parameters.mrmc}
 \alias{parameters.stmc}
 \alias{points.roc_curve}
+\alias{points}
 \alias{points.roc_curves}
 \alias{points.empirical_curve}
 \alias{points.empirical_curves}
 \alias{mean.roc_curve}
+\alias{mean}
 \alias{mean.roc_curves}
 \alias{mean.binormal_curves}
 \title{ROC Performance Curves}
@@ -96,10 +98,10 @@ to compute points on or to average over the curves.}
 \item{metric}{reader performance metric to which the \code{values}
 correspond.}
 
-\item{values}{numeric vector of values at which to compute the points or
-\code{NULL} for default empirical values as determined by \code{which}.}
+\item{values}{numeric vector of values at which to compute ROC curve points,
+or \code{NULL} for default empirical values as determined by \code{which}.}
 
-\item{which}{character string indicating whether to used curve-specific
+\item{which}{character string indicating whether to use curve-specific
 observed values and 0 and 1 (\code{"curve"}), the combination of these
 values over all curves (\code{"curves"}), or only the observed
 curve-specific values (\code{"observed"}).}

@@ -15,9 +15,9 @@
 #'   \code{"points"} or \code{"parameters"}.
 #' @param x object returned by \code{\link{mrmc}} or \code{roc_curves} for which
 #'   to compute points on or to average over the curves.
-#' @param values numeric vector of values at which to compute the points or
-#'   \code{NULL} for default empirical values as determined by \code{which}.
-#' @param which character string indicating whether to used curve-specific
+#' @param values numeric vector of values at which to compute ROC curve points,
+#'   or \code{NULL} for default empirical values as determined by \code{which}.
+#' @param which character string indicating whether to use curve-specific
 #'  observed values and 0 and 1 (\code{"curve"}), the combination of these
 #'  values over all curves (\code{"curves"}), or only the observed
 #'  curve-specific values (\code{"observed"}).
@@ -151,7 +151,7 @@ binormalLR_curve <- function(data) {
         Metz = tibble(
           d_a = roc$d_a,
           c = roc$c),
-        bichisquare = tibble(
+        bichisquared = tibble(
           lambda = ((1 - roc$c) / (1 + roc$c))^2,
           theta = (roc$d_a * (1 + roc$c) / roc$c)^2 * (1 + roc$c^2) / 16
         ),
@@ -226,6 +226,7 @@ parameters.stmc <- function(x, ...) {
 
 
 #' @rdname roc_curves
+#' @aliases points
 #'
 points.roc_curve <- function(x, metric = c("specificity", "sensitivity"),
                              values = seq(0, 1, length = 101), ...) {
@@ -368,6 +369,7 @@ points.empirical_curves <- function(
 
 
 #' @rdname roc_curves
+#' @aliases mean
 #'
 mean.roc_curve <- function(x, ...) {
   points(x, ...)

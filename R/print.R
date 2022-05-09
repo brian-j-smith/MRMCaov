@@ -40,7 +40,7 @@ print.binormalLR_curve <- function(x, ...) {
   cat("Binormal Likelihood Ratio Curve\n",
       "Parameters\n",
       "  Metz and Pan: ", format_params(params$Metz), "\n",
-      "  Bi-Chi-Square: ", format_params(params$bichisquare), "\n",
+      "  Bi-Chi-Squared: ", format_params(params$bichisquared), "\n",
       "  Binormal: ", format_params(params$binormal), "\n", sep = "")
   NextMethod()
 }
