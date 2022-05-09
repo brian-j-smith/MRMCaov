@@ -148,7 +148,7 @@ new_mrmc <- function(response, test, reader, case, data, cov, design,
 
   var_names <- c("test", "reader")
   aov_data <- unique(mrmc_data[var_names])
-  sort_order <- do.call(order, rev(aov_data))
+  sort_order <- do.call(order, aov_data)
   aov_data <- aov_data[sort_order, , drop = FALSE]
   y <- num_obs <- numeric(nrow(aov_data))
   for (i in 1:nrow(aov_data)) {

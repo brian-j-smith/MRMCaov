@@ -29,6 +29,7 @@ aov_mrmc <- function(fo, data) {
 
   }
 
+  res$model <- res$model[do.call(order, res$model[-1]), , drop = FALSE]
   res$summary <- res$summary[labels(res$terms), -c(4, 5)]
   res
 
@@ -88,6 +89,11 @@ get_cov_method <- function(x) {
   if (!is(x, "cov_method")) x <- x()
   if (!is(x, "cov_method")) stop("invalid covariance method")
   x
+}
+
+
+interaction <- function(..., drop = TRUE, lex.order = TRUE) {
+  base::interaction(..., drop = drop, lex.order = lex.order)
 }
 
 

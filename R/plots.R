@@ -102,7 +102,7 @@ make_plot_df <- function(x) {
     group_vars[[n_group_vars]] <- NULL
     if (length(group_vars)) {
       prefix <- paste(names(group_vars), collapse = ".")
-      df$facet <- paste0(prefix, ": ", interaction(group_vars))
+      df$facet <- paste0(prefix, ": ", interaction(group_vars, drop = FALSE))
     }
   }
 

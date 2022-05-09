@@ -250,7 +250,7 @@ reader_test_diffs <- function(object, conf.level) {
   test_levels <- levels(object)$test
   reader_levels <- levels(object)$reader
 
-  estimates <- matrix(object$data[[1]], ncol = n["test"], byrow = TRUE)
+  estimates <- matrix(object$data[[1]], ncol = n["test"])
 
   stderrs <- sapply(reader_levels, function(reader) {
     comps <- vcov_comps(object, reader = reader)

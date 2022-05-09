@@ -27,7 +27,7 @@ DeLong <- function() {
 
       truths <- data$truth
       ratings <- data$rating
-      groups <- interaction(data$test, data$reader, drop = TRUE)
+      groups <- interaction(data$test, data$reader)
 
       varcomps <- lapply(levels(groups), function(group) {
         indices <- groups == group
