@@ -1,0 +1,21 @@
+# Obuchowski and Rockette Model
+
+**MRMCaov** implements multi-reader multi-case analysis based on the Obuchowski and Rockette [-@Obuchowski:1995:HTD] analysis of variance (ANOVA) model
+$$
+\hat{\theta}_{ij} = \mu + \tau_i + R_j + (\tau R)_{ij} + \epsilon_{ij},
+$$
+where $i = 1,\ldots,t$ and $j = 1,\ldots,r$ index diagnostic tests and readers; $\hat{\theta}_{ij}$ is a reader performance metric, such as ROC AUC, estimated over multiple cases; $\mu$ an overall study mean; $\tau_i$ a fixed test effect; $R_j$ a random reader effect; $(\tau R)_{ij}$ a random test $\times$ reader interaction effect; and $\epsilon_{ij}$ a random error term.  The random terms $R_j$, $(\tau R)_{ij}$, and $\epsilon_{ij}$ are assumed to be mutually independent and normally distributed with 0 means and variances $\sigma^2_R$, $\sigma^2_{TR}$, and $\sigma^2_\epsilon$.
+
+The error covariances between tests and between readers are further assumed to be equal, resulting in the three covariances
+$$
+\text{Cov}(\epsilon_{ij}, \epsilon_{i'j'}) = \left\{
+  \begin{array}{lll}
+    \text{Cov}_1 & i \ne i', j = j' & \text{(different test, same reader)} \\
+    \text{Cov}_2 & i = i', j \ne j' & \text{(same test, same reader)} \\
+    \text{Cov}_3 & i \ne i', j \ne j' & \text{(different test, different reader)}.
+  \end{array}
+\right.
+$$
+Obuchowski and Rockette [-@Obuchowski:1995:HTD] suggest a covariance ordering of $\text{Cov}_1 \ge \text{Cov}_2 \ge \text{Cov}_3 \ge 0$ based on clinical considerations.  Hillis [-@Hillis:2014:MMA] later showed that these can be replaced with the less restrictive orderings $\text{Cov}_1 \ge \text{Cov}_3$, $\text{Cov}_2 \ge \text{Cov}_3$, and $\text{Cov}_3 \ge 0$.  Alternatively, the covariance can be specified as the population correlations $\rho_i = \text{Cov}_i / \sigma^2_\epsilon$.
+
+In the Obuchowski-Rockette ANOVA model, $\sigma^2_\epsilon$ can be interpreted as the performance metric variance for a single fixed reader and test; and $\text{Cov}_1$, $\text{Cov}_2$, and $\text{Cov}_3$ as the performance metric covariances for the same reader of two different tests, two different readers of the same test, and two different readers of two different tests.  These error variance and covariance parameters are estimated in the package by averaging the reader and test-specific estimates computed using jackknifing [@Efron:1982:JBR] or, for empirical ROC AUC, an unbiased estimator [@Gallas:2007:MMV] or the method of DeLong [@DeLong:1988:CAU].

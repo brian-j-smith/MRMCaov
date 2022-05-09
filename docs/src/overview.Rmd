@@ -11,6 +11,7 @@
 * Conversion of Obuchowski-Rockette to Roe, Metz & Hillis model parameters and vice versa.
 * Compatibility with Microsoft Windows and Linux
 
+## Documentation: [User Guide](https://brian-j-smith.github.io/MRMCaov/using.html)
 
 ## Download and Installation
 

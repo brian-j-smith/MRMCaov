@@ -1,49 +1,40 @@
 # Reader Performance Metrics
 
+The reader performance metrics described previously for use with `mrmc()` and related functions to analyze multi and single-reader multi-case studies can be applied to truth and rating vectors as stand-alone functions.  This enables estimation of performance metrics for other applications, such as predictive modeling, that may be of interest.
 
 ## ROC Curve Metrics
 
+AUC, partial AUC, sensitivity, and specificity are estimated below with an empirical ROC curve.  Estimates with binormal and binormal likelihood-ratio curves can be obtained by replacing `empirical` in the function names with `binormal` and `binormalLR`, respectively.
+
 ```{r using_metrics_roc}
 ## Total area under the empirical ROC curve
-with(VanDyke, {
-  empirical_auc(truth, rating)
-})
+empirical_auc(VanDyke$truth, VanDyke$rating)
 
 ## Partial area for specificity from 0.7 to 1.0
-with(VanDyke, {
-  empirical_auc(truth, rating, partial = "spec", min = 0.70, max = 1.0)
-})
+empirical_auc(VanDyke$truth, VanDyke$rating, partial = "spec", min = 0.70, max = 1.0)
 
 ## Partial area for sensitivity from 0.7 to 1.0
-with(VanDyke, {
-  empirical_auc(truth, rating, partial = "sens", min = 0.70, max = 1.0)
-})
+empirical_auc(VanDyke$truth, VanDyke$rating, partial = "sens", min = 0.70, max = 1.0)
 
 ## Sensitivity for given specificity
-with(VanDyke, {
-  empirical_sens(truth, rating, spec = 0.8)
-})
+empirical_sens(VanDyke$truth, VanDyke$rating, spec = 0.8)
 
 ## Sensitivity for given specificity
-with(VanDyke, {
-  empirical_spec(truth, rating, sens = 0.8)
-})
+empirical_spec(VanDyke$truth, VanDyke$rating, sens = 0.8)
 ```
 
 
 ## Binary Metrics
+
+Sensitivity and specificity for binary ratings are available with the `binary_sens()` and `binary_spec()` functions as demonstrated in the next example based on a binary rating created from the numeric one in the `VanDyke` dataset.
 
 ```{r using_metrics_binary}
 ## Create binary classification
 VanDyke$binary_rating <- VanDyke$rating >= 3
 
 ## Sensitivity
-with(VanDyke, {
-  binary_sens(truth, binary_rating)
-})
+binary_sens(VanDyke$truth, VanDyke$binary_rating)
 
 ## Specificity
-with(VanDyke, {
-  binary_spec(truth, binary_rating)
-})
+binary_spec(VanDyke$truth, VanDyke$binary_rating)
 ```

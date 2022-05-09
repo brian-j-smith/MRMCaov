@@ -1,60 +1,324 @@
-# MRMC Analysis
+# Multi-Reader Multi-Case Analysis
+
+A multi-reader multi-case (MRMC) analysis, as the name suggests, involves multiple readers of multiple cases to compare reader performance metrics across two or more diagnostic tests.  An MRMC analysis can be performed with a call to the `mrmc()` function to specify a reader performance metric, study variables and observations, and covariance estimation method.
+
+> **MRMC Function**
+>
+> `mrmc(response, test, reader, case, data, cov = jackknife)`
+>
+> *Description*
+>
+> Returns an `mrmc` class object of data that can be used to estimate and compare reader performance metrics in a multi-reader multi-case statistical analysis.
+>
+> *Arguments*
+>
+> * `response`: object defining true case statuses, corresponding reader ratings, and a reader performance metric to compute on them.
+> * `test`, `reader`, `case`: variables containing the test, reader, and case identifiers for the `response` observations.
+> * `data`: data frame containing the response and identifier variables.
+> * `cov`: function `jackknife`, `unbiased`, or `DeLong` to estimate reader performance metric covariances.
+
+The response variable in the `mrmc()` specification is defined with one of the performance metrics described in the following sections.  Results from `mrmc()` can be displayed with `print()` and passed to `summary()` for statistical comparisons of the diagnostic tests.  The summary call produces ANOVA results from a global test of equality of ROC AUC means across all tests and statistical tests of pairwise differences, along with confidence intervals for the differences and intervals for individual tests.
+
+> **MRMC Summary Function**
+>
+> `summary(object, conf.level = 0.95)`
+>
+> *Description*
+>
+> Returns a `summary.mrmc` class object of statistical results from a multi-reader multi-case analysis.
+>
+> *Arguments*
+>
+> * `object`: results from `mrmc()`.
+> * `conf.level`: confidence level for confidence intervals.
 
 
-## ROC Curve Metrics
+## Performance Metrics
+
+
+### Area Under the ROC Curve
+
+Area under the ROC curve is a measure of concordance between numeric reader ratings and true binary case statuses.  It provides an estimate of the probability that a randomly selected positive case will have a higher rating than a negative case.  ROC AUC values range from 0 to 1, with 0.5 representing no concordance and 1 perfect concordance.  AUC can be computed with the functions described below for binormal, binormal likelihood-ratio, and empirical ROC curves.  Empirical curves are also referred to as trapezoidal.  The functions also support calculation of partial AUC over a range of sensitivities or specificities.
+
+> **ROC AUC Functions**
+>
+> `binormal_auc(truth, rating, partial = FALSE, min = 0, max = 1, normalize = FALSE)`  
+> `binormalLR_auc(truth, rating, partial = FALSE, min = 0, max = 1, normalize = FALSE)`  
+> `empirical_auc(truth, rating, partial = FALSE, min = 0, max = 1, normalize = FALSE)`  
+> `trapezoidal_auc(truth, rating, partial = FALSE, min = 0, max = 1, normalize = FALSE)`  
+>
+> *Description*
+>
+> Returns computed area under the receiver operating character curve estimated with a binormal model (`binormal_auc`), binormal likelihood-ratio model (`binormalLR_auc`), or empirically (`empirical_auc` or `trapezoidal_auc`).
+>
+> *Arguments*
+>
+> * `truth`: vector of true binary case statuses, with positive status taken to be the highest level.
+> * `rating`: numeric vector of case ratings.
+> * `partial`: character string `"sensitivity"` or `"specificity"` for calculation of partial AUC, or `FALSE` for full AUC.  Partial matching of the character strings is allowed.  A value of `"specificity"` results in area under the ROC curve between the given `min` and `max` specificity values, whereas `"sensitivity"` results in area to the right of the curve between the given sensitivity values.
+> * `min`, `max`: minimum and maximum sensitivity or specificity values over which to calculate partial AUC.
+> * `normalize`: logical indicating whether partial AUC is divided by the interval width (`max - min`) over which it is calculated.
+
+In the example below, `mrmc()` is called to compare CINE MRI and SE MRI treatments in an MRMC analysis of areas under binormal ROC curves computed for the readers of cases in the VanDyke study.
 
 ```{r using_mrmc_roc}
-## Load tibble package for concise printing of roc_curves
-library(tibble)
-
-## Compare ROC AUC treatment means for the VanDyke Example
-est <- mrmc(empirical_auc(truth, rating), treatment, reader, case,
-            data = VanDyke)
-print(est)
-print(roc_curves(est))
-plot(est)
-summary(est)
+## Compare ROC AUC treatment means for the VanDyke example
+est <- mrmc(
+  binormal_auc(truth, rating), treatment, reader, case, data = VanDyke
+)
 ```
 
+The `print()` function can be applied to `mrmc()` output to display information about the reader performance metrics, including the
 
-## Binary Metrics
+* value of variable `truth` (1) defining positive case status,
+* estimated performance metric values (`data$binormal_auc`) for each test (`$treatment`) and reader (`$reader`),
+* number of cases read at each level of the factors (`N`), and
+* error variance $\sigma^2_\epsilon$ and covariances $\text{Cov}_1$, $\text{Cov}_2$, and $\text{Cov}_3$.
+
+<details>
+<summary>**Show MRMC Performance Metrics**</summary>
+```{r}
+print(est)
+```
+</details>
+<p>
+
+MRMC statistical tests are performed with a call to `summary()`.  Results include a test of the global null hypothesis that performances are equal across all diagnostic tests, tests of their pairwise mean differences, and estimated mean performances for each one.
+
+<details>
+<summary>**Show MRMC Test Results**</summary>
+```{r}
+summary(est)
+```
+</details>
+<p>
+
+ROC curves estimated by `mrmc()` can be displayed with `plot()` and their parameters extracted with `parameters()`.
+
+<details>
+<summary>**Show MRMC ROC Curves**</summary>
+```{r}
+plot(est)
+```
+</details>
+<details>
+<summary>**Show MRMC ROC Curve Parameters**</summary>
+```{r}
+print(parameters(est))
+```
+</details>
+<p>
+
+### ROC Curve Expected Utility
+
+As an alternative to AUC as a summary of ROC curves, Abbey et al. [-@abbey:2013:SPC] propose an expected utility metric defined as
+$$
+\text{EU} = \max_\text{FPR}(\text{TPR}(\text{FPR}) - \beta \times \text{FPR}),
+$$
+where $\text{TPR}(\text{FPR})$ are true positive rates on the ROC curve, and FPR are false positive rates ranging from 0 to 1.
+
+> **ROC Curve Expected Utility Functions**
+>
+> `binormal_eu(truth, rating, slope = 1)`  
+> `binormalLR_eu(truth, rating, slope = 1)`  
+> `empirical_eu(truth, rating, slope = 1)`  
+> `trapezoidal_eu(truth, rating, slope = 1)`  
+>
+> *Description*
+>
+> Returns expected utility of an ROC curve.
+>
+> *Arguments*
+>
+> * `truth`: vector of true binary case statuses, with positive status taken to be the highest level.
+> * `rating`: numeric vector of case ratings.
+> * `slope`: numeric slope ($\beta$) at which to compute expected utility.
+
+
+### ROC Curve Sensitivity and Specificity
+
+Functions are provided to extract sensitivity from an ROC curve for a given specificity and vice versa.
+
+> **ROC Curve Sensitivity and Specificity Functions**
+>
+> `binormal_sens(truth, rating, spec)`  
+> `binormal_spec(truth, rating, sens)`  
+> `binormalLR_sens(truth, rating, spec)`  
+> `binormalLR_spec(truth, rating, sens)`  
+> `empirical_sens(truth, rating, spec)`  
+> `empirical_spec(truth, rating, sens)`  
+> `trapezoidal_sens(truth, rating, spec)`  
+> `trapezoidal_spec(truth, rating, sens)`  
+>
+> *Description*
+>
+> Returns the sensitivity/specificity from an ROC curve at a specified specificity/sensitivity.
+>
+> *Arguments*
+>
+> * `truth`: vector of true binary case statuses, with positive status taken to be the highest level.
+> * `rating`: numeric vector of case ratings.
+> * `spec`, `sens`: specificity/sensitivity on the ROC curve at which to return sensitivity/specificity.
+
+
+### Binary Metrics
+
+Metrics for binary reader ratings are also available.
+
+> **Sensitivity and Specificity Functions**
+>
+> `binary_sens(truth, rating)`  
+> `binary_spec(truth, rating)`  
+>
+> *Description*
+>
+> Returns the sensitivity or specificity.
+>
+> *Arguments*
+>
+> * `truth`: vector of true binary case statuses, with positive status taken to be the highest level.
+> * `rating`: factor or numeric vector of 0-1 binary ratings.
 
 ```{r using_mrmc_binary}
 ## Compare sensitivity for binary classification
-est <- mrmc(binary_sens(truth, binary_rating), treatment, reader, case,
-            data = VanDyke)
+VanDyke$binary_rating <- VanDyke$rating >= 3
+est <- mrmc(
+  binary_sens(truth, binary_rating), treatment, reader, case, data = VanDyke
+)
+```
+
+<details>
+<summary>**Show MRMC Performance Metrics**</summary>
+```{r}
 print(est)
+```
+</details>
+<details>
+<summary>**Show MRMC Test Results**</summary>
+```{r}
 summary(est)
 ```
+</details>
+<p>
 
+## Covariance Estimation Methods
 
-## Covariance Estimation
+Special statistical methods are needed in MRMC analyses to estimate covariances between performance metrics from different readers and tests when cases are treated as a random sample and are rated by more than one reader or evaluated with more than one test.  For this estimation, the package provides the DeLong method [@DeLong:1988:CAU], jackknifing [@Efron:1982:JBR], and an unbiased method [@Gallas:2007:MMV].  The applicability of each depends on the study design as well as the performance metric being analyzed.  DeLong is appropriate for a balanced factorial design and empirical ROC AUC, jackknifing for any design and metric, and unbiased for any design and empirical ROC AUC.
 
-```{r using_mrmc_cov}
+| Covariance Method    | Study Design | Metric            | Function      |
+|:---------------------|:-------------|:------------------|:--------------|
+| DeLong               | Factorial    | Empirical ROC AUC | `DeLong()`    |
+| Jackknife            | Any          | Any               | `jackknife()` |
+| Unbiased             | Any          | Empirical ROC AUC | `unbiased()`  |
+
+Jackknifing is the default covariance method for `mrmc()`.  Others can be specified with its `cov` argument.
+
+```{r using_mrmc_DeLong}
 ## DeLong method
-est <- mrmc(empirical_auc(truth, rating), treatment, reader, case,
-            data = VanDyke,
-            cov = DeLong)
-summary(est)
-
-## Unbiased method
-est <- mrmc(empirical_auc(truth, rating), treatment, reader, case,
-            data = VanDyke,
-            cov = unbiased)
-summary(est)
+est <- mrmc(
+  empirical_auc(truth, rating), treatment, reader, case, data = VanDyke,
+  cov = DeLong
+)
 ```
 
+<details>
+<summary>**Show MRMC Test Results**</summary>
+```{r}
+summary(est)
+```
+</details>
+<p>
+
+```{r using_mrmc_unbiased}
+## Unbiased method
+est <- mrmc(
+  empirical_auc(truth, rating), treatment, reader, case, data = VanDyke,
+  cov = unbiased
+)
+```
+
+<details>
+<summary>**Show MRMC Test Results**</summary>
+```{r}
+summary(est)
+```
+</details>
+<p>
 
 ## Fixed Factors
 
-```{r using_mrmc_fixed}
-## Fixed readers
-est <- mrmc(empirical_auc(truth, rating), treatment, fixed(reader), case,
-            data = VanDyke)
-summary(est)
+By default, readers and cases are treated as random effects by `mrmc()`.  Random effects are the appropriate designations when inference is intended for the larger population from which study readers and cases are considered to be a random sample.  Either, but not both, can be specified as fixed effects with the `fixed()` function in applications where study readers or cases make up the entire group to which inference is intended.  When readers are designated as fixed, `mrmc()` test results additionally include reader-specific pairwise comparisons of the diagnostic tests as well as mean estimates of the performance metric for each reader-test combination.
 
-## Fixed cases
-est <- mrmc(empirical_auc(truth, rating), treatment, reader, fixed(case),
-            data = VanDyke)
+```{r using_mrmc_fixed_readers}
+## Fixed readers
+est <- mrmc(
+  empirical_auc(truth, rating), treatment, fixed(reader), case, data = VanDyke
+)
+```
+
+<details>
+<summary>**Show MRMC Test Results**</summary>
+```{r}
 summary(est)
 ```
+</details>
+<p>
+
+```{r using_mrmc_fixed_cases}
+## Fixed cases
+est <- mrmc(
+  empirical_auc(truth, rating), treatment, reader, fixed(case), data = VanDyke
+)
+```
+<details>
+<summary>**Show MRMC Test Results**</summary>
+```{r}
+summary(est)
+```
+</details>
+<p>
+
+## Study Designs
+
+**MRMCaov** supports factorial, nested, and partially paired study designs.  In a factorial design, one set of cases is evaluated by all readers and tests.  This is the design employed by the VanDyke study as indicated by its dataset `case` identifier values which appear within each combination of the `reader` and `treatment` identifiers.  Designs in which a different set of cases is evaluated by each reader or with each test can be specified with unique codings of case identifiers within the corresponding nesting factor.  Example codings for these two nested designs are included in the `VanDyke` dataset as `case2` and `case3`.  The `case2` identifiers differ from reader to reader and thus represent a study design in which cases are nested within readers.  Likewise, the `case3` identifiers differ by test and are an example design of cases nested within tests.  Additionally, the package supports partially paired designs in which ratings may not be available on all cases for some readers or tests; e.g., as a result of missing values.  Nested and partially paired designs require specification of jackknife (default) or unbiased as the covariance estimation method.
+
+```{r echo=FALSE}
+cat("Case identifier codings for factorial and nested study designs\n")
+x <- t(VanDyke[c("reader", "treatment", "case", "case2", "case3")])
+dimnames(x) <- list(
+  Factor = rownames(x),
+  Observation = seq_len(ncol(x))
+)
+n <- 30
+print(x[, seq_len(n)], quote = FALSE)
+cat("... with", ncol(x) - n, "more observations")
+```
+
+```{r using_mrmc_within_readers}
+## Cases nested within readers
+est <- mrmc(
+  empirical_auc(truth, rating), treatment, reader, case2, data = VanDyke
+)
+```
+
+<details>
+<summary>**Show MRMC Test Results**</summary>
+```{r}
+summary(est)
+```
+</details>
+<p>
+
+```{r using_mrmc_within_tests}
+## Cases nested within tests
+est <- mrmc(
+  empirical_auc(truth, rating), treatment, reader, case3, data = VanDyke
+)
+```
+<details>
+<summary>**Show MRMC Test Results**</summary>
+```{r}
+summary(est)
+```
+</details>
+<p>

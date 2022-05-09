@@ -1,11 +1,14 @@
 ---
-title: Using MRMCaov for R
+title: MRMCaov for R User Guide
 subtitle: Package Version `r packageVersion("MRMCaov")`
 output:
-  html_document:
-    df_print: paged
+  pdf_document:
+    toc: true
     number_sections: yes
-    css: ../src/style.css
+author:
+- Brian J Smith, Department of Biostatistics, University of Iowa
+- Stephen L Hillis, Departments of Radiology and Biostatistics, University of Iowa
+date: May 13, 2022
 bibliography: ../src/bibliography.bib
 nocite: |
   @MRMCaov-package, @MRMCaov-SPIE2020
@@ -24,7 +27,10 @@ knitr::opts_chunk$set(
 )
 
 print_data <- function(x) {
-  x
+  res <- head(x, n = 20)
+  print(res)
+  nmore <- nrow(x) - nrow(res)
+  if (nmore) cat("... with", nmore, "more rows\n")
 }
 ```
 

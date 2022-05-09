@@ -3,9 +3,12 @@
 .RData
 .Ruserdata
 *.Rproj
+*.code-workspace
 docs/html/_site
 docs/html/*_cache
 docs/html/*_files
+docs/pdf/*_cache
+docs/pdf/*_files
 src/*.mod
 src-i386
 src-x64

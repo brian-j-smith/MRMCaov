@@ -23,6 +23,8 @@ the package include the following.
     parameters and vice versa.
   - Compatibility with Microsoft Windows and Linux
 
+## Documentation: [User Guide](https://brian-j-smith.github.io/MRMCaov/)
+
 ## Download and Installation
 
 To install the package, do the following:
@@ -56,7 +58,7 @@ install.packages(c("ggplot2", "gtools", "mvtnorm", "progress", "pROC", "tibble")
 citation("MRMCaov")
 ```
 
-``` 
+```
 
 To cite MRMCaov in publications, please use the following two references, including the R package URL.
 
@@ -82,7 +84,7 @@ toBibtex(citation("MRMCaov"))
       note = {R package version 0.2.0},
       url = {https://github.com/brian-j-smith/MRMCaov},
     }
-    
+
     @InProceedings{MRMCaov-SPIE2020,
       author = {Brian J. Smith and Stephen L. Hillis},
       title = {Multi-reader multi-case analysis of variance software for diagnostic performance comparison of imaging modalities},
