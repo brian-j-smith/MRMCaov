@@ -13,6 +13,7 @@
 
 <title>Multi-Reader Multi-Case Analysis of Variance for R</title>
 
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -64,6 +65,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -84,6 +86,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -309,7 +314,7 @@ div.tocify {
 <div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -341,37 +346,60 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Multi-Reader Multi-Case Analysis of Variance for R</h1>
+<h1 class="title toc-ignore">Multi-Reader Multi-Case Analysis of
+Variance for R</h1>
 
 </div>
 
 
 <div id="description" class="section level2">
 <h2>Description</h2>
-<p><strong>MRMCaov</strong> is an R package for statistical comparison of diagnostic tests - such as those based on medical imaging - for which ratings have been obtained from multiple readers and on multiple cases. Features of the package include the following.</p>
+<p><strong>MRMCaov</strong> is an R package for statistical comparison
+of diagnostic tests - such as those based on medical imaging - for which
+ratings have been obtained from multiple readers and on multiple cases.
+Features of the package include the following.</p>
 <ul>
-<li>Comparison of imaging modalities or diagnostic tests with respect to ROC metrics</li>
-<li>ROC metrics include AUC, partial AUC, sensitivity, specificity, and expected utility as well as user-defined metrics</li>
-<li>Parametric and nonparametric estimation and plotting of ROC curves</li>
+<li>Comparison of imaging modalities or diagnostic tests with respect to
+ROC metrics</li>
+<li>ROC metrics include AUC, partial AUC, sensitivity, specificity, and
+expected utility as well as user-defined metrics</li>
+<li>Parametric and nonparametric estimation and plotting of ROC
+curves</li>
 <li>Support for factorial and nested study designs</li>
 <li>DeLong, jackknife, and unbiased covariance estimation</li>
 <li>Inference for random or fixed readers and cases</li>
-<li>Conversion of Obuchowski-Rockette to Roe, Metz &amp; Hillis model parameters and vice versa.</li>
+<li>Conversion of Obuchowski-Rockette to Roe, Metz &amp; Hillis model
+parameters and vice versa.</li>
 <li>Compatibility with Microsoft Windows and Linux</li>
 </ul>
+</div>
+<div id="documentation-user-guide" class="section level2">
+<h2>Documentation: <a
+href="https://brian-j-smith.github.io/MRMCaov/using.html">User
+Guide</a></h2>
 </div>
 <div id="download-and-installation" class="section level2">
 <h2>Download and Installation</h2>
 <p>To install the package, do the following:</p>
 <ol style="list-style-type: decimal">
-<li>Download the archive file for your operating system from the links provided in the table below.</li>
-<li>Run <a href="https://www.rstudio.com/products/rstudio/">RStudio</a>.</li>
-<li>Click on “Tools” from the RStudio menu and then select “Install Packages…” to bring up the “Install Packages” dialog box.</li>
-<li>From the dialog box, select “Package Archive File (.zip; .tar.gz)” as the source from which to install, and browse to and select the downloaded package archive file.</li>
-<li>Install the packages below with the given command submitted at the R console, if they have not been installed previously.</li>
+<li>Download the archive file for your operating system from the links
+provided in the table below.</li>
+<li>Run <a
+href="https://www.rstudio.com/products/rstudio/">RStudio</a>.</li>
+<li>Click on “Tools” from the RStudio menu and then select “Install
+Packages…” to bring up the “Install Packages” dialog box.</li>
+<li>From the dialog box, select “Package Archive File (.zip; .tar.gz)”
+as the source from which to install, and browse to and select the
+downloaded package archive file.</li>
+<li>Install the packages below with the given command submitted at the R
+console, if they have not been installed previously.</li>
 </ol>
-<pre class="r"><code>install.packages(c(&quot;ggplot2&quot;, &quot;gtools&quot;, &quot;mvtnorm&quot;, &quot;progress&quot;, &quot;pROC&quot;, &quot;tibble&quot;))</code></pre>
+<pre class="r"><code>install.packages(c(&quot;ggplot2&quot;, &quot;gtools&quot;, &quot;mvtnorm&quot;, &quot;pROC&quot;, &quot;tibble&quot;))</code></pre>
 <table>
+<colgroup>
+<col width="51%" />
+<col width="48%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th>Operating System</th>
@@ -381,11 +409,13 @@ div.tocify {
 <tbody>
 <tr class="odd">
 <td>Microsoft Windows:</td>
-<td><a href="https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.0/MRMCaov_0.2.0.zip">MRMCaov_0.2.0.zip</a></td>
+<td><a
+href="https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.1/MRMCaov_0.2.1.zip">MRMCaov_0.2.1.zip</a></td>
 </tr>
 <tr class="even">
 <td>Linux:</td>
-<td><a href="https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.0/MRMCaov_0.2.0.tar.gz">MRMCaov_0.2.0.tar.gz</a></td>
+<td><a
+href="https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.1/MRMCaov_0.2.1.tar.gz">MRMCaov_0.2.1.tar.gz</a></td>
 </tr>
 </tbody>
 </table>
@@ -399,7 +429,7 @@ To cite MRMCaov in publications, please use the following two
 references, including the R package URL.
 
 Smith BJ, Hillis SL, Pesce LL (2022). _MCMCaov: Multi-Reader Multi-Case
-Analysis of Variance_. R package version 0.2.0, &lt;URL:
+Analysis of Variance_. R package version 0.2.1, &lt;URL:
 https://github.com/brian-j-smith/MRMCaov&gt;.
 
 Smith BJ, Hillis SL (2020). &quot;Multi-reader multi-case analysis of
@@ -419,7 +449,7 @@ toBibtex(citation(&quot;MRMCaov&quot;))</code></pre>
   author = {Brian J Smith and Stephen L Hillis and Lorenzo L Pesce},
   title = {{MCMCaov}: Multi-Reader Multi-Case Analysis of Variance},
   year = {2022},
-  note = {R package version 0.2.0},
+  note = {R package version 0.2.1},
   url = {https://github.com/brian-j-smith/MRMCaov},
 }
 
