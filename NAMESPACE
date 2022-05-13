@@ -9,7 +9,6 @@ importFrom(graphics, plot, points)
 importFrom(gtools, combinations)
 importFrom(methods, is)
 importFrom(mvtnorm, pmvnorm)
-importFrom(progress, progress_bar)
 importFrom(stats, anova, aov, approx, as.formula, coef, formula, model.frame,
            model.matrix, optim, optimize, pnorm, pf, pt, reformulate, qnorm, qt,
            reshape, terms, update, vcov)

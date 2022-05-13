@@ -1,8 +1,8 @@
 Package: MRMCaov
 Type: Package
 Title: Multi-Reader Multi-Case Analysis of Variance
-Version: 0.2.0
-Date: 2022-03-16
+Version: 0.2.1
+Date: 2022-05-13
 Authors@R: c(person(c("Brian", "J"), "Smith",
                     email = "brian-j-smith@uiowa.edu",
                     role = c("aut", "cre")),
@@ -18,9 +18,9 @@ Author: Brian J Smith [aut, cre],
 Maintainer: Brian J Smith <brian-j-smith@uiowa.edu>
 Description: A package for multi-reader and multi-case analysis of variance.
 Depends: R (>= 3.5.0)
-Imports: ggplot2, gtools, methods, mvtnorm, progress, pROC, tibble
+Imports: ggplot2, gtools, methods, mvtnorm, pROC, tibble
 NeedsCompilation: yes
 LazyData: true
 License: GPL-3
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Encoding: UTF-8

@@ -2,6 +2,10 @@
 
 ## Version Updates
 
+## 0.2.1
+* Order tests and readers lexically in results from `mrmc()`.
+* Rename `bichisquare` column to `bichisquared` in `binormalLR_curve`.
+
 ## 0.2.0
 * Implement fast algorithm for unbiased covariance estimation.
 * Remove deprecated functions `proproc_roc()`, `proproc_sens()`, and `proproc_spec()`.
