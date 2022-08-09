@@ -42,6 +42,11 @@ chol2det <- function(x, log = FALSE) {
 }
 
 
+combinations <- function(n, r) {
+  t(combn(n, r))
+}
+
+
 curves2tibble <- function(x, groups) {
   groups_ind <- rep(seq(nrow(groups)), times = sapply(x, nrow))
   x <- do.call(rbind, x)

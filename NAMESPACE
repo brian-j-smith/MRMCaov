@@ -6,14 +6,13 @@ import(methods)
 
 
 importFrom(graphics, plot, points)
-importFrom(gtools, combinations)
 importFrom(methods, is)
 importFrom(mvtnorm, pmvnorm)
 importFrom(stats, anova, aov, approx, as.formula, coef, formula, model.frame,
            model.matrix, optim, optimize, pnorm, pf, pt, reformulate, qnorm, qt,
            reshape, terms, update, vcov)
 importFrom(tibble, as_tibble, tibble)
-importFrom(utils, head, str, tail)
+importFrom(utils, combn, head, str, tail)
 
 
 export(
