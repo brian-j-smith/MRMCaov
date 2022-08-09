@@ -97,6 +97,11 @@ get_cov_method <- function(x) {
 }
 
 
+header <- function(..., width = getOption("width")) {
+  writeLines(strwrap(paste0(...), width = width))
+}
+
+
 interaction <- function(..., drop = TRUE, lex.order = TRUE) {
   base::interaction(..., drop = drop, lex.order = lex.order)
 }

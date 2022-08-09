@@ -128,14 +128,14 @@ print.summary.mrmc <- function(x, ...) {
   .print.summary.mrmc(x)
 
   if (!is_one_reader) {
-    cat("\n\nReader-specific ", 100 * x$conf.level, "% CIs and tests for ",
-        x$vars["metric"], " pairwise differences (each analysis based only on",
-        " data for the specified reader):\n\n", sep = "")
+    header("\n\nReader-specific ", 100 * x$conf.level, "% CIs and tests for ",
+           x$vars["metric"], " pairwise differences (each analysis based only on",
+           " data for the specified reader):\n\n", sep = "")
     print(x$reader_test_diffs)
   }
 
   if (!is.null(x$reader_means)) {
-    cat("\n\nSingle reader ", 100 * x$conf.level, "% CIs:\n\n", sep = "")
+    header("\n\nSingle reader ", 100 * x$conf.level, "% CIs:\n\n", sep = "")
     print(x$reader_means)
   }
 
@@ -194,19 +194,19 @@ print.summary.mrmc <- function(x, ...) {
   test_metric <- paste(x$vars["test"], x$vars["metric"])
 
   if (!is.null(x$test_equality)) {
-    cat("\n\nANOVA global test of equal ", test_metric, ":\n\n", sep = "")
+    header("\n\nANOVA global test of equal ", test_metric, ":\n\n", sep = "")
     print(x$test_equality)
   }
 
   if (!is.null(x$test_diffs)) {
-    cat("\n\n", 100 * x$conf.level, "% CIs and tests for ", test_metric,
-        " pairwise differences:\n\n", sep = "")
+    header("\n\n", 100 * x$conf.level, "% CIs and tests for ", test_metric,
+           " pairwise differences:\n\n", sep = "")
     print(x$test_diffs)
   }
 
   if (!is.null(x$test_means)) {
-    cat("\n\n", 100 * x$conf.level, "% ", test_metric, " CIs (each analysis",
-        " based only on data for the specified treatment):\n\n", sep = "")
+    header("\n\n", 100 * x$conf.level, "% ", test_metric, " CIs (each analysis",
+           " based only on data for the specified treatment):\n\n", sep = "")
     print(x$test_means)
   }
 
