@@ -3285,8 +3285,8 @@ elseif (.not.check_cutoff_order()) then
            write(msg,*) " i     cutoff    fpf          tpf  "
            call DisplayState(msg)
            do i=1,num_cat-1
-                  call fpf_PBM( d_a_par, c_par, vc_cutoffs(i-1), fpf)
-                  call tpf_PBM( d_a_par, c_par, vc_cutoffs(i-1), tpf)
+                  call fpf_PBM( d_a_par, c_par, vc_cutoffs(i), fpf)
+                  call tpf_PBM( d_a_par, c_par, vc_cutoffs(i), tpf)
                   write(err_msg,"(i2,3(1x,e22.15))") i, vc_cutoffs(i), fpf,tpf
                   call DisplayState(msg)
            enddo

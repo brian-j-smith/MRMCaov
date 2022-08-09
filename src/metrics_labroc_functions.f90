@@ -964,8 +964,8 @@ elseif (.not.check_cutoff_order()) then
            write(msg,*) " i     cutoff    fpf          tpf  "
            call DisplayState(msg)
            do i=1,num_cat-1
-                  call fpf_CVBM( a_par, b_par, cutoffs(i-1), fpf)
-                  call tpf_CVBM( a_par, b_par, cutoffs(i-1), tpf)
+                  call fpf_CVBM( a_par, b_par, cutoffs(i), fpf)
+                  call tpf_CVBM( a_par, b_par, cutoffs(i), tpf)
                   write(err_msg,"(i2,3(1x,e22.15))") i, cutoffs(i), fpf,tpf
                   call DisplayState(msg)
            enddo
