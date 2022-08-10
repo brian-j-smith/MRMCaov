@@ -1,0 +1,83 @@
+---
+documentclass: jss
+author:
+  - name: Brian J. Smith
+    affiliation: Department of Biostatstics
+    address: |
+      | University of Iowa,
+      | Iowa City, Iowa, USA
+    email: \email{brian-j-smith@uiowa.edu}
+  - name: Stephen L. Hillis
+    affiliation: Departments of Radiology and Biostatsitics 
+    address: |
+      | University of Iowa,
+      | Iowa City, Iowa, USA
+    email: \email{steve-hillis@uiowa.edu}
+title:
+  formatted: "\\pkg{MRMCaov}: Multi-Reader Multi-Case ANOVA Software for \\proglang{R}"
+  plain:     "MRMCaov: Multi-Reader Multi-Case ANOVA Software for R"
+  short:     "\\pkg{MRMCaov}"
+abstract: >
+  The abstract of the article.
+keywords:
+  # at least one keyword must be supplied
+  formatted: [keywords, not capitalized, "\\proglang{Java}"]
+  plain:     [keywords, not capitalized, Java]
+output:
+  rticles::jss_article:
+    includes:
+      in_header: preamble.tex
+bibliography: ../src/bibliography.bib
+nocite: |
+  @MRMCaov-package, @MRMCaov-SPIE2020
+---
+
+```{r, setup, include=FALSE}
+options(prompt = 'R> ', continue = '+ ')
+
+print_data <- function(x) {
+  res <- head(x, n = 20)
+  print(res)
+  nmore <- nrow(x) - nrow(res)
+  if (nmore) cat("... with", nmore, "more rows\n")
+}
+```
+
+
+```{r child = "01_intro.Rmd"}
+```
+
+
+```{r child = "02_model.Rmd"}
+```
+
+
+```{r child = "03_example.Rmd"}
+```
+
+
+```{r child = "04_mrmc.Rmd"}
+```
+
+
+```{r child = "05_srmc.Rmd"}
+```
+
+
+```{r child = "06_stmc.Rmd"}
+```
+
+
+```{r child = "07_curves.Rmd"}
+```
+
+
+```{r child = "08_metrics.Rmd"}
+```
+
+
+```{r child = "09_conclusion.Rmd"}
+```
+
+
+# References

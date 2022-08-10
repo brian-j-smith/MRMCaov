@@ -8,7 +8,7 @@ output:
 author:
 - Brian J Smith, Department of Biostatistics, University of Iowa
 - Stephen L Hillis, Departments of Radiology and Biostatistics, University of Iowa
-date: May 13, 2022
+date: "`r Sys.Date()`"
 bibliography: ../src/bibliography.bib
 nocite: |
   @MRMCaov-package, @MRMCaov-SPIE2020
@@ -32,6 +32,9 @@ print_data <- function(x) {
   nmore <- nrow(x) - nrow(res)
   if (nmore) cat("... with", nmore, "more rows\n")
 }
+```
+
+```{r child = "../src/overview.Rmd"}
 ```
 
 ```{r child = "../src/using_intro.Rmd"}

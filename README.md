@@ -4,24 +4,28 @@ MRMCaov: Multi-Reader Multi-Case Analysis of Variance
 [![Generic
 badge](https://img.shields.io/badge/docs-online-green.svg)](https://brian-j-smith.github.io/MRMCaov/)
 
-## Description
+# Getting Started
 
 **MRMCaov** is an R package for statistical comparison of diagnostic
 tests - such as those based on medical imaging - for which ratings have
 been obtained from multiple readers and on multiple cases. Features of
 the package include the following.
 
--   Comparison of imaging modalities or diagnostic tests with respect to
-    ROC metrics
--   ROC metrics include AUC, partial AUC, sensitivity, specificity, and
-    expected utility as well as user-defined metrics
--   Parametric and nonparametric estimation and plotting of ROC curves
--   Support for factorial and nested study designs
--   DeLong, jackknife, and unbiased covariance estimation
--   Inference for random or fixed readers and cases
--   Conversion of Obuchowski-Rockette to Roe, Metz & Hillis model
-    parameters and vice versa.
--   Compatibility with Microsoft Windows and Linux
+  - Statistical comparisons of diagnostic tests with respect to reader
+    performance metrics
+  - Comparisons based on the ANOVA model of Obuchowski-Rockette and the
+    unified framework of Hillis
+  - Reader performance metrics for area under receiver operating
+    characteristic curves (ROC AUCs), partial AUCs, expected utility of
+    ROC curves, likelihood ratio of positive or negative tests,
+    sensitivity, specificity, and user-defined metrics
+  - Parametric and nonparametric estimation and plotting of ROC curves
+  - Support for factorial, nested, and partially paired study designs
+  - Inference for random or fixed readers and cases
+  - Conversion of Obuchowski-Rockette to Roe, Metz & Hillis model
+    parameters and vice versa
+  - DeLong, jackknife, and unbiased covariance estimation
+  - Compatibility with Microsoft Windows and Linux
 
 ## Documentation: [User Guide](https://brian-j-smith.github.io/MRMCaov/using.html)
 
@@ -40,14 +44,16 @@ To install the package, do the following:
 5.  Install the packages below with the given command submitted at the R
     console, if they have not been installed previously.
 
+<!-- end list -->
+
 ``` r
-install.packages(c("ggplot2", "gtools", "mvtnorm", "pROC", "tibble"))
+install.packages(c("ggplot2", "mvtnorm", "pROC", "tibble"))
 ```
 
-| Operating System   | Package Archive File                                                                                           |
-|--------------------|----------------------------------------------------------------------------------------------------------------|
-| Microsoft Windows: | [MRMCaov_0.2.1.zip](https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.1/MRMCaov_0.2.1.zip)       |
-| Linux:             | [MRMCaov_0.2.1.tar.gz](https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.1/MRMCaov_0.2.1.tar.gz) |
+| Operating System   | Package Archive File                                                                                            |
+| ------------------ | --------------------------------------------------------------------------------------------------------------- |
+| Microsoft Windows: | [MRMCaov\_0.2.1.zip](https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.1/MRMCaov_0.2.1.zip)       |
+| Linux:             | [MRMCaov\_0.2.1.tar.gz](https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.1/MRMCaov_0.2.1.tar.gz) |
 
 ## Citing the Software
 
@@ -56,20 +62,27 @@ install.packages(c("ggplot2", "gtools", "mvtnorm", "pROC", "tibble"))
 citation("MRMCaov")
 ```
 
+``` 
 
-    To cite MRMCaov in publications, please use the following two references, including the R package URL.
+To cite MRMCaov in publications, please use the following two
+references, including the R package URL.
 
-    Smith BJ, Hillis SL, Pesce LL (2022). _MCMCaov: Multi-Reader Multi-Case Analysis of Variance_. R
-    package version 0.2.1, <URL: https://github.com/brian-j-smith/MRMCaov>.
+  Smith BJ, Hillis SL, Pesce LL (2022). _MCMCaov: Multi-Reader
+  Multi-Case Analysis of Variance_. R package version 0.2.1,
+  <https://github.com/brian-j-smith/MRMCaov>.
 
-    Smith BJ, Hillis SL (2020). "Multi-reader multi-case analysis of variance software for diagnostic
-    performance comparison of imaging modalities." In Samuelson F, Taylor-Phillips S (eds.), _Proceedings
-    of SPIE 11316, Medical Imaging 2020: Image Perception, Observer Performance, and Technology
-    Assessment_, 113160K. doi: 10.117/12.2549075 (URL: https://doi.org/10.117/12.2549075), <URL:
-    https://pubmed.ncbi.nlm.nih.gov/32351258>.
+  Smith BJ, Hillis SL (2020). "Multi-reader multi-case analysis of
+  variance software for diagnostic performance comparison of imaging
+  modalities." In Samuelson F, Taylor-Phillips S (eds.), _Proceedings
+  of SPIE 11316, Medical Imaging 2020: Image Perception, Observer
+  Performance, and Technology Assessment_, 113160K.
+  doi:10.117/12.2549075 <https://doi.org/10.117/12.2549075>,
+  <https://pubmed.ncbi.nlm.nih.gov/32351258>.
 
-    To see these entries in BibTeX format, use 'print(<citation>, bibtex=TRUE)', 'toBibtex(.)', or set
-    'options(citation.bibtex.max=999)'.
+To see these entries in BibTeX format, use 'print(<citation>,
+bibtex=TRUE)', 'toBibtex(.)', or set
+'options(citation.bibtex.max=999)'.
+```
 
 ``` r
 ## Bibtex format
@@ -83,7 +96,7 @@ toBibtex(citation("MRMCaov"))
       note = {R package version 0.2.1},
       url = {https://github.com/brian-j-smith/MRMCaov},
     }
-
+    
     @InProceedings{MRMCaov-SPIE2020,
       author = {Brian J. Smith and Stephen L. Hillis},
       title = {Multi-reader multi-case analysis of variance software for diagnostic performance comparison of imaging modalities},

@@ -1,0 +1,35 @@
+# VanDyke Example
+
+Use of the \pkg{MRMCaov} package is illustrated with data from a study comparing the relative performance of cinematic presentation of MRI (CINE MRI) to single spin-echo magnetic resonance imaging (SE MRI) for the detection of thoracic aortic dissection [@VanDyke:1993:CMD].  In the study, 45 patients with aortic dissection and 69 without dissection were imaged with both modalities.  Based on the images, five radiologists rated patients disease statuses as 1 = definitely no aortic dissection, 2 = probably no aortic dissection, 3 = unsure about aortic dissection, 4 = probably aortic dissection, or 5 = definitely aortic dissection.  Interest lies in estimating ROC curves for each combination of reader and modality and in comparing modalities with respect to summary statistics from the curves.  The study data are included in the package as a data frame named `VanDyke`.
+
+```{r using_example_data}
+## Load MRMCaov library and VanDyke dataset
+library(MRMCaov)
+data(VanDyke, package = "MRMCaov")
+```
+
+```{r echo=FALSE}
+print_data(VanDyke)
+```
+
+The study employed a factorial design in which each of the five radiologists read and rated both the CINE and SE MRI images from all 114 cases.  The original study variables in the `VanDyke` data frame are summarized in Table~\ref{tbl:VanDyke} along with two additional `case2` and `case3` variables that represent hypothetical study designs in which cases are nested within readers (`reader`) and within imaging modalities (`treatment`), respectively.
+
+\begin{table}[h]
+\caption{VanDyke study variables}
+\label{tbl:VanDyke}
+\begin{tabular}{ll}
+\toprule
+Variable    & Description \\
+\midrule
+\code{reader}    & unique identifiers for the five radiologists                                \\
+\code{treatment} & identifiers for the imaging modality (1 = CINE MRI, 2 = SE MRI)             \\
+\code{case}      & identifiers for the 114 cases                                               \\
+\code{truth}     & indicator for thoracic aortic dissection (1 = performed, 0 = not performed) \\
+\code{rating}    & five-point ratings given to case images by the readers                      \\
+\code{case2}     & example identifiers representing nesting of cases within readers            \\
+\code{case3}     & example identifiers representing nesting of cases within treatments         \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Data from other studies may be analyzed with the package and should follow the format of `VanDyke` with columns for reader, treatment, and case identifiers as well as true event statuses and reader ratings.  The variable names, however, may be different.

@@ -1,0 +1,56 @@
+# Single-Reader Multi-Case Analysis
+
+A single-reader multi-case (SRMC) analysis involves a single readers of multiple cases to compare reader performance metrics across two or more diagnostic tests.  An SRMC analysis can be performed with a call to `srmc()`.
+
+\begin{figure}[h]
+\begin{tcolorbox}[title=SRMC Function]
+\textbf{Syntax}
+\begin{verbatim}
+srmc(response, test, case, data, cov = jackknife
+\end{verbatim}
+\begin{Description}
+Returns an \code{srmc} class object of data that can be used to estimate and compare reader performance metrics in a single-reader multi-case statistical analysis.
+\end{Description}
+\textbf{Arguments}
+\begin{description}
+\item[\code{response}:] object defining true case statuses, corresponding reader ratings, and a reader performance metric to compute on them.
+\item[\code{test}, \code{case}:] variables containing the test and case identifiers for the \code{response} observations.
+\item[\code{data}:] data frame containing the response and identifier variables.
+\item[\code{cov}:] function \code{jackknife}, \code{unbiased}, or \code{DeLong} to estimate reader performance metric covariances.
+\end{description}
+\end{tcolorbox}
+\end{figure}
+
+The function is used similar to `mrmc()` but without the `reader` argument.  Below is an example SRMC analysis performed with one of the readers from the `VanDyke` dataset.
+
+```{r using_srmc_roc}
+## Subset VanDyke dataset by reader 1
+VanDyke1 <- subset(VanDyke, reader == "1")
+
+## Compare ROC AUC treatment means for reader 1
+est <- srmc(binormal_auc(truth, rating), treatment, case, data = VanDyke1)
+```
+
+**SRMC Performance Metrics**
+
+```{r}
+print(est)
+```
+
+**SRMC ROC Curves**
+
+```{r}
+plot(est)
+```
+
+**SRMC ROC Curve Parameters**
+
+```{r}
+print(parameters(est))
+```
+
+**SRMC Test Results**
+
+```{r}
+summary(est)
+```

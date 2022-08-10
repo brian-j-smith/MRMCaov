@@ -6,7 +6,7 @@
 \alias{MRMCaov-package}
 \title{MRMCaov: Multi-Reader Multi-Case Analysis of Variance}
 \description{
-A package for multi-reader and multi-case analysis of variance.
+Statistical tools for estimating and comparing the performances of diagnostic tests in multi-reader multi-case studies where true case statuses (or ground truths) are known and one or more readers provide test ratings for multiple cases. Reader performance metrics are provided for area under and expected utility of ROC curves, likelihood ratio of positive or negative tests, and sensitivity and specificity. ROC curves can be estimated empirically or with binormal or binormal likelihood-ratio models. Statistical comparisons of diagnostic tests are based on the ANOVA model of Obuchowski-Rockette and the unified framework of Hillis. The ANOVA can be conducted with data from a full factorial, nested, or partially paired study design; with random or fixed readers or cases; and covariances estimated with the DeLong method, jackknifing, or an unbiased method.
 }
 \details{
 The functions below are available in \pkg{MRMCaov} for estimation and

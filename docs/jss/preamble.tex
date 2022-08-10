@@ -1,0 +1,12 @@
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[most]{tcolorbox}
+
+\newenvironment{Description}{\textbf{Description}\vspace{0.5em}\newline}{\vspace{0.5em}\newline}
+
+\newtcolorbox[auto counter,number within=section]{example}[2][]{
+  enhanced,
+  breakable,
+  title={MATLAB Example \thetcbcounter: #2},
+  #1
+}

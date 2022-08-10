@@ -1,0 +1,39 @@
+---
+title: "MRMCaov for R User Guide"
+subtitle: "Package Version `r packageVersion('MRMCaov')`"
+author:
+- name: "Brian J Smith"
+  affiliation: "Department of Biostatistics, University of Iowa"
+  email: "brian-j-smith@uiowa.edu"
+- name: "Stephen L Hillis"
+  affiliation: "Departments of Radiology and Biostatistics, University of Iowa"
+  email: "steve-hillis@uiowa.edu"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+bibliography: bibliography.bib
+vignette: >
+  %\VignetteIndexEntry{MRMCaov for R User Guide}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, setup, include=FALSE}
+options(
+  prompt = 'R> ',
+  continue = '+ ',
+  fig.width = 7,
+  fig.height = 4,
+  fig.align = "center"
+)
+
+print_data <- function(x) {
+  res <- head(x, n = 20)
+  print(res)
+  nmore <- nrow(x) - nrow(res)
+  if (nmore) cat("... with", nmore, "more rows\n")
+}
+```

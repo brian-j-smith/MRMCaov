@@ -111,7 +111,7 @@ print(parameters(est))
 
 ### ROC Curve Expected Utility
 
-As an alternative to AUC as a summary of ROC curves, Abbey et al. [-@abbey:2013:SPC] propose an expected utility metric defined as
+As an alternative to AUC as a summary of ROC curves, Abbey et al. [-@Abbey:2013:SPC] propose an expected utility metric defined as
 $$
 \text{EU} = \max_\text{FPR}(\text{TPR}(\text{FPR}) - \beta \times \text{FPR}),
 $$

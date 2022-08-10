@@ -1,0 +1,174 @@
+# ROC Curves
+
+ROC curves can be estimated, summarized, and displayed apart from a multi-case statistical analysis with the `roc_curves()` function.  Supported estimation methods include the empirical distribution (default), binormal model, and binormal likelihood-ratio model.
+
+## Curve Fitting
+
+\begin{figure}[h]
+\begin{tcolorbox}[title=ROC Curves Function]
+\textbf{Syntax}
+\begin{verbatim}
+roc_curves(truth, rating, groups = list(), method = "empirical")
+\end{verbatim}
+\begin{Description}
+Returns an \code{roc\_curves} class object of estimated ROC curves.
+\end{Description}
+\textbf{Arguments}
+\begin{description}
+\item[\code{truth}:] vector of true binary case statuses, with positive status taken to be the highest level.
+\item[\code{rating}:] numeric vector of case ratings.
+\item[\code{groups}:] list or data frame of grouping variables of the same lengths as \code{truth} and \code{rating}.
+\item[\code{method}:] character string indicating the curve type as \code{"binormal"}, \code{"binormalLR"}, \code{"empirical"}, or \code{"trapezoidal"}.
+\end{description}
+\end{tcolorbox}
+\end{figure}
+
+A single curve can be estimated over all observations or multiple curves estimated within the levels of one or more grouping variables.  Examples of both are given in the following sections using variables from the `VanDyke` dataset referenced inside of calls to the `with()` function.  Alternatively, the variables may be referenced with the `$` operator; e.g., `VanDyke$truth` and `VanDyke$rating`.  Resulting curves from `roc_curves()` can be displayed with the `print()` and `plot()` functions.
+
+### Single Curve
+
+```{r using_curves_one}
+## Direct referencing of data frame columns
+# curve <- roc_curves(VanDyke$truth, VanDyke$rating)
+
+## Indirect referencing using the with function
+curve <- with(VanDyke, {
+  roc_curves(truth, rating)
+})
+plot(curve)
+```
+
+
+### Multiple Curves
+
+Multiple group-specific curves can be obtained from `roc_curves()` by supplying a list or data frame of grouping variables to the `groups` argument.  Groups will be formed and displayed in the order in which grouping variables are supplied.  For instance, a second grouping variable will be plotted within the first one.
+
+```{r using_curves_reader}
+## Grouped by reader
+curves <- with(VanDyke, {
+  roc_curves(truth, rating,
+             groups = list(Reader = reader, Treatment = treatment))
+})
+plot(curves)
+```
+
+```{r using_curves_treatment}
+## Grouped by treatment
+curves <- with(VanDyke, {
+  roc_curves(truth, rating,
+             groups = list(Treatment = treatment, Reader = reader))
+})
+plot(curves)
+```
+
+
+### Parametric Curves
+
+Estimated parameters for curves obtained with the binormal or binormal likelihood-ratio models can be extracted as a data frame with the `parameters()` function.
+
+```{r using_curves_binorm}
+## Binormal curves
+curves_binorm <- with(VanDyke, {
+  roc_curves(truth, rating,
+             groups = list(Treatment = treatment, Reader = reader),
+             method = "binormal")
+})
+params_binorm <- parameters(curves_binorm)
+print(params_binorm)
+plot(curves_binorm)
+```
+
+Estimates for different parameterizations of the binormal likelihood-ratio model are additionally returned and include those of the binormal model and the simplification of Pan and Metz [-@Pan:1997:PBM;@Metz:1993:PBR] as well as those of the bi-chi-squared model [@Hillis:2017:EBL].
+
+```{r using_curves_binormLR}
+## Binormal likelihood-ratio curves
+curves_binormLR <- with(VanDyke, {
+  roc_curves(truth, rating,
+             groups = list(Treatment = treatment, Reader = reader),
+             method = "binormalLR")
+})
+params_binormLR <- parameters(curves_binormLR)
+print(params_binormLR)
+plot(curves_binormLR)
+```
+
+
+## Curve Points
+
+Points on an ROC curve estimated with `roc_curves()` can be extracted with the `points()` function.  True positive rates (TPRs) and false positive rates (FPRs) on the estimated curve are returned for a given set of sensitivity or specificity values or, in the case of empirical curves, the original points.  ROC curve points can be displayed with `print()` and `plot()`.
+
+\begin{figure}[h]
+\begin{tcolorbox}[title=ROC Points Function]
+\textbf{Syntax}
+\begin{verbatim}
+## Method for class 'roc_curves'`  
+points(x, metric = "specificity", values = seq(0, 1, length = 101), ...)
+
+## Method for class 'empirical_curves'`  
+points(x, metric = "specificity", values = NULL, which = "curve", ...)
+\end{verbatim}
+\begin{Description}
+Returns an \code{roc\_points} class object that is a data frame of false positive and true positive rates from an estimated ROC curve.
+\end{Description}
+\textbf{Arguments}
+\begin{description}
+\item[\code{x}:] object from \code{roc\_curves()} for which to compute points on the curves.
+\item[\code{metric}:] character string specifying \code{"specificity"} or \code{"sensitivity"} as the reader performance metric to which \code{values} correspond.
+\item[\code{values}:] numeric vector of values at which to compute ROC curve points, or \code{NULL} for default empirical values as determined by \code{which}.
+\item[\code{which}:] character string indicating whether to use curve-specific observed values and 0 and 1 (\code{"curve"}), the combination of these values over all curves (\code{"curves"}), or only the observed curve-specific values (\code{"observed"}).
+\end{description}
+\end{tcolorbox}
+\end{figure}
+
+```{r using_curves_points}
+## Extract points at given specificities
+curve_spec_pts <- points(curves, metric = "spec", values = c(0.5, 0.7, 0.9))
+print(curve_spec_pts)
+plot(curve_spec_pts, coord_fixed = FALSE)
+
+## Extract points at given sensitivities
+curve_sens_pts <- points(curves, metric = "sens", values = c(0.5, 0.7, 0.9))
+print(curve_sens_pts)
+plot(curve_sens_pts, coord_fixed = FALSE)
+```
+
+
+## Mean Curves
+
+A mean ROC curve from multiple group-specific curves returned by `roc_curves()` can be computed with the `means()` function.  Curves can be averaged over sensitivities, specificities, or binormal parameters [@Chen:2014:ARO].  Averaged curves can be displayed with `print()` and `plot()`.
+
+\begin{figure}[h]
+\begin{tcolorbox}[title=ROC Means Function]
+\textbf{Syntax}
+\begin{verbatim}
+## Method for class 'roc_curves'
+mean(x, ...)`
+
+## Method for class 'binormal_curves'
+mean(x, method = "points", ...)
+\end{verbatim}
+\begin{Description}
+Returns an \code{roc\_points} class object.
+\end{Description}
+\textbf{Arguments}
+\begin{description}
+\item[\code{x}:] object from \code{roc\_curves()} for which to average over the curves.
+\item[\code{method}:] character string indicating whether to average binormal curves over \code{"points"} or \code{"parameters"}.
+\item[\code{...}:] optional arguments passed to \code{points()}, including at which \code{metric} (\code{"sensitivity"} or \code{"specificity"}) values to average points on the ROC curves.
+\end{description}
+\end{tcolorbox}
+\end{figure}
+
+```{r using_curves_mean_spec}
+## Average sensitivities at given specificities (default)
+curves_mean <- mean(curves)
+print(curves_mean)
+plot(curves_mean)
+```
+
+```{r using_curves_mean_sens}
+## Average specificities at given sensitivities
+curves_mean <- mean(curves, metric = "sens")
+print(curves_mean)
+plot(curves_mean)
+```

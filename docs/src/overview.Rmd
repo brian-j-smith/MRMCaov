@@ -1,14 +1,15 @@
-## Description
+# Getting Started
 
 **MRMCaov** is an R package for statistical comparison of diagnostic tests - such as those based on medical imaging - for which ratings have been obtained from multiple readers and on multiple cases.  Features of the package include the following.
 
-* Comparison of imaging modalities or diagnostic tests with respect to ROC metrics
-* ROC metrics include AUC, partial AUC, sensitivity, specificity, and expected utility as well as user-defined metrics
+* Statistical comparisons of diagnostic tests with respect to reader performance metrics
+* Comparisons based on the ANOVA model of Obuchowski-Rockette and the unified framework of Hillis
+* Reader performance metrics for area under receiver operating characteristic curves (ROC AUCs), partial AUCs, expected utility of ROC curves, likelihood ratio of positive or negative tests, sensitivity, specificity, and user-defined metrics
 * Parametric and nonparametric estimation and plotting of ROC curves
-* Support for factorial and nested study designs
-* DeLong, jackknife, and unbiased covariance estimation
+* Support for factorial, nested, and partially paired study designs
 * Inference for random or fixed readers and cases
-* Conversion of Obuchowski-Rockette to Roe, Metz & Hillis model parameters and vice versa.
+* Conversion of Obuchowski-Rockette to Roe, Metz & Hillis model parameters and vice versa
+* DeLong, jackknife, and unbiased covariance estimation
 * Compatibility with Microsoft Windows and Linux
 
 ## Documentation: [User Guide](https://brian-j-smith.github.io/MRMCaov/using.html)
@@ -24,7 +25,7 @@ To install the package, do the following:
 5. Install the packages below with the given command submitted at the R console, if they have not been installed previously.
 
 ```{r eval = FALSE}
-install.packages(c("ggplot2", "gtools", "mvtnorm", "pROC", "tibble"))
+install.packages(c("ggplot2", "mvtnorm", "pROC", "tibble"))
 ```
 
 | Operating System      | Package Archive File |

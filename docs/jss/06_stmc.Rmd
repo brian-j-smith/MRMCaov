@@ -1,0 +1,50 @@
+# Single-Test Multi-Case Analysis
+
+A single-test and single-reader multi-case (STMC) analysis involves a single reader of multiple cases to estimate a reader performance metric for one diagnostic test.  An STMC analysis can be performed with a call to `stmc()`.
+
+\begin{figure}[h]
+\begin{tcolorbox}[title=STMC Function]
+\textbf{Syntax}
+\begin{verbatim}
+stmc(response, case, data, cov = jackknife)
+\end{verbatim}
+\begin{Description}
+Returns an \code{stmc} class object of data that can be used to estimate a reader performance metric in a single-test and single-reader multi-case statistical analysis.
+\end{Description}
+\textbf{Arguments}
+\begin{description}
+\item[\code{response}:] object defining true case statuses, corresponding reader ratings, and a reader performance metric to compute on them.
+\item[\code{case}:] variable containing the case identifiers for the \code{response} observations.
+\item[\code{data}:] data frame containing the response and identifier variables.
+\item[\code{cov}:] function \code{jackknife}, \code{unbiased}, or \code{DeLong} to estimate reader performance metric covariances.
+\end{description}
+\end{tcolorbox}
+\end{figure}
+
+The function is used similar to `mrmc()` but without the `test` and `reader` arguments.  In the following example, an STMC analysis is performed with one of the tests and readers from the `VanDyke` dataset.
+
+```{r using_trmc_roc}
+## Subset VanDyke dataset by treatment 1 and reader 1
+VanDyke11 <- subset(VanDyke, treatment == "1" & reader == "1")
+
+## Estimate ROC AUC for treatment 1 and reader 1
+est <- stmc(binormal_auc(truth, rating), case, data = VanDyke11)
+```
+
+**STMC ROC Curve**
+
+```{r}
+plot(est)
+```
+
+**STMC ROC Curve Parameters**
+
+```{r}
+print(parameters(est))
+```
+
+**STMC ROC AUC Estimate**
+
+```{r}
+summary(est)
+```

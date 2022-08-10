@@ -1,0 +1,3 @@
+# Conclusion
+
+\pkg{MRMCaov} brings a new statistical package for MRMC analysis to the \proglang{R} software environment and its large community of users.  The package enables comparison of diagnostic tests with an interactive interface and flexible options for performance metrics, study designs, covariance estimation methods, and statistical estimation and testing of performance.  A demonstration of features currently implemented in the package is provided in this paper.  Proper statistical methods and readily available software are crucial for the evaluation and comparison of multi-reader multi-case studies.  The \pkg{MRMCaov} software is designed to help ensure the application of such methods.

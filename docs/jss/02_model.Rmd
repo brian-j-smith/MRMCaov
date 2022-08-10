@@ -1,6 +1,6 @@
 # Obuchowski and Rockette Model
 
-**MRMCaov** implements multi-reader multi-case analysis based on the Obuchowski and Rockette [-@Obuchowski:1995:HTD] analysis of variance (ANOVA) model
+\pkg{MRMCaov} implements multi-reader multi-case analysis based on the Obuchowski and Rockette [-@Obuchowski:1995:HTD] analysis of variance (ANOVA) model
 $$
 \hat{\theta}_{ij} = \mu + \tau_i + R_j + (\tau R)_{ij} + \epsilon_{ij},
 $$
@@ -19,3 +19,5 @@ $$
 Obuchowski and Rockette [-@Obuchowski:1995:HTD] suggest a covariance ordering of $\text{Cov}_1 \ge \text{Cov}_2 \ge \text{Cov}_3 \ge 0$ based on clinical considerations.  Hillis [-@Hillis:2014:MMA] later showed that these can be replaced with the less restrictive orderings $\text{Cov}_1 \ge \text{Cov}_3$, $\text{Cov}_2 \ge \text{Cov}_3$, and $\text{Cov}_3 \ge 0$.  Alternatively, the covariance can be specified as the population correlations $\rho_i = \text{Cov}_i / \sigma^2_\epsilon$.
 
 In the Obuchowski-Rockette ANOVA model, $\sigma^2_\epsilon$ can be interpreted as the performance metric variance for a single fixed reader and test; and $\text{Cov}_1$, $\text{Cov}_2$, and $\text{Cov}_3$ as the performance metric covariances for the same reader of two different tests, two different readers of the same test, and two different readers of two different tests.  These error variance and covariance parameters are estimated in the package by averaging the reader and test-specific estimates computed using jackknifing [@Efron:1982:JBR] or, for empirical ROC AUC, an unbiased estimator [@Gallas:2007:MMV] or the method of DeLong [@DeLong:1988:CAU].
+
+Hillis [-@Hillis:2014:MMA] developed a framework in which the the Obuchowski-Rockette model can be viewed generally as a marginal-mean ANOVA model.  His framework provides easy derivations of test statistics and parameter estimates, as well as their distributions and confidence intervals; allows for easy generalization to nested study designs; and is the basis for MRMC analysis in the package.  In particular, package analyses return test statistics and p-values for a global test of equality of reader performances across all diagnostic tests and for tests of their pairwise differences.  Also returned are estimates of test performances and performance differences along with their confidence intervals.  Moreover, the framework enables support for paired, unpaired, or partially paired study designs and for the designation of readers or cases as fixed instead of random.
