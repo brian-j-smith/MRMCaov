@@ -21,7 +21,7 @@ DeLong <- function() {
         stop("DeLong covariance method not available for partial AUC")
       }
 
-      if (!is_balanced(data)) {
+      if (!is_fully_paired(data)) {
         stop("balanced design required for DeLong covariance method")
       }
 

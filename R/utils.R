@@ -107,8 +107,9 @@ interaction <- function(..., drop = TRUE, lex.order = TRUE) {
 }
 
 
-is_balanced <- function(data) {
-  all(table(data[c("test", "reader", "case")]) == 1)
+is_fully_paired <- function(data) {
+  tbl <- table(data[c("test", "reader", "case")])
+  all(tbl == tbl[1])
 }
 
 

@@ -20,7 +20,7 @@ unbiased <- function(abar = FALSE) {
 
       data$group <- interaction(data$test, data$reader)
 
-      f <- if (is_balanced(data)) unbiased_balanced else unbiased_default
+      f <- if (is_fully_paired(data)) unbiased_balanced else unbiased_default
       covmat <- f(data$truth, data$rating, data$group, data$case)
       dimnames(covmat) <- list(levels(data$group), levels(data$group))
 
