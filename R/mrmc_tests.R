@@ -3,7 +3,7 @@ mrmc_tests <- function(data, cov, design) {
   data <- data[-2]
   formula <- formula(data)
 
-  lapply(levels(tests), function(test) {
+  mapply(function(test) {
     is_test <- tests == test
     structure(
       list(design = design,
@@ -12,7 +12,7 @@ mrmc_tests <- function(data, cov, design) {
            data = data),
       class = "mrmc_tests"
     )
-  })
+  }, levels(tests), SIMPLIFY = FALSE)
 }
 
 
