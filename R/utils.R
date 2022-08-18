@@ -81,7 +81,7 @@ get_design <- function(data) {
     } else if (all(colSums(crosstab("test", "case")) == 1)) {
       3
     } else {
-      1
+      if (is_fully_paired(data)) 1 else -1
     }
   } else if (all(colSums(test_x_reader) == 1)) {
     4

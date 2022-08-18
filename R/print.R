@@ -177,8 +177,8 @@ print.summary.mrmc <- function(x, ...) {
 
 .print.summary.mrmc <- function(x, ...) {
   cat("Experimental design:",
-      switch(x$design,
-             "factorial",
+      switch(abs(x$design),
+             paste0("factorial", if (x$design < 0) " (partially paired)"),
              paste("cases nested within", x$vars["reader"]),
              paste("cases nested within", x$vars["test"]),
              paste(x$vars["reader"], "nested within", x$vars["test"])),
