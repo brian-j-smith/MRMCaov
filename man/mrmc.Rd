@@ -50,6 +50,7 @@ be designated as fixed in calls to \code{mrmc} with the syntax
 the reader or case variable.
 }
 \examples{
+\donttest{
 ## Random readers and cases
 (est <- mrmc(empirical_auc(truth, rating), treatment, reader, case,
              data = VanDyke))
@@ -60,11 +61,7 @@ plot(est)
 est <- mrmc(empirical_auc(truth, rating), treatment, fixed(reader), case,
             data = VanDyke)
 summary(est)
-
-## Random readers and fixed cases
-est <- mrmc(empirical_auc(truth, rating), treatment, reader, fixed(case),
-            data = VanDyke)
-summary(est)
+}
 
 }
 \seealso{

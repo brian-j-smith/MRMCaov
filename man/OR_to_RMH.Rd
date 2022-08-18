@@ -164,6 +164,7 @@ inputted RM model parameter values, based on the analytical mapping provided
 by Hillis (2018).
 }
 \examples{
+\donttest{
 ## Example 1: Computing RM parameters from OR parameters directly
 ##--------------------------------------------------------------
 ## Example 1a: Using b_method ="unspecified" (the default)
@@ -275,6 +276,7 @@ RM <- OR_to_RMH(n0 = 69, n1 = 45, AUC1 = 0.897, AUC2 = 0.941,
                corr1 = 0.433, corr2 = 0.430, corr3 = 0.299,
                var_R = 0.00154, var_TR = 0.000208, var_error = 0.000788)
 print(RM,all = TRUE)
+}
 
 }
 \references{

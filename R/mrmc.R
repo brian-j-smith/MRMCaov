@@ -30,6 +30,7 @@
 #' \code{\link{summary}}
 #'
 #' @examples
+#' \donttest{
 #' ## Random readers and cases
 #' (est <- mrmc(empirical_auc(truth, rating), treatment, reader, case,
 #'              data = VanDyke))
@@ -40,11 +41,7 @@
 #' est <- mrmc(empirical_auc(truth, rating), treatment, fixed(reader), case,
 #'             data = VanDyke)
 #' summary(est)
-#'
-#' ## Random readers and fixed cases
-#' est <- mrmc(empirical_auc(truth, rating), treatment, reader, fixed(case),
-#'             data = VanDyke)
-#' summary(est)
+#' }
 #'
 mrmc <- function(
   response, test, reader, case, data, cov = method, method = jackknife,
