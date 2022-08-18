@@ -1163,7 +1163,7 @@ if(  ( any(catn_in < 0) .or. any(cats_in < 0) ) .or.  & ! negative # of cases
     if(idebug == 1) then
         write(msg,*) "Categorical data given to proproc is unacceptable"
         call DisplayState(msg)
-        write (msg,*) "CATEGORICAL DATA USED IN THE MLE, total cat = ", num_cat
+        write (msg,*) "CATEGORICAL DATA USED IN THE MLE, total cat = ", num_categ
         call DisplayState(msg)
         do i = 1, num_categ 
            write (msg,*) catn_in(i), cats_in(i)

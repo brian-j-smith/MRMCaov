@@ -1702,10 +1702,10 @@ d_vc_d_th1(4,2) = - d_G_d_cut2 / d_G_d_vc2
  real(kind=double), intent(IN):: d_a_par, c_par ! curve parameters
  real(kind=double), intent(IN):: vc1, vc2 ! cutoffs that bound the CATEGORY where the value of this subcategory "falls"
  real(kind=double) :: median_vc_j !  vc value for median
- real(kind=double),  dimension(num_cat+1,num_cat+1), intent(IN) :: cov ! Variance-covariance matrix as estimated by the MLE
- real(kind=double) :: rho ! fraction of actually positive cases
  integer, intent(IN):: curr_cat ! the index of the current category
  integer, intent(IN):: num_cat !  total number of categories
+ real(kind=double),  dimension(num_cat+1,num_cat+1), intent(IN) :: cov ! Variance-covariance matrix as estimated by the MLE
+ real(kind=double) :: rho ! fraction of actually positive cases
  real(kind=double) :: kij ! this number represents the fraction of cases that are smaller the median of this subcategory. Some
                           ! subcategories are closer to one cutoff some closer to the other one so the value is not always
                           ! .5, but it always splits the cases that are in this category
