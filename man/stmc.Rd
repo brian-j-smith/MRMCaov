@@ -26,8 +26,9 @@ version; use \code{cov} instead.}
 Estimation of ROC performance metrics for a single test of multiple cases.
 }
 \examples{
-VanDyke1 <- subset(VanDyke, reader == 1)
-est <- stmc(empirical_auc(truth, rating), data = VanDyke1)
+VanDyke11 <- subset(VanDyke, treatment == "1" & reader == "1")
+est <- stmc(empirical_auc(truth, rating), data = VanDyke11)
+plot(est)
 summary(est)
 
 }

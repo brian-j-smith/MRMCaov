@@ -19,6 +19,12 @@
 #' \code{\link{parameters}}, \code{\link{plot}}, \code{\link{roc_curves}},
 #' \code{\link{summary}}
 #'
+#' @examples
+#' VanDyke1 <- subset(VanDyke, reader == "1")
+#' est <- srmc(empirical_auc(truth, rating), treatment, case, data = VanDyke1)
+#' plot(est)
+#' summary(est)
+#'
 srmc <- function(
   response, test, case, data, cov = method, method = jackknife
 ) {

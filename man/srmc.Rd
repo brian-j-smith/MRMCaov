@@ -28,6 +28,13 @@ version; use \code{cov} instead.}
 Estimation and comparison of ROC performance metrics for single-reader
 multi-case studies.
 }
+\examples{
+VanDyke1 <- subset(VanDyke, reader == "1")
+est <- srmc(empirical_auc(truth, rating), treatment, case, data = VanDyke1)
+plot(est)
+summary(est)
+
+}
 \seealso{
 \code{\link{metrics}}, \code{\link{cov_methods}},
 \code{\link{parameters}}, \code{\link{plot}}, \code{\link{roc_curves}},

@@ -5,7 +5,8 @@
 \alias{DeLong}
 \alias{jackknife}
 \alias{unbiased}
-\title{Performance Metric Covariance Estimation}
+\title{Reader performance metric covariance estimation methods to be used with
+package-supplied multi-case statistical analysis functions.}
 \usage{
 DeLong()
 
@@ -17,8 +18,21 @@ unbiased(abar = FALSE)
 \item{abar}{logical indicating whether to compute mean covariance components.}
 }
 \description{
-Performance Metric Covariance Estimation
+Reader performance metric covariance estimation methods to be used with
+package-supplied multi-case statistical analysis functions.
+}
+\references{
+DeLong ER, DeLong DM, and Clarke-Pearson DL (1988). Comparing the areas under
+two or more correlated receiver operating characteristic curves: a
+nonparametric approach. Biometrics, 44: 837–45.
+
+Efron B (1982). The Jackknife, the Bootstrap and Other Resampling Plans.
+Philadelphia: SIAM.
+
+Gallas BD, Pennello GA, and Meyers KJ (2007). Multireader multicase variance
+analysis for binary data. JJournal of the Optical Society of America A, 24:
+B70–80.
 }
 \seealso{
-\code{\link{mrmc}}
+\code{\link{mrmc}}, \code{\link{srmc}}, \code{\link{stmc}}
 }

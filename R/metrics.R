@@ -31,9 +31,11 @@
 #' iso-utility line (Abbey, 2013), sensitivity (sens) at a given specificity,
 #' and specificity (spec) at a given sensitivity.
 #'
+#' @seealso \code{\link{mrmc}}, \code{\link{srmc}}, \code{\link{stmc}}
+#'
 #' @references
 #' Abbey CK, Samuelson FW and Gallas BD (2013). Statistical power considerations
-#' for a utility endpoint in observer performance studies.  Academic Radiology,
+#' for a utility endpoint in observer performance studies. Academic Radiology,
 #' 20: 798-806.
 #'
 NULL

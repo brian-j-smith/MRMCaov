@@ -54,8 +54,8 @@ the reader or case variable.
 ## Random readers and cases
 (est <- mrmc(empirical_auc(truth, rating), treatment, reader, case,
              data = VanDyke))
-summary(est)
 plot(est)
+summary(est)
 
 ## Fixed readers and random cases
 est <- mrmc(empirical_auc(truth, rating), treatment, fixed(reader), case,
@@ -63,6 +63,27 @@ est <- mrmc(empirical_auc(truth, rating), treatment, fixed(reader), case,
 summary(est)
 }
 
+}
+\references{
+Dorfman DD, Berbaum KS, and Metz CE (1992). Receiver operating characteristic
+rating analysis. Generalization to the population of readers and patients
+with the jackknife method. Investigative Radiology, 27: 723–731.
+
+Obuchowski NA and Rockette HE (1995). Hypothesis testing of diagnostic
+accuracy for multiple readers and multiple tests: an ANOVA approach with
+dependent observations. Communications in Statistics–Simulation and
+Computation 24: 285–308.
+
+Hillis SL, Obuchowski NA, Schartz KM, and Berbaum KS (2005). A comparison of
+the Dorfman-Berbaum-Metz and Obuchowski-Rockette methods for receiver
+operating characteristic (ROC) data. Statisticsin Medicine, 24: 1579–1607.
+
+Hillis SL (2007). A comparison of denominator degrees of freedom methods for
+multiple observer ROC analysis. Statistics in Medicine, 26: 596–619.
+
+Hillis SL, Berbaum KS, and Metz CE (2008). Recent developments in the
+Dorfman-Berbaum-Metz procedure for multireader ROC study analysis. Academic
+Radiology, 15: 647–661.
 }
 \seealso{
 \code{\link{metrics}}, \code{\link{cov_methods}},

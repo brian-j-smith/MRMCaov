@@ -121,6 +121,9 @@ and specificity (spec) at a given sensitivity.
 }
 \references{
 Abbey CK, Samuelson FW and Gallas BD (2013). Statistical power considerations
-for a utility endpoint in observer performance studies.  Academic Radiology,
+for a utility endpoint in observer performance studies. Academic Radiology,
 20: 798-806.
+}
+\seealso{
+\code{\link{mrmc}}, \code{\link{srmc}}, \code{\link{stmc}}
 }

@@ -280,29 +280,27 @@ print(RM,all = TRUE)
 
 }
 \references{
-Hillis, Stephen L. 2012. "Simulation of Unequal-Variance Binormal Multireader
-ROC Decision Data: An Extension of the Roe and Metz Simulation Model."
-\emph{Academic Radiology} no. 19 (12):1518-1528.
-doi: 10.1016/j.acra.2012.09.011.
+Hillis SL (2012). Simulation of unequal-variance binormal multireader
+ROC decision data: an extension of the Roe and Metz simulation model.
+\emph{Academic Radiology}, 19(12): 1518-1528. doi: 10.1016/j.acra.2012.09.011
 
-Hillis, Stephen L. 2018. "Relationship between Roe and Metz simulation model
-for multireader diagnostic data and Obuchowski-Rockette model parameters."
-\emph{Statistics in Medicine} no. 37 (13):2067-2093. doi: 10.1002/sim.7616.
+Hillis SL (2018). Relationship between Roe and Metz simulation model
+for multireader diagnostic data and Obuchowski-Rockette model parameters.
+\emph{Statistics in Medicine}, 37(13): 2067-2093. doi: 10.1002/sim.7616
 
-Hillis, Stephen L. 2020. "Determining Roe and Metz model parameters for
-simulating multireader multicase confidence-of-disease rating data based on
-read-data or conjectured Obuchowski-Rockette parameter estimates." Vol.
-11316, SPIE Medical Imaging: SPIE. doi.org/10.1117/12.2550541
+Hillis SL (2020). Determining Roe and Metz model parameters for simulating
+multireader multicase confidence-of-disease rating data based on read-data or
+conjectured Obuchowski-Rockette parameter estimates. Vol. 11316, SPIE Medical
+Imaging: SPIE. doi.org/10.1117/12.2550541
 
-Hillis, Stephen L., and Kevin S. Berbaum. 2011. "Using the mean-to-sigma
-ratio as a measure of the improperness of binormal ROC curves."
-\emph{Academic Radiology} no. 18 (2):143-154. doi:
-10.1016/j.acra.2010.09.002.
+Hillis SL and Kevin SB (2011). Using the mean-to-sigma ratio as a measure of
+the improperness of binormal ROC curves. \emph{Academic Radiology}, 18(2):
+143-154. doi: 10.1016/j.acra.2010.09.002
 
-Roe, Cheryl A., and Charles E. Metz. 1997. "Dorfman-Berbaum-Metz method for
-statistical analysis of multireader, multimodality receiver operating
-characteristic data: Validation with computer simulation." \emph{Academic
-Radiology} no. 4 (4):298-303. doi: 10.1016/S1076-6332(97)80032-3.
+Roe CA and Metz CE (1997). Dorfman-Berbaum-Metz method for statistical
+analysis of multireader, multimodality receiver operating characteristic
+data: validation with computer simulation. \emph{Academic Radiology}, 4(4):
+298-303. doi: 10.1016/S1076-6332(97)80032-3
 }
 \seealso{
 \code{\link{RMH_to_OR}}

@@ -21,5 +21,5 @@
 Summary Estimates and Statistical Tests
 }
 \seealso{
-\code{\link{mrmc}}
+\code{\link{mrmc}}, \code{\link{stmc}}
 }

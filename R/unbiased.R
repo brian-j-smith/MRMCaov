@@ -2,6 +2,11 @@
 #'
 #' @param abar logical indicating whether to compute mean covariance components.
 #'
+#' @references
+#' Gallas BD, Pennello GA, and Meyers KJ (2007). Multireader multicase variance
+#' analysis for binary data. JJournal of the Optical Society of America A, 24:
+#' B70–80.
+#'
 unbiased <- function(abar = FALSE) {
   structure(
     function(data, ...) {

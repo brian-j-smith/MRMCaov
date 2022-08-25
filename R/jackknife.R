@@ -1,5 +1,9 @@
 #' @rdname cov_methods
 #'
+#' @references
+#' Efron B (1982). The Jackknife, the Bootstrap and Other Resampling Plans.
+#' Philadelphia: SIAM.
+#'
 jackknife <- function() {
   structure(
     function(data, ...) {

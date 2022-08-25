@@ -1,9 +1,15 @@
-#' Performance Metric Covariance Estimation
+#' Reader performance metric covariance estimation methods to be used with
+#' package-supplied multi-case statistical analysis functions.
 #'
 #' @name cov_methods
 #' @rdname cov_methods
 #'
-#' @seealso \code{\link{mrmc}}
+#' @seealso \code{\link{mrmc}}, \code{\link{srmc}}, \code{\link{stmc}}
+#'
+#' @references
+#' DeLong ER, DeLong DM, and Clarke-Pearson DL (1988). Comparing the areas under
+#' two or more correlated receiver operating characteristic curves: a
+#' nonparametric approach. Biometrics, 44: 837–45.
 #'
 DeLong <- function() {
   structure(

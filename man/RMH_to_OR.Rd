@@ -160,19 +160,18 @@ OR_3_models_Hillis
 
 }
 \references{
-Hillis, Stephen L. 2012. "Simulation of Unequal-Variance Binormal Multireader
-ROC Decision Data: An Extension of the Roe and Metz Simulation Model."
-\emph{Academic Radiology} no. 19 (12):1518-1528.
-doi: 10.1016/j.acra.2012.09.011.
+Hillis SL (2012). Simulation of unequal-variance binormal multireader
+ROC decision data: an extension of the Roe and Metz simulation model.
+\emph{Academic Radiology}, 19(12): 1518-1528. doi: 10.1016/j.acra.2012.09.011
 
-Hillis, Stephen L. 2018. "Relationship between Roe and Metz simulation model
-for multireader diagnostic data and Obuchowski-Rockette model parameters."
-\emph{Statistics in Medicine} no. 37 (13):2067-2093. doi: 10.1002/sim.7616.
+Hillis SL (2018). Relationship between Roe and Metz simulation model
+for multireader diagnostic data and Obuchowski-Rockette model parameters.
+\emph{Statistics in Medicine}, 37(13): 2067-2093. doi: 10.1002/sim.7616
 
-Roe, Cheryl A., and Charles E. Metz. 1997. "Dorfman-Berbaum-Metz method for
-statistical analysis of multireader, multimodality receiver operating
-characteristic data: Validation with computer simulation." \emph{Academic
-Radiology} no. 4 (4):298-303. doi: 10.1016/S1076-6332(97)80032-3.
+Roe CA and Metz CE (1997). Dorfman-Berbaum-Metz method for statistical
+analysis of multireader, multimodality receiver operating characteristic
+data: validation with computer simulation. \emph{Academic Radiology}, 4(4):
+298-303. doi: 10.1016/S1076-6332(97)80032-3
 }
 \seealso{
 \code{\link{OR_to_RMH}}

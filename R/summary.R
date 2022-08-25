@@ -7,7 +7,7 @@
 #' @param conf.level confidence level for confidence intervals.
 #' @param ... additional arguments affecting the summary.
 #'
-#' @seealso \code{\link{mrmc}}
+#' @seealso \code{\link{mrmc}}, \code{\link{stmc}}
 #'
 summary.mrmc <- function(object, conf.level = 0.95, ...) {
   f <- ifelse(object$design == 4, .summary_nested, .summary)
