@@ -13,7 +13,7 @@
 
 <title>Using MRMCaov for R</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -171,11 +171,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -372,7 +376,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Using MRMCaov for R</h1>
-<h3 class="subtitle">Package Version 0.2.1</h3>
+<h3 class="subtitle">Package Version 0.2.2</h3>
 
 </div>
 
@@ -688,7 +692,7 @@ class="math inline">\(\text{Cov}_3\)</span>.</li>
 #&gt; 
 #&gt; Response metric data:
 #&gt; 
-#&gt; # A tibble: 10 x 2
+#&gt; # A tibble: 10 × 2
 #&gt;        N data$binormal_auc $treatment $reader
 #&gt;    &lt;dbl&gt;             &lt;dbl&gt; &lt;fct&gt;      &lt;fct&gt;  
 #&gt;  1   114             0.933 1          1      
@@ -748,7 +752,6 @@ performances for each one.</p>
 #&gt; 
 #&gt; 
 #&gt; ANOVA global test of equal treatment binormal_auc:
-#&gt; 
 #&gt;         MS(T)      MS(T:R)        Cov2       Cov3 Denominator       F df1
 #&gt; 1 0.004114199 0.0009478898 0.000311605 0.00019377 0.001537064 2.67666   1
 #&gt;        df2   p-value
@@ -756,15 +759,14 @@ performances for each one.</p>
 #&gt; 
 #&gt; 
 #&gt; 95% CIs and tests for treatment binormal_auc pairwise differences:
-#&gt; 
 #&gt;   Comparison    Estimate     StdErr       df    CI.Lower    CI.Upper        t
 #&gt; 1      1 - 2 -0.04056698 0.02479568 10.51789 -0.09544867  0.01431471 -1.63605
 #&gt;     p-value
 #&gt; 1 0.1313682
 #&gt; 
 #&gt; 
-#&gt; 95% treatment binormal_auc CIs (each analysis based only on data for the specified treatment):
-#&gt; 
+#&gt; 95% treatment binormal_auc CIs (each analysis based only on data for the
+#&gt; specified treatment):
 #&gt;    Estimate        MS(R)         Cov2     StdErr       df  CI.Lower  CI.Upper
 #&gt; 1 0.9109867 0.0027417481 0.0004612327 0.03177392 13.55902 0.8426298 0.9793435
 #&gt; 2 0.9515536 0.0008142512 0.0001619773 0.01802297 15.91435 0.9133299 0.9897774</code></pre>
@@ -785,7 +787,7 @@ performances for each one.</p>
 <strong>Show MRMC ROC Curve Parameters</strong>
 </summary>
 <pre class="r"><code>print(parameters(est))
-#&gt; # A tibble: 10 x 3
+#&gt; # A tibble: 10 × 3
 #&gt;    Group$reader $treatment        a     b
 #&gt;    &lt;fct&gt;        &lt;fct&gt;         &lt;dbl&gt; &lt;dbl&gt;
 #&gt;  1 1            1          1.70e  0 0.537
@@ -897,7 +899,7 @@ est &lt;- mrmc(
 #&gt; 
 #&gt; Response metric data:
 #&gt; 
-#&gt; # A tibble: 10 x 2
+#&gt; # A tibble: 10 × 2
 #&gt;        N data$binary_sens $treatment $reader
 #&gt;    &lt;dbl&gt;            &lt;dbl&gt; &lt;fct&gt;      &lt;fct&gt;  
 #&gt;  1    45            0.889 1          1      
@@ -951,7 +953,6 @@ est &lt;- mrmc(
 #&gt; 
 #&gt; 
 #&gt; ANOVA global test of equal treatment binary_sens:
-#&gt; 
 #&gt;        MS(T)     MS(T:R)       Cov2         Cov3 Denominator        F df1
 #&gt; 1 0.02390123 0.001802469 0.00101459 0.0006604938 0.003572952 6.689493   1
 #&gt;        df2    p-value
@@ -959,15 +960,14 @@ est &lt;- mrmc(
 #&gt; 
 #&gt; 
 #&gt; 95% CIs and tests for treatment binary_sens pairwise differences:
-#&gt; 
 #&gt;   Comparison    Estimate     StdErr       df   CI.Lower   CI.Upper         t
 #&gt; 1      1 - 2 -0.09777778 0.03780451 15.71732 -0.1780371 -0.0175185 -2.586405
 #&gt;      p-value
 #&gt; 1 0.02008822
 #&gt; 
 #&gt; 
-#&gt; 95% treatment binary_sens CIs (each analysis based only on data for the specified treatment):
-#&gt; 
+#&gt; 95% treatment binary_sens CIs (each analysis based only on data for the
+#&gt; specified treatment):
 #&gt;    Estimate       MS(R)        Cov2     StdErr        df  CI.Lower  CI.Upper
 #&gt; 1 0.8222222 0.009135802 0.001646465 0.05893747 14.456811 0.6961876 0.9482568
 #&gt; 2 0.9200000 0.005086420 0.000382716 0.03741657  7.575855 0.8328691 1.0000000</code></pre>
@@ -1058,7 +1058,6 @@ est &lt;- mrmc(
 #&gt; 
 #&gt; 
 #&gt; ANOVA global test of equal treatment empirical_auc:
-#&gt; 
 #&gt;         MS(T)      MS(T:R)         Cov2         Cov3 Denominator        F df1
 #&gt; 1 0.004796171 0.0005510306 0.0003395265 0.0002358497 0.001069415 4.484854   1
 #&gt;        df2    p-value
@@ -1066,15 +1065,14 @@ est &lt;- mrmc(
 #&gt; 
 #&gt; 
 #&gt; 95% CIs and tests for treatment empirical_auc pairwise differences:
-#&gt; 
 #&gt;   Comparison    Estimate    StdErr       df      CI.Lower      CI.Upper
 #&gt; 1      1 - 2 -0.04380032 0.0206825 15.06611 -0.0878671960  0.0002665519
 #&gt;           t    p-value
 #&gt; 1 -2.117747 0.05123303
 #&gt; 
 #&gt; 
-#&gt; 95% treatment empirical_auc CIs (each analysis based only on data for the specified treatment):
-#&gt; 
+#&gt; 95% treatment empirical_auc CIs (each analysis based only on data for the
+#&gt; specified treatment):
 #&gt;    Estimate       MS(R)         Cov2     StdErr       df  CI.Lower  CI.Upper
 #&gt; 1 0.8970370 0.003082629 0.0004775239 0.03307642 12.59597 0.8253461 0.9687280
 #&gt; 2 0.9408374 0.001304602 0.0002015292 0.02150464 12.56530 0.8942155 0.9874592</code></pre>
@@ -1109,7 +1107,6 @@ est &lt;- mrmc(
 #&gt; 
 #&gt; 
 #&gt; ANOVA global test of equal treatment empirical_auc:
-#&gt; 
 #&gt;         MS(T)      MS(T:R)        Cov2         Cov3 Denominator        F df1
 #&gt; 1 0.004796171 0.0005510306 0.000339065 0.0002356148 0.001068281 4.489614   1
 #&gt;        df2   p-value
@@ -1117,15 +1114,14 @@ est &lt;- mrmc(
 #&gt; 
 #&gt; 
 #&gt; 95% CIs and tests for treatment empirical_auc pairwise differences:
-#&gt; 
 #&gt;   Comparison    Estimate     StdErr       df      CI.Lower      CI.Upper
 #&gt; 1      1 - 2 -0.04380032 0.02067154 15.03418 -0.0878519409  0.0002512968
 #&gt;           t   p-value
 #&gt; 1 -2.118871 0.0511618
 #&gt; 
 #&gt; 
-#&gt; 95% treatment empirical_auc CIs (each analysis based only on data for the specified treatment):
-#&gt; 
+#&gt; 95% treatment empirical_auc CIs (each analysis based only on data for the
+#&gt; specified treatment):
 #&gt;    Estimate       MS(R)         Cov2    StdErr       df  CI.Lower  CI.Upper
 #&gt; 1 0.8970370 0.003082629 0.0004771788 0.0330712 12.58802 0.8253526 0.9687214
 #&gt; 2 0.9408374 0.001304602 0.0002009512 0.0214912 12.53391 0.8942323 0.9874424</code></pre>
@@ -1173,7 +1169,6 @@ est &lt;- mrmc(
 #&gt; 
 #&gt; 
 #&gt; ANOVA global test of equal treatment empirical_auc:
-#&gt; 
 #&gt;         MS(T)         Cov1         Cov2         Cov3  Denominator       X2 df
 #&gt; 1 0.004796171 0.0003466137 0.0003440748 0.0002390284 0.0008758604 5.475953  1
 #&gt;      p-value
@@ -1181,22 +1176,21 @@ est &lt;- mrmc(
 #&gt; 
 #&gt; 
 #&gt; 95% CIs and tests for treatment empirical_auc pairwise differences:
-#&gt; 
 #&gt;   Comparison    Estimate     StdErr    CI.Lower    CI.Upper         z
 #&gt; 1      1 - 2 -0.04380032 0.01871748 -0.08048591 -0.00711473 -2.340075
 #&gt;      p-value
 #&gt; 1 0.01927984
 #&gt; 
 #&gt; 
-#&gt; 95% treatment empirical_auc CIs (each analysis based only on data for the specified treatment):
-#&gt; 
+#&gt; 95% treatment empirical_auc CIs (each analysis based only on data for the
+#&gt; specified treatment):
 #&gt;    Estimate   Var(Error)         Cov2     StdErr  CI.Lower  CI.Upper
 #&gt; 1 0.8970370 0.0010141028 0.0004839618 0.02428971 0.8494301 0.9446440
 #&gt; 2 0.9408374 0.0005904738 0.0002041879 0.01677632 0.9079564 0.9737183
 #&gt; 
 #&gt; 
-#&gt; Reader-specific 95% CIs and tests for empirical_auc pairwise differences (each analysis based only on data for the specified reader):
-#&gt; 
+#&gt; Reader-specific 95% CIs and tests for empirical_auc pairwise differences (each
+#&gt; analysis based only on data for the specified reader):
 #&gt;   Reader Comparison    Estimate     StdErr     CI.Lower     CI.Upper          z
 #&gt; 1      1      1 - 2 -0.02818035 0.02551213 -0.078183215  0.021822507 -1.1045864
 #&gt; 2      2      1 - 2 -0.04653784 0.02630183 -0.098088476  0.005012792 -1.7693768
@@ -1212,7 +1206,6 @@ est &lt;- mrmc(
 #&gt; 
 #&gt; 
 #&gt; Single reader 95% CIs:
-#&gt; 
 #&gt;    empirical_auc treatment reader       StdErr  CI.Lower  CI.Upper
 #&gt; 1      0.9196457         1      1 0.0301255164 0.8606008 0.9786907
 #&gt; 3      0.8587762         1      2 0.0363753335 0.7874818 0.9300705
@@ -1246,21 +1239,19 @@ est &lt;- mrmc(
 #&gt; 
 #&gt; 
 #&gt; ANOVA global test of equal treatment empirical_auc:
-#&gt; 
 #&gt;         MS(T)      MS(T:R)     F df1 df2    p-value
 #&gt; 1 0.004796171 0.0005510306 8.704   1   4 0.04195875
 #&gt; 
 #&gt; 
 #&gt; 95% CIs and tests for treatment empirical_auc pairwise differences:
-#&gt; 
 #&gt;   Comparison    Estimate df     StdErr    CI.Lower    CI.Upper         t
 #&gt; 1      1 - 2 -0.04380032  4 0.01484629 -0.08502022 -0.00258042 -2.950254
 #&gt;      p-value
 #&gt; 1 0.04195875
 #&gt; 
 #&gt; 
-#&gt; 95% treatment empirical_auc CIs (each analysis based only on data for the specified treatment):
-#&gt; 
+#&gt; 95% treatment empirical_auc CIs (each analysis based only on data for the
+#&gt; specified treatment):
 #&gt;    Estimate       MS(R)     StdErr df  CI.Lower  CI.Upper
 #&gt; 1 0.8970370 0.003082629 0.02482994  4 0.8280981 0.9659760
 #&gt; 2 0.9408374 0.001304602 0.01615303  4 0.8959894 0.9856854</code></pre>
@@ -1332,21 +1323,19 @@ est &lt;- mrmc(
 #&gt; 
 #&gt; 
 #&gt; ANOVA global test of equal treatment empirical_auc:
-#&gt; 
 #&gt;         MS(T)      MS(T:R) Cov2 Cov3  Denominator     F df1 df2    p-value
 #&gt; 1 0.004796171 0.0005510306    0    0 0.0005510306 8.704   1   4 0.04195875
 #&gt; 
 #&gt; 
 #&gt; 95% CIs and tests for treatment empirical_auc pairwise differences:
-#&gt; 
 #&gt;   Comparison    Estimate     StdErr df    CI.Lower    CI.Upper         t
 #&gt; 1      1 - 2 -0.04380032 0.01484629  4 -0.08502022 -0.00258042 -2.950254
 #&gt;      p-value
 #&gt; 1 0.04195875
 #&gt; 
 #&gt; 
-#&gt; 95% treatment empirical_auc CIs (each analysis based only on data for the specified treatment):
-#&gt; 
+#&gt; 95% treatment empirical_auc CIs (each analysis based only on data for the
+#&gt; specified treatment):
 #&gt;    Estimate       MS(R) Cov2     StdErr df  CI.Lower  CI.Upper
 #&gt; 1 0.8970370 0.003082629    0 0.02482994  4 0.8280981 0.9659760
 #&gt; 2 0.9408374 0.001304602    0 0.01615303  4 0.8959894 0.9856854</code></pre>
@@ -1380,7 +1369,6 @@ est &lt;- mrmc(
 #&gt; 
 #&gt; 
 #&gt; ANOVA global test of equal treatment empirical_auc:
-#&gt; 
 #&gt;         MS(T)      MS(T:R)         Cov2 Cov3 Denominator        F df1      df2
 #&gt; 1 0.004796171 0.0005510306 0.0003455973    0 0.002279017 2.104491   1 68.42325
 #&gt;     p-value
@@ -1388,15 +1376,14 @@ est &lt;- mrmc(
 #&gt; 
 #&gt; 
 #&gt; 95% CIs and tests for treatment empirical_auc pairwise differences:
-#&gt; 
 #&gt;   Comparison    Estimate     StdErr       df    CI.Lower    CI.Upper         t
 #&gt; 1      1 - 2 -0.04380032 0.03019283 68.42325 -0.10404242  0.01644178 -1.450686
 #&gt;     p-value
 #&gt; 1 0.1514363
 #&gt; 
 #&gt; 
-#&gt; 95% treatment empirical_auc CIs (each analysis based only on data for the specified treatment):
-#&gt; 
+#&gt; 95% treatment empirical_auc CIs (each analysis based only on data for the
+#&gt; specified treatment):
 #&gt;    Estimate       MS(R)         Cov2     StdErr       df  CI.Lower  CI.Upper
 #&gt; 1 0.8970370 0.003082629 0.0004861032 0.03320586 12.79430 0.8251827 0.9688914
 #&gt; 2 0.9408374 0.001304602 0.0002050913 0.02158730 12.75962 0.8941114 0.9875634</code></pre>
@@ -1455,7 +1442,7 @@ est &lt;- srmc(binormal_auc(truth, rating), treatment, case, data = VanDyke1)</c
 #&gt; 
 #&gt; Response metric data:
 #&gt; 
-#&gt; # A tibble: 2 x 2
+#&gt; # A tibble: 2 × 2
 #&gt;       N data$binormal_auc $treatment $reader
 #&gt;   &lt;dbl&gt;             &lt;dbl&gt; &lt;fct&gt;      &lt;fct&gt;  
 #&gt; 1   114             0.933 1          1      
@@ -1489,7 +1476,7 @@ est &lt;- srmc(binormal_auc(truth, rating), treatment, case, data = VanDyke1)</c
 <strong>Show SRMC ROC Curve Parameters</strong>
 </summary>
 <pre class="r"><code>print(parameters(est))
-#&gt; # A tibble: 2 x 3
+#&gt; # A tibble: 2 × 3
 #&gt;   Group$reader $treatment     a     b
 #&gt;   &lt;fct&gt;        &lt;fct&gt;      &lt;dbl&gt; &lt;dbl&gt;
 #&gt; 1 1            1           1.70 0.537
@@ -1517,7 +1504,6 @@ est &lt;- srmc(binormal_auc(truth, rating), treatment, case, data = VanDyke1)</c
 #&gt; 
 #&gt; 
 #&gt; 95% CIs and tests for treatment binormal_auc pairwise differences:
-#&gt; 
 #&gt;   Comparison    Estimate     StdErr    CI.Lower    CI.Upper          z
 #&gt; 1      1 - 2 -0.01765762 0.02862095 -0.07375366  0.03843841 -0.6169475
 #&gt;     p-value
@@ -1525,7 +1511,6 @@ est &lt;- srmc(binormal_auc(truth, rating), treatment, case, data = VanDyke1)</c
 #&gt; 
 #&gt; 
 #&gt; Single reader 95% CIs:
-#&gt; 
 #&gt;   binormal_auc treatment reader     StdErr  CI.Lower  CI.Upper
 #&gt; 1    0.9331609         1      1 0.03348356 0.8675343 0.9987874
 #&gt; 2    0.9508185         2      1 0.02351885 0.9047224 0.9969146</code></pre>
@@ -1582,7 +1567,7 @@ est &lt;- stmc(binormal_auc(truth, rating), case, data = VanDyke11)</code></pre>
 <strong>Show STMC ROC Curve Parameters</strong>
 </summary>
 <pre class="r"><code>print(parameters(est))
-#&gt; # A tibble: 1 x 2
+#&gt; # A tibble: 1 × 2
 #&gt;       a     b
 #&gt;   &lt;dbl&gt; &lt;dbl&gt;
 #&gt; 1  1.70 0.537</code></pre>
@@ -1683,7 +1668,7 @@ curves_binorm &lt;- with(VanDyke, {
 })
 params_binorm &lt;- parameters(curves_binorm)
 print(params_binorm)
-#&gt; # A tibble: 10 x 3
+#&gt; # A tibble: 10 × 3
 #&gt;    Group$Treatment $Reader        a     b
 #&gt;    &lt;fct&gt;           &lt;fct&gt;      &lt;dbl&gt; &lt;dbl&gt;
 #&gt;  1 1               1       1.70e  0 0.537
@@ -1712,20 +1697,21 @@ curves_binormLR &lt;- with(VanDyke, {
 })
 params_binormLR &lt;- parameters(curves_binormLR)
 print(params_binormLR)
-#&gt; # A tibble: 10 x 4
-#&gt;    Group$Treatment $Reader  Metz$d_a     $c bichisquared$la~   $theta binormal$a
-#&gt;    &lt;fct&gt;           &lt;fct&gt;       &lt;dbl&gt;  &lt;dbl&gt;            &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;
-#&gt;  1 1               1       2.13      -0.298             3.42 1.71e+ 0    1.71e+0
-#&gt;  2 2               1       2.35      -0.321             3.79 1.70e+ 0    1.87e+0
-#&gt;  3 1               2       1.73      -0.281             3.17 1.32e+ 0    1.40e+0
-#&gt;  4 2               2       0.0000680 -0.791            73.3  3.28e-11    4.84e-5
-#&gt;  5 1               3       0.0000725 -0.746            47.0  5.96e-11    5.18e-5
-#&gt;  6 2               3       2.08      -0.330             3.94 1.23e+ 0    1.65e+0
-#&gt;  7 1               4       0.000701  -0.932           797.   3.10e-10    4.96e-4
-#&gt;  8 2               4       0          1                 0    0         NaN      
-#&gt;  9 1               5       0.896     -0.507             9.37 5.94e- 2    6.66e-1
-#&gt; 10 2               5       2.02      -0.553            12.1  2.17e- 1    1.49e+0
-#&gt; # ... with 1 more variable: binormal$b &lt;dbl&gt;
+#&gt; # A tibble: 10 × 4
+#&gt;    Group$Treatment $Reader  Metz$d_a     $c bichisquared$la…¹   $theta binorma…²
+#&gt;    &lt;fct&gt;           &lt;fct&gt;       &lt;dbl&gt;  &lt;dbl&gt;             &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+#&gt;  1 1               1       2.13      -0.298              3.42 1.71e+ 0   1.71e+0
+#&gt;  2 2               1       2.35      -0.321              3.79 1.70e+ 0   1.87e+0
+#&gt;  3 1               2       1.73      -0.281              3.17 1.32e+ 0   1.40e+0
+#&gt;  4 2               2       0.0000680 -0.791             73.3  3.28e-11   4.84e-5
+#&gt;  5 1               3       0.0000725 -0.746             47.0  5.96e-11   5.18e-5
+#&gt;  6 2               3       2.08      -0.330              3.94 1.23e+ 0   1.65e+0
+#&gt;  7 1               4       0.000701  -0.932            797.   3.10e-10   4.96e-4
+#&gt;  8 2               4       0          1                  0    0        NaN      
+#&gt;  9 1               5       0.896     -0.507              9.37 5.94e- 2   6.66e-1
+#&gt; 10 2               5       2.02      -0.553             12.1  2.17e- 1   1.49e+0
+#&gt; # … with 1 more variable: binormal$b &lt;dbl&gt;, and abbreviated variable names
+#&gt; #   ¹​bichisquared$lambda, ²​binormal$a
 plot(curves_binormLR)</code></pre>
 <p><img src="using_files/figure-html/using_curves_binormLR-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
@@ -1767,7 +1753,7 @@ only the observed curve-specific values (<code>"observed"</code>).</li>
 <pre class="r"><code>## Extract points at given specificities
 curve_spec_pts &lt;- points(curves, metric = &quot;spec&quot;, values = c(0.5, 0.7, 0.9))
 print(curve_spec_pts)
-#&gt; # A tibble: 30 x 3
+#&gt; # A tibble: 30 × 3
 #&gt;    Group$Treatment $Reader   FPR   TPR
 #&gt;  * &lt;fct&gt;           &lt;fct&gt;   &lt;dbl&gt; &lt;dbl&gt;
 #&gt;  1 1               1         0.1 0.862
@@ -1780,14 +1766,14 @@ print(curve_spec_pts)
 #&gt;  8 1               2         0.3 0.821
 #&gt;  9 1               2         0.5 0.872
 #&gt; 10 2               2         0.1 0.821
-#&gt; # ... with 20 more rows
+#&gt; # … with 20 more rows
 plot(curve_spec_pts, coord_fixed = FALSE)</code></pre>
 <p><img src="using_files/figure-html/using_curves_points-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>
 ## Extract points at given sensitivities
 curve_sens_pts &lt;- points(curves, metric = &quot;sens&quot;, values = c(0.5, 0.7, 0.9))
 print(curve_sens_pts)
-#&gt; # A tibble: 30 x 3
+#&gt; # A tibble: 30 × 3
 #&gt;    Group$Treatment $Reader    FPR   TPR
 #&gt;  * &lt;fct&gt;           &lt;fct&gt;    &lt;dbl&gt; &lt;dbl&gt;
 #&gt;  1 1               1       0.0116   0.5
@@ -1800,7 +1786,7 @@ print(curve_sens_pts)
 #&gt;  8 1               2       0.0543   0.7
 #&gt;  9 1               2       0.609    0.9
 #&gt; 10 2               2       0        0.5
-#&gt; # ... with 20 more rows
+#&gt; # … with 20 more rows
 plot(curve_sens_pts, coord_fixed = FALSE)</code></pre>
 <p><img src="using_files/figure-html/using_curves_points-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
@@ -1836,7 +1822,7 @@ average points on the ROC curves.</li>
 <pre class="r"><code>## Average sensitivities at given specificities (default)
 curves_mean &lt;- mean(curves)
 print(curves_mean)
-#&gt; # A tibble: 20 x 2
+#&gt; # A tibble: 20 × 2
 #&gt;       FPR   TPR
 #&gt;  *  &lt;dbl&gt; &lt;dbl&gt;
 #&gt;  1 0      0    
@@ -1864,7 +1850,7 @@ plot(curves_mean)</code></pre>
 <pre class="r"><code>## Average specificities at given sensitivities
 curves_mean &lt;- mean(curves, metric = &quot;sens&quot;)
 print(curves_mean)
-#&gt; # A tibble: 23 x 2
+#&gt; # A tibble: 23 × 2
 #&gt;        FPR   TPR
 #&gt;  *   &lt;dbl&gt; &lt;dbl&gt;
 #&gt;  1 0       0    
@@ -1877,7 +1863,7 @@ print(curves_mean)
 #&gt;  8 0.0280  0.689
 #&gt;  9 0.0358  0.711
 #&gt; 10 0.0450  0.733
-#&gt; # ... with 13 more rows
+#&gt; # … with 13 more rows
 plot(curves_mean)</code></pre>
 <p><img src="using_files/figure-html/using_curves_mean_sens-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
@@ -1940,7 +1926,7 @@ binary_spec(VanDyke$truth, VanDyke$binary_rating)
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-abbey:2013:SPC" class="csl-entry">
+<div id="ref-Abbey:2013:SPC" class="csl-entry">
 Abbey, Craig K, Frank W Samuelson, and Brandon D Gallas. 2013.
 <span>“Statistical Power Considerations for a Utility Endpoint in
 Observer Performance Studies.”</span> <em>Academic Radiology</em> 207:
@@ -2036,7 +2022,8 @@ href="https://doi.org/10.117/12.2549075">https://doi.org/10.117/12.2549075</a>.
 </div>
 <div id="ref-MRMCaov-package" class="csl-entry">
 Smith, Brian J, Stephen L Hillis, and Lorenzo L Pesce. 2022.
-<em>MCMCaov: Multi-Reader Multi-Case Analysis of Variance</em>. <a
+<em><span>MCMCaov</span>: Multi-Reader Multi-Case Analysis of
+Variance</em>. <a
 href="https://github.com/brian-j-smith/MRMCaov">https://github.com/brian-j-smith/MRMCaov</a>.
 </div>
 <div id="ref-VanDyke:1993:CMD" class="csl-entry">
