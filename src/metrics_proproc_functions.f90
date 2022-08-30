@@ -1234,7 +1234,7 @@ initial_est_OK: if(ierror == fit_OK) then
     initial_est_cutoffs: if(ierror /= 0) then ! Initial estimates of cutoffs failed
              ! report a failure in the initialization of the cutoffs
              ierror = fit_fail_init_est ! failed initial estimates
-             err_msg = " initialize_cutoffs, " // err_msg
+             err_msg = " initialize_cutoffs, " // err_msg(:line_length - 21)
              pts_error(j) = 1 ! this specific value failed
     else ! Initial estimates of cutoff successful
              ! Check if there are any 2 cutoffs which have almost identical values
@@ -1379,7 +1379,7 @@ initial_est_OK: if(ierror == fit_OK) then
          if(ierror /= 0) then ! Initial estimates of cutoffs failed
              ! report a failure in the initialization of the cutoffs
              ierror = fit_fail_init_est ! failed initial estimates
-             err_msg = " initialize_cutoffs, " // err_msg
+             err_msg = " initialize_cutoffs, " // err_msg(:line_length - 21)
          else ! Initial estimates of cutoff successful
              ! Check if there are any 2 cutoffs which have almost identical values
              ! Normally the algorithm deals with it. It never happens for the initial estimates
@@ -3237,7 +3237,7 @@ optimize: do  iter = 1 ,  max_iter
        if(ierror /= 0) then
           ! LP put a huge value to reject this step (here we are optimzing - log likelihood
           log_like= huge(d_a_par)
-          err_msg = " initialize_cutoffs failed " // err_msg
+          err_msg = " initialize_cutoffs failed " // err_msg(:line_length - 27)
           if(idebug == 1) call DisplayState(err_msg)
           cycle ! try again unless iteration limit is exceeded
        else
