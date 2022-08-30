@@ -11,11 +11,11 @@
 module io
   use data_types
   implicit none
-  
+
   private
-  
-  public line_length ! length of character strings for the list input  
-  public line_format ! length of character strings formats for I/O for list input  
+
+  public line_length ! length of character strings for the list input
+  public line_format ! length of character strings formats for I/O for list input
   public print_fatal_error_line ! send to unit err_file a fatal error message
   public print_warning_line ! send to unit war_file a warning about calculation in progress
   public print_log_line ! send to unit log_file information about the evolving calculation
@@ -30,11 +30,11 @@ module io
 
   integer, parameter :: line_length = 120 ! 80 ! length of character types
   character(len=6), parameter :: line_format = "(120a)" ! "(80a)"  Note that the value should be the same as in
-                       ! the string line_length, this is the format for one line of characters 
-  
-  ! NOTE, IMPORTANT: The unit numbers are defined with the array used_file_units, in this way it is much easier to 
-  !                  check, by the program, whether a unit is already allocated for some purpose in order to avoid 
-  !                  conflict. If a new unit is added, its unit number should be added to used_file_units, and then a 
+                       ! the string line_length, this is the format for one line of characters
+
+  ! NOTE, IMPORTANT: The unit numbers are defined with the array used_file_units, in this way it is much easier to
+  !                  check, by the program, whether a unit is already allocated for some purpose in order to avoid
+  !                  conflict. If a new unit is added, its unit number should be added to used_file_units, and then a
   !                  new mnemonic should be added.
   integer, parameter, dimension (9) :: used_file_units =(/ 8, 9, 6,12,13,15,16, 18, 19 /)
   integer, parameter:: log_file = used_file_units(7) ! send the log info straight to file standard IO
@@ -46,7 +46,7 @@ module io
   integer, parameter:: AUC_SE_AUC_file  = used_file_units(6) ! contains only the estimated AUC and it SE
   integer, parameter:: score_to_latent_file  = used_file_units(4) ! contains information to to link test result value space to latent
   integer, parameter:: score_to_FPF_TPF_file  = used_file_units(5) ! contains information to to link test result value space to latent
-  integer, parameter:: input_file_default = used_file_units(2) ! default Unit for input file 
+  integer, parameter:: input_file_default = used_file_units(2) ! default Unit for input file
 
   contains
 
@@ -56,10 +56,10 @@ module io
   ! and FPF TPF values
   implicit none
   character(len=line_length), intent(in):: err_msg
-  
+
       write(score_to_FPF_TPF_file,line_format ) err_msg
-  
-  end subroutine print_score_to_FPF_TPF_line 
+
+  end subroutine print_score_to_FPF_TPF_line
   !---------------------------------------
 
   !---------------------------------------
@@ -68,22 +68,22 @@ module io
   ! and latent spaces
   implicit none
   character(len=line_length), intent(in):: err_msg
-  
+
       write(score_to_latent_file,line_format ) err_msg
-  
-  end subroutine print_score_to_latent_line 
+
+  end subroutine print_score_to_latent_line
   !---------------------------------------
 
 
   !---------------------------------------
   subroutine print_AUC_SE_AUC_line(err_msg)
-  ! Prints a line of text to the file that contains AUC and its Se 
+  ! Prints a line of text to the file that contains AUC and its Se
   implicit none
   character(len=line_length), intent(in):: err_msg
-  
+
       write(AUC_SE_AUC_file,line_format ) err_msg
-  
-  end subroutine print_AUC_SE_AUC_line 
+
+  end subroutine print_AUC_SE_AUC_line
   !---------------------------------------
 
   !---------------------------------------
@@ -91,46 +91,46 @@ module io
   ! Prints a line of text into the file containing the parameters estimated by the MLE
   implicit none
   character(len=line_length), intent(in):: err_msg
-  
+
       write(MLE_par_file,line_format ) err_msg
-  
-  end subroutine print_MLE_par_line 
+
+  end subroutine print_MLE_par_line
   !---------------------------------------
- 
+
   !---------------------------------------
   subroutine print_fatal_error_line(err_msg)
   ! Subroutine which will send fatal error messages to whatever the error
   ! destination will be chosen to be, currently unit err_file
   implicit none
   character(len=line_length), intent(in):: err_msg
-  
+
       write(err_file,line_format ) err_msg
-  
+
   end subroutine print_fatal_error_line
   !---------------------------------------
-  
+
   !---------------------------------------
   subroutine print_warning_line(err_msg)
   ! Subroutine which will send non fatal warnings to whatever the warning
   ! destination will be chosen to be, currently unit war_file
   implicit none
   character(len=line_length), intent(in):: err_msg
-  
+
       write(war_file,line_format) err_msg
-  
+
   end subroutine print_warning_line
 
   !-----------------------------------------------------
- 
+
  !---------------------------------------
   subroutine print_log_line(msg)
   ! Subroutine which will send non informational lines to whatever the warning
   ! destination will be chosen to be, currently unit log_file
   implicit none
   character(len=line_length), intent(in):: msg
-  
+
       write(log_file,line_format) msg
-  
+
   end subroutine print_log_line
   !-----------------------------------------------------
 
@@ -140,9 +140,9 @@ module io
   ! destination will be chosen to be, currently unit log_file
   implicit none
   character(len=line_length), intent(in):: msg
-  
+
       write(plot_file,line_format) msg
-  
+
   end subroutine print_plot_line
   !-----------------------------------------------------
 
@@ -152,12 +152,12 @@ module io
   ! destination will be chosen to be, currently file res_file
   implicit none
   character(len=line_length), intent(in):: msg
-  
+
       write(res_file,line_format) msg
-  
+
   end subroutine print_res_line
   !-----------------------------------------------------
 
 
-  
+
 end module io

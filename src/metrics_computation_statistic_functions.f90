@@ -2,18 +2,18 @@
 ! File containing wrappers for f77 functions and data for statistic fucntions
 ! evaluation
 !
-! It is structured so that first come the cleaned up functions or the functions which 
+! It is structured so that first come the cleaned up functions or the functions which
 ! are wraps and call either some library function or some hack. The hacks follow at the end
 ! of the file and at some point should either be cleaned up or eliminated.
-! 
-! WARNING: 
+!
+! WARNING:
 !         * instability for Phi =1 is removed by setting it to 1-epsilon
 !         * f77 routine CUMNOR needs to be standardized to IEEE T float
 !         * Need to set references right in the file
 !         * dmdbnor is a hack and needs fixing (with its subprocedures)
 !         * zdev comes from the original program, it must be changed at some point
 !           but we need an elemental procedure, which the ACC does not provide yet
-!        
+!
 !
 !
 ! DATE       PROGRAMMER        DESCRIPTION OF CHANGE
@@ -39,21 +39,21 @@
 ! 12/10/08  LP(U)              Included subroutine to generate a random integer
 !  --------------------------------------------------
 
-module statistic_functions 
+module statistic_functions
  use data_types, only: double, operator(.speq.) , operator(.spne.)
  use computation_constants
  implicit none
 
  private
  ! All functions related to the normal distribution are defined as functions
- ! of the normal deviate 
+ ! of the normal deviate
  public phi, one_minus_phi, phi1_minus_phi2, bootstrap_set
  public zdev, compute_zdev_plus, bivar_normal_distrib, norm_dist, g
 
  real(kind=double),parameter:: z_threshold = 38.0_double ! value for which
                               ! in double precision 1-p is equal to 0 with 15 digits
-! Modified on June 2008 by LP (UC) to avoid it getting too close to machine infinities. The accuracy is anyway good 
-! enough because it would be essentially a 1 or  zero when applying phi(). 
+! Modified on June 2008 by LP (UC) to avoid it getting too close to machine infinities. The accuracy is anyway good
+! enough because it would be essentially a 1 or  zero when applying phi().
  real(kind=double),parameter:: deviate_infinity = z_threshold !
                    ! value of the normal deviate when the distribution is equal to zero
                    ! or one (exactly would be -/+ infinity)
@@ -63,11 +63,11 @@ contains
 subroutine bootstrap_set(n1,n2, nboot, bset)
 !------------------------------------------------------------------
 ! PURPOSE: generate a set, of size nboot, of indices, with replacement,
-!          between  n1 and n2. 
+!          between  n1 and n2.
 !          Specifically between min(n1,n2) and max(n1,n2).
 !          Usually the number bset will be equal to
-!          abs(n1-n2) + 1 and n2 would be the size of the array and 
-!          n1 will be equal to 1. However, arrays can have any types of 
+!          abs(n1-n2) + 1 and n2 would be the size of the array and
+!          n1 will be equal to 1. However, arrays can have any types of
 !          indices and the bootstrap can be run with different sizes of
 !          the bootstrap set.
 
@@ -90,12 +90,12 @@ do i=1,nboot
 enddo
 
 !------------------------------------------------------------------
-end subroutine bootstrap_set 
+end subroutine bootstrap_set
 !------------------------------------------------------------------
 
 
 !------------------------------------------------------------------
-integer function random_integer(n1,n2) 
+integer function random_integer(n1,n2)
 !------------------------------------------------------------------
 !PURPOSE:   generate a random integer between n1 and n2, extremes included
 !           Specifically between min(n1,n2) and max(n1,n2). n1 and n2
@@ -120,9 +120,9 @@ lower_int = min(n1,n2)
 upper_int = max(n1,n2)
 
 ! Generate a random number between [0,1), 1 excluded.
-call random_number(r) 
+call random_number(r)
 
-! create the integer. Note that we do not need to worry whether the 
+! create the integer. Note that we do not need to worry whether the
 ! numbers are positive or negative because we determine which is the
 ! smallest value, therefore the interval is above it and the difference
 ! between the two is by construct positive
@@ -141,7 +141,7 @@ end function random_integer
 !------------------------------------------------------------------
 ! Purpose: compute the deviate, but to a preset accuracy. Normally
 ! deviate functions are inaccurate, and carry a somewhat large error
-! Here we use a root finding scheme to reduce the error. This 
+! Here we use a root finding scheme to reduce the error. This
 ! under the assumption that the phi function is more accurate
 ! which is normally the case. Since it is slow, it should be used only
 ! if needed. It can most likely be made run faster, but for now I don't
@@ -166,20 +166,20 @@ if( phi(deviate1) < p ) then
 ! In this case we know that the maximum error is .00045
 ! so we take more than double that to bracket the exact root
 ! in case of need we iterate until it is bracketed
-! Note that the iteration are done with a larger step to converge more 
+! Note that the iteration are done with a larger step to converge more
 ! quickly in case someting went wrong
       deviate2 = deviate1 + 0.001_double
       do
          if( phi(deviate2) > p ) exit
          deviate2 = deviate2 + 0.005_double
-      enddo 
+      enddo
 elseif( phi(deviate1) > p ) then
      deviate2 = deviate1
      deviate1 = deviate1 - 0.001_double
      do
          if( phi(deviate1) < p ) exit
          deviate1 = deviate1 - 0.005_double
-     enddo 
+     enddo
 else ! It is already the right value
  zdev_plus = deviate1
  ierror = 0
@@ -215,7 +215,7 @@ end function scalar_phi
 !------------------------------------------------------------------
  elemental  real(kind=double) function g(x)
 !------------------------------------------------------------------
- ! standard normal density 
+ ! standard normal density
  implicit none
  real(kind=double), intent(IN):: x
 
@@ -232,7 +232,7 @@ end function scalar_phi
 ! return the value of bivariate binormal distribution for x,y. with
 ! Error message.
 ! NOTE: The constant used to constraint the value of rho is chosen in order to render the
-!       error in the estimate of  this term ~10^-6 when rho~1. It seems to work, but it should be 
+!       error in the estimate of  this term ~10^-6 when rho~1. It seems to work, but it should be
 !       changed for a better function
 ! HISTORY: June 4th 2009 LP UC: added 4 9s to round_rho to improve the estimates of partial_aucs
  implicit none
@@ -313,7 +313,7 @@ end function scalar_phi
                (   1.0_double  +  1.432788_double * t  +  0.189269_double * t2  + &
                    0.001308_double * t * t2 )
        IF(p <= 0.5_double)  zdev = -zdev
- 
+
  ELSEIF(p > 1.0_double - epsilon_p) THEN ! Plus "infinity"
        zdev = deviate_infinity
  ELSEIF( p < epsilon_p) THEN ! Minus "infinity"
@@ -334,28 +334,28 @@ end function scalar_phi
  ! for the normal distribution for value z
  implicit none
  ! DUMMY VARIABLES
- real(kind=double),intent(IN)::z ! the  argument the normal devite for 
+ real(kind=double),intent(IN)::z ! the  argument the normal devite for
                                  ! which z -phi(z) is of interest
- ! work variables 
+ ! work variables
  real(kind=double):: phi  ! used in the call with the canned routine
                                  ! check interface for details
- 
 
- !  We use the asymptotic approximation from 
+
+ !  We use the asymptotic approximation from
  ! Abramovitz & Stegun if z is large, otherwise some other
- ! approximation. Note that it is done like this to eliminated 
+ ! approximation. Note that it is done like this to eliminated
  ! cancellation errors for number too close to 1.
  ! For the goal of the code PROPROC the test for large negative numbers
  ! is not needed, but we included for general numerical stability
 
    if( abs(z) <= z_threshold) then
-      call cumnor(z, phi, one_minus_phi) ! This uses a special procedure from Anderson 
+      call cumnor(z, phi, one_minus_phi) ! This uses a special procedure from Anderson
                                   ! cancer center, it takes 1 - phi for numerical
                                   ! accuracy
    elseif( z < - z_threshold) then ! z -> -Infinity
-       one_minus_phi = 1.0_double - exp_asympthotic_term_for_phi(z ) 
+       one_minus_phi = 1.0_double - exp_asympthotic_term_for_phi(z )
    else ! z ->  +infinity
-        one_minus_phi =  exp_asympthotic_term_for_phi(z) 
+        one_minus_phi =  exp_asympthotic_term_for_phi(z)
    endif
 
  end function one_minus_phi
@@ -369,33 +369,33 @@ end function scalar_phi
  ! distribution for 2 values of phi
  implicit none
  ! DUMMY VARIABLES
- real(kind=double),intent(IN)::z1,z2 ! the 2 values of the normal devite for 
+ real(kind=double),intent(IN)::z1,z2 ! the 2 values of the normal devite for
                                     ! which the difference is of interest
 
  ! INTERNAL VARIABLES
 
 
- !  We use the asymptotic approximation from 
+ !  We use the asymptotic approximation from
  ! Abramovitz & Stegun if z is large, otherwise some other
- ! approximation. Note that it is done like this to eliminated 
+ ! approximation. Note that it is done like this to eliminated
  ! cancellation errors for number too close to 1.
  ! The algorithm is done to avoid:
 
  ! The only important cancellation is when both terms contain a 1.0
  ! The ifs are structured like this to be more efficient, having the most usual choice first
  ! even if this costs repetition
-    
+
  if( abs(z1) <= z_threshold .and. abs(z2) <= z_threshold) then
        phi1_minus_phi2 = phi(z1) - phi(z2)
  elseif ( z1 >   z_threshold .and. z2 >  z_threshold)  then ! exponential term opposite sing at + or - INF
-       phi1_minus_phi2 =  - exp_asympthotic_term_for_phi(z1) + exp_asympthotic_term_for_phi(z2) 
- elseif ( z1 < - z_threshold .and. z2 < - z_threshold   ) then 
-       phi1_minus_phi2 =   exp_asympthotic_term_for_phi(z1) - exp_asympthotic_term_for_phi(z2) 
- elseif ( z1 < - z_threshold .and. z2 >  z_threshold   ) then 
+       phi1_minus_phi2 =  - exp_asympthotic_term_for_phi(z1) + exp_asympthotic_term_for_phi(z2)
+ elseif ( z1 < - z_threshold .and. z2 < - z_threshold   ) then
+       phi1_minus_phi2 =   exp_asympthotic_term_for_phi(z1) - exp_asympthotic_term_for_phi(z2)
+ elseif ( z1 < - z_threshold .and. z2 >  z_threshold   ) then
        phi1_minus_phi2 =  exp_asympthotic_term_for_phi(z1) &
-                          - 1.0_double  +  exp_asympthotic_term_for_phi(z2) 
- elseif ( z1 >  z_threshold .and. z2 < - z_threshold   ) then 
-       phi1_minus_phi2 =  1.0_double - exp_asympthotic_term_for_phi(z1) - exp_asympthotic_term_for_phi(z2) 
+                          - 1.0_double  +  exp_asympthotic_term_for_phi(z2)
+ elseif ( z1 >  z_threshold .and. z2 < - z_threshold   ) then
+       phi1_minus_phi2 =  1.0_double - exp_asympthotic_term_for_phi(z1) - exp_asympthotic_term_for_phi(z2)
  else ! if one of the two is large, there is no avoidable cancellation
        phi1_minus_phi2 = phi(z1) - phi(z2)
  endif
@@ -407,11 +407,11 @@ end function scalar_phi
  end function phi1_minus_phi2
 
 !---------------------------------------------------
- subroutine norm_dist(z, phi, one_minus_phi) 
+ subroutine norm_dist(z, phi, one_minus_phi)
 !---------------------------------------------------
 ! PURPOSE: Returns 2 IEEE T float values for the cumulative distribution
 !     of a normal random variable  N[0:1] (phi) and its complement to 1 (one_minus_phi).
-!     See any elementary statistics book about it. 
+!     See any elementary statistics book about it.
 ! ALGORITHM: wrap written by Lorenzo Pesce 7/8/2004 to use canned  routine from
 !     Anderson Cancer Center into the program PROPROC or the Ab & Steg asympthotic
 !     approximation of phi(z). We use phi and one_minus_phi to minimize cancellation
@@ -433,18 +433,18 @@ implicit none
    phi = 0.0_double
    one_minus_phi = 1.0_double
   else
-    call cumnor(z,phi,one_minus_phi) ! This uses a special procedure from Anderson 
+    call cumnor(z,phi,one_minus_phi) ! This uses a special procedure from Anderson
                                        ! cancer center
-  endif 
+  endif
 
-  end subroutine norm_dist        
-!---------------------------------------------------------    
+  end subroutine norm_dist
+!---------------------------------------------------------
 
 !---------------------------------------------------
- real(kind=double) elemental function phi(z) 
+ real(kind=double) elemental function phi(z)
 !---------------------------------------------------
 ! Returns a IEEE T float (if the canned routine does so)
-!  value for the cumulative distribution  of the normal random variable  N[0:1]. 
+!  value for the cumulative distribution  of the normal random variable  N[0:1].
 ! written by Lorenzo Pesce 11/7/2002 to use canned  routine from
 ! Anderson Cancer Center into the program PROPROC or the AB & Steg asympthotic
 ! approximation of phi(z)
@@ -459,22 +459,22 @@ implicit none
 
 
   if( abs(z) <= z_threshold) then
-      call cumnor(z, phi, one_minus_phi) ! This uses a special procedure from Anderson 
+      call cumnor(z, phi, one_minus_phi) ! This uses a special procedure from Anderson
                                 ! cancer center
    elseif( z > z_threshold) then
-      phi =  1.0_double - exp_asympthotic_term_for_phi(z)  
+      phi =  1.0_double - exp_asympthotic_term_for_phi(z)
    else
-      phi =   exp_asympthotic_term_for_phi(z)  
+      phi =   exp_asympthotic_term_for_phi(z)
    endif
 
    ! Check if the outcome of the calculation is numerically indistinguishable from 0 or 1
 !    phi = no_zero_or_one(phi)
 
 
-  end function phi                                                    
-!---------------------------------------------------------    
+  end function phi
+!---------------------------------------------------------
 
- real (kind=double) elemental function Phi_A_Stegun(z) 
+ real (kind=double) elemental function Phi_A_Stegun(z)
 !---------------------------------------------------
 ! Returns the cumulative distribution function as a IEEE T float value
 ! Uses algorithm from Abramovitz & Stegun  (to be checked)
@@ -485,12 +485,12 @@ implicit none
   real(kind=double) :: T ! work variable
   real(kind=double) :: D ! work variable
   real(kind=double) :: P ! work variable, very related to phi
-  
+
   Az = ABS(z)
 
   T = 1.0_double / (1.0_double + 0.2316419_double*az)
 
-  IF ( az < 18.0_double) THEN   
+  IF ( az < 18.0_double) THEN
          D = 0.3989423_double * EXP(- z*z / 2.0_double)
   ELSE
          D = 0.0_double
@@ -502,12 +502,12 @@ implicit none
           + 1.781478_double) * T - 0.3565638_double &
        ) * T &
        + 0.3193815_double   &
-     ) 
+     )
 
   IF ( z < 0.0_double ) then
       Phi_A_Stegun = 1.0_double - P
   ELSE
-     Phi_A_Stegun = p 
+     Phi_A_Stegun = p
   ENDIF
 
   end function Phi_A_Stegun
@@ -522,12 +522,12 @@ implicit none
 
  implicit none
 
- real(kind=double),intent(IN):: z 
- real(kind=double):: abs_z 
+ real(kind=double),intent(IN):: z
+ real(kind=double):: abs_z
 
  abs_z = abs(z)
 
- exp_asympthotic_term_for_phi =   exp(-abs_z**2/2.0_double) / (  sqrt(2*pi) * abs_z  ) 
+ exp_asympthotic_term_for_phi =   exp(-abs_z**2/2.0_double) / (  sqrt(2*pi) * abs_z  )
 
  end function  exp_asympthotic_term_for_phi
 
@@ -556,33 +556,33 @@ implicit none
 
 !-------------------------------------------------------------------
 !-------------------------------------------------------------------
-! HACKS, HERE FOLLOW THE FUNCTIONS THAT SHOULD EITHER BE POLISHED OR 
+! HACKS, HERE FOLLOW THE FUNCTIONS THAT SHOULD EITHER BE POLISHED OR
 ! SHOULD BE TAKEN FROM A LIBRARY (BEST THE SECOND OPTION)
 !-------------------------------------------------------------------
 !-------------------------------------------------------------------
 !------------------------------------------------------------------
-    elemental  SUBROUTINE dmdbnor (X,Y,RHO,P,IER)                                        
+    elemental  SUBROUTINE dmdbnor (X,Y,RHO,P,IER)
 !------------------------------------------------------------------
 !
-!   FUNCTION            - BIVARIATE NORMAL PROBABILITY DISTRIBUTION             
-!                           FUNCTION                                            
-!   USAGE               - CALL MDBNOR(X,Y,RHO,P,IER)                            
-!   PARAMETERS   X      - INPUT  UPPER LIMIT OF INTEGRATION FOR THE             
-!                           FIRST VARIABLE                                      
-!                Y      - INPUT  UPPER LIMIT OF INTEGRATION FOR THE             
-!                           SECOND VARIABLE                                     
-!                RHO    - INPUT  CORRELATION COEFFICIENT                        
-!                P      - outPUT PROBABILITY THAT THE FIRST VARIABLE            
-!                           IS LESS THAN OR EQUAL TO X AND THAT THE             
-!                           SECOND VARIABLE IS LESS THAN OR EQUAL TO Y          
-!                IER    - ERROR PARAMETER                                       
-!                         TERMINAL ERROR = 128+N                                
-!                         N=1 INDICATES THE ABSOLUTE VALUE OF RHO IS            
-!                             GREATER THAN OR EQUAL TO ONE                      
-!   PRECISION           - DOUBLE                                                
-!   REQD. IMSL RoutINES - DMDTNF,DUERTST                                          
-!                                                                               
-!                                  C0 = SQRT(.5)                                
+!   FUNCTION            - BIVARIATE NORMAL PROBABILITY DISTRIBUTION
+!                           FUNCTION
+!   USAGE               - CALL MDBNOR(X,Y,RHO,P,IER)
+!   PARAMETERS   X      - INPUT  UPPER LIMIT OF INTEGRATION FOR THE
+!                           FIRST VARIABLE
+!                Y      - INPUT  UPPER LIMIT OF INTEGRATION FOR THE
+!                           SECOND VARIABLE
+!                RHO    - INPUT  CORRELATION COEFFICIENT
+!                P      - outPUT PROBABILITY THAT THE FIRST VARIABLE
+!                           IS LESS THAN OR EQUAL TO X AND THAT THE
+!                           SECOND VARIABLE IS LESS THAN OR EQUAL TO Y
+!                IER    - ERROR PARAMETER
+!                         TERMINAL ERROR = 128+N
+!                         N=1 INDICATES THE ABSOLUTE VALUE OF RHO IS
+!                             GREATER THAN OR EQUAL TO ONE
+!   PRECISION           - DOUBLE
+!   REQD. IMSL RoutINES - DMDTNF,DUERTST
+!
+!                                  C0 = SQRT(.5)
   implicit none
 
   real(kind=double), intent(IN):: X
@@ -602,15 +602,15 @@ implicit none
  ! initialize variables
   NNN = 0
   EPS = 0.0_double
-  IER = 0         
+  IER = 0
   P = 0.0_double
-! Check if  RHO is  out OF RANGE                  
+! Check if  RHO is  out OF RANGE
   IF ( ABS(RHO) >=  C1) then
-        IER = 129 
+        IER = 129
         RETURN
   ENDIF
 
-!  FOR LARGE POSITIVE  X OR Y VALUE - USE GAUSSIAN 
+!  FOR LARGE POSITIVE  X OR Y VALUE - USE GAUSSIAN
 !  APPROXIMATION
 
       IF( X > C2) THEN
@@ -620,7 +620,7 @@ implicit none
              ELSE
                 P = PHI(Y)
                 GO TO 8000
-             ENDIF 
+             ENDIF
       ELSE
              IF( Y > C2) THEN
                 P = PHI(X)
@@ -637,39 +637,39 @@ implicit none
 
 ! Neither X nor Y is very large either positive or negative
 ! so a more precise approximation is needed
-  
+
       F1 = 1.0_double/SQRT(1.0_double - RHO*RHO)
-      XY = X*Y                        
-      IAX = 0                         
-      IAY = 0                         
-      IND = 0                         
-      IF (XY .spne. 0.0_double) THEN  
+      XY = X*Y
+      IAX = 0
+      IAY = 0
+      IND = 0
+      IF (XY .spne. 0.0_double) THEN
         AX = F1*(Y/X - RHO)
         AY = F1*(X/Y - RHO)
-        GO TO 25           
+        GO TO 25
       ENDIF
 
-      IF (X .spne. 0.0_double) GO TO 15 
-      IF (Y .spne. 0.0_double) GO TO 20 
-!                                                                2 1/2          
-!                                  FOR X=Y=0 AX=AY=(1-RHO)/(1-RHO )             
-      AX = F1*(1.0_double - RHO)  
-      AY = AX                     
-      GO TO 25                    
-!                                  FOR Y=0,X LESS THAN 0     TY = -1/4          
-!                                  FOR Y=0,X GREATER THAN 0  TY =  1/4          
-   15 TY = 0.25_double            
+      IF (X .spne. 0.0_double) GO TO 15
+      IF (Y .spne. 0.0_double) GO TO 20
+!                                                                2 1/2
+!                                  FOR X=Y=0 AX=AY=(1-RHO)/(1-RHO )
+      AX = F1*(1.0_double - RHO)
+      AY = AX
+      GO TO 25
+!                                  FOR Y=0,X LESS THAN 0     TY = -1/4
+!                                  FOR Y=0,X GREATER THAN 0  TY =  1/4
+   15 TY = 0.25_double
       IF (X < 0.0_double) TY = -TY
-      AX = -F1*RHO     
-      IND = 1          
-      GO TO 25         
-!                                  FOR X=0,Y LESS THAN 0     TX = -1/4          
-!                                  FOR X=0,Y GREATER THAN 0  TX =  1/4          
-   20 TX = 0.25_double 
+      AX = -F1*RHO
+      IND = 1
+      GO TO 25
+!                                  FOR X=0,Y LESS THAN 0     TX = -1/4
+!                                  FOR X=0,Y GREATER THAN 0  TX =  1/4
+   20 TX = 0.25_double
       IF (Y < 0.0_double) TX = -TX
       AY = -F1 * RHO
-      GO TO 35  
-                                    
+      GO TO 35
+
    25 IF (AX >= 0.0_double) GO TO 30
       IAX = 1
       AX = -AX
@@ -690,11 +690,11 @@ implicit none
            GO TO 33
          ENDIF
        ENDIF
-      IF (IAX .NE. 0) TX = -TX 
-      IF (IND .NE. 0) GO TO 45   
-   35 IF (AY >= 0.0_double) GO TO 40 
-      IAY = 1  
-      AY = -AY 
+      IF (IAX .NE. 0) TX = -TX
+      IF (IND .NE. 0) GO TO 45
+   35 IF (AY >= 0.0_double) GO TO 40
+      IAY = 1
+      AY = -AY
    40 YYY = Y
        MMM = 0
    43       CALL DMDTNF(YYY,AY,EPS,TY,NNN)
@@ -712,14 +712,14 @@ implicit none
            GO TO 43
          ENDIF
        ENDIF
-      IF (IAY .NE. 0) TY = -TY                                                  
-   45 QX = PHI(X)                                                      
-      QY = PHI(Y)                                                      
-!                                  NOW EVALUATE P                               
-      P = 0.5_double*(QX + QY) - TX - TY                                             
-      IF (XY <= 0.0_double .AND. ( (XY .spne. 0.0_double) .OR. X+Y<0.0_double))  P = P - 0.5_double         
-      P =  MIN(MAX(0.0_double,P),1.0_double)                                               
- 8000 CONTINUE                                                                  
+      IF (IAY .NE. 0) TY = -TY
+   45 QX = PHI(X)
+      QY = PHI(Y)
+!                                  NOW EVALUATE P
+      P = 0.5_double*(QX + QY) - TX - TY
+      IF (XY <= 0.0_double .AND. ( (XY .spne. 0.0_double) .OR. X+Y<0.0_double))  P = P - 0.5_double
+      P =  MIN(MAX(0.0_double,P),1.0_double)
+ 8000 CONTINUE
         IF(P < C3) P = 0.0_double
        IF((1.0_double - P) .LT. C3) P = 1.0_double
 
@@ -730,24 +730,24 @@ implicit none
 !--------------------------------------------------------------------
   ELEMENTAL SUBRoutINE DMDTNF  (Y,Z,EPS,T,nnn)
 !--------------------------------------------------------------------
-!                                                                               
-!   FUNCTION            - INTEGRATE T(Y,Z) FOR NON-CENTRAL T USAGE.             
-!   USAGE               - CALL MDTNF(Y,Z,EPS,T)                                 
-!   PARAMETERS   Y      - INPUT PARAMETER.  SEE DOCUMENTATION FOR               
-!                           THE DEFINITION.                                     
-!                Z      - INPUT.  INTEGRATION IS FROM 0 TO Z.                   
-!                EPS    - INPUT.  ACCURACY SHOULD NOT BE LESS THAN EPS.         
-!                           IF EPS=0 IS ENTERED, EPS=.000001 IS USED.           
-!                T      - RESULTANT VALUE OF THE INTEGRAL.                      
-!   PRECISION           - DOUBLE                                                
-!                                                                               
+!
+!   FUNCTION            - INTEGRATE T(Y,Z) FOR NON-CENTRAL T USAGE.
+!   USAGE               - CALL MDTNF(Y,Z,EPS,T)
+!   PARAMETERS   Y      - INPUT PARAMETER.  SEE DOCUMENTATION FOR
+!                           THE DEFINITION.
+!                Z      - INPUT.  INTEGRATION IS FROM 0 TO Z.
+!                EPS    - INPUT.  ACCURACY SHOULD NOT BE LESS THAN EPS.
+!                           IF EPS=0 IS ENTERED, EPS=.000001 IS USED.
+!                T      - RESULTANT VALUE OF THE INTEGRAL.
+!   PRECISION           - DOUBLE
+!
 
  implicit none
 
  real(kind=double), intent(IN):: Y
- real(kind=double), intent(IN):: Z   
+ real(kind=double), intent(IN):: Z
  real(kind=double), intent(IN):: EPS
- real(kind=double), intent(out):: T        
+ real(kind=double), intent(out):: T
  integer, intent(out):: nnn
 
   ! Lorenzo Pesce, 03/11/04 eliminated archaic syntax (data structures)
@@ -758,69 +758,69 @@ implicit none
  real(kind=double):: A4B4,AHSQB,AB4,F,SUM,G,G1,BER,TER,D1,D2,D,AEPS
 
       NNN=0
-      EP1 = EPS                                                                 
-      IF(EPS .speq. 0.0_double) EP1 = .000001_double                                      
-      T = 0.0_double                                                                
-      B = ABS(Y)                                                              
-      A = ABS(Z)                                                              
-      IF(A .speq. 0.0_double) GO TO 35                                                  
-      TA = ATAN(A)                                                           
-      IF (A*B <= 4.0_double) GO TO 10                                               
+      EP1 = EPS
+      IF(EPS .speq. 0.0_double) EP1 = .000001_double
+      T = 0.0_double
+      B = ABS(Y)
+      A = ABS(Z)
+      IF(A .speq. 0.0_double) GO TO 35
+      TA = ATAN(A)
+      IF (A*B <= 4.0_double) GO TO 10
       T = phi(B)
-      T = C*(TA + ATAN(1.0_double/A)) - .5_double*(T-.5_double)                              
-      GO TO 30                                                                  
-!                                  APPROXIMATION FOR SMALL Y*Z                  
-   10 HSQB = .5_double*B*B                                                           
-      IF (HSQB > EXPOV) GO TO 35                                             
-      BEXP = EXP(-HSQB)                                                        
-      ASQ = A*A                                                                 
-      A4 = ASQ*ASQ                                                              
-      B4 = HSQB * HSQB                                                          
-      A4B4 = A4 * B4                                                            
-      AHSQB = A * HSQB                                                          
-      AB4 = A*B4*.5_double                                                           
-      F = 1.0_double                                                                  
-      SUM = 0.0_double                                                                
-      G = 3.0_double                                                                  
-!                                  BEGIN SERIES EXPANSION                       
-   15 G1 = G                                                                    
-      BER = 0.0_double                                                                
-      TER = AB4                                                                 
-   20 BER = BER+TER                                                             
-      IF(TER .LE. BER*EP1) GO TO 25                                             
-!                                  DEVELOP COEFFICIENT SERIES                   
-      TER = TER*HSQB/G1                                                         
-      G1 = G1+1.0_double                                                             
-      GO TO 20                                                                  
-   25 D1 = (BER+AHSQB)/F                                                        
-      D2 = BER*ASQ/(F+2.0_double)                                                     
-      D = D1-D2                                                                 
-      SUM = SUM+D                                                               
-      T = TA-SUM*BEXP                                                           
-      AEPS = EP1*T                                                              
-      AHSQB = AHSQB*A4B4/((G-1.0_double)*G)                                           
-      AB4 = AB4*A4B4/((G +1.0_double)*G)                                              
-      F = F+4.0_double                                                               
-      G = G+2.0_double                                                               
-!                                  SHOULD SERIES EXPANSION BE TERMINATED        
+      T = C*(TA + ATAN(1.0_double/A)) - .5_double*(T-.5_double)
+      GO TO 30
+!                                  APPROXIMATION FOR SMALL Y*Z
+   10 HSQB = .5_double*B*B
+      IF (HSQB > EXPOV) GO TO 35
+      BEXP = EXP(-HSQB)
+      ASQ = A*A
+      A4 = ASQ*ASQ
+      B4 = HSQB * HSQB
+      A4B4 = A4 * B4
+      AHSQB = A * HSQB
+      AB4 = A*B4*.5_double
+      F = 1.0_double
+      SUM = 0.0_double
+      G = 3.0_double
+!                                  BEGIN SERIES EXPANSION
+   15 G1 = G
+      BER = 0.0_double
+      TER = AB4
+   20 BER = BER+TER
+      IF(TER .LE. BER*EP1) GO TO 25
+!                                  DEVELOP COEFFICIENT SERIES
+      TER = TER*HSQB/G1
+      G1 = G1+1.0_double
+      GO TO 20
+   25 D1 = (BER+AHSQB)/F
+      D2 = BER*ASQ/(F+2.0_double)
+      D = D1-D2
+      SUM = SUM+D
+      T = TA-SUM*BEXP
+      AEPS = EP1*T
+      AHSQB = AHSQB*A4B4/((G-1.0_double)*G)
+      AB4 = AB4*A4B4/((G +1.0_double)*G)
+      F = F+4.0_double
+      G = G+2.0_double
+!                                  SHOULD SERIES EXPANSION BE TERMINATED
        IF (D2*BEXP .GE. AEPS)THEN
          NNN=NNN+1
          IF(NNN.GT.100)RETURN
          GO TO 15
        ENDIF
-      T = T * C                   
+      T = T * C
    30 IF(Z .LT. 0.0_double) T = -T
-   35 RETURN                    
-!----------------------------------------------------------                                  
+   35 RETURN
+!----------------------------------------------------------
       END SUBRoutINE  DMDTNF
-!----------------------------------------------------------                                  
-!----------------------------------------------------------                                  
+!----------------------------------------------------------
+!----------------------------------------------------------
 
 
 ! THIS IS THE FUNCTION CUMNOR AND ITS DEPENDENCIES.
-! IT WAS HACKED TO F90 AT THE END OF JANUARY 2006 BY LORENZO PESCE AT THE UNIVERSITY 
+! IT WAS HACKED TO F90 AT THE END OF JANUARY 2006 BY LORENZO PESCE AT THE UNIVERSITY
 ! OF CHICAGO. NOTE THAT A NUMBER OF "STRANGE FUNCTIONS" THAT APPEAR HERE SHOULD PROBABLY BE
-! SCRAPPED IN FORTRAN 90 (LIKE THE IPMPAR) BOTH BECAUSE THEY ARE ARCHAIC AND 
+! SCRAPPED IN FORTRAN 90 (LIKE THE IPMPAR) BOTH BECAUSE THEY ARE ARCHAIC AND
 ! BECAUSE THE MIGHT AFFECT PRECISION.
 !
 !
@@ -957,7 +957,7 @@ implicit none
 !  Coefficients for approximation in second interval
 !------------------------------------------------------------------
  real(kind = double) , parameter,  dimension(9) ::  c = (/ &
-         3.9894151208813466764e-1_double,  & 
+         3.9894151208813466764e-1_double,  &
          8.8831497943883759412e0_double,   &
          9.3506656132177855979e1_double,   &
          5.9727027639480026226e2_double,   &
@@ -1011,7 +1011,7 @@ implicit none
   if  (y <= thrsh) THEN
 !------------------------------------------------------------------
 !  Evaluate  anorm  for  |X| <= 0.66291
-!------------------------------------------------------------------ 
+!------------------------------------------------------------------
          xsq = zero
          if (y > eps) xsq = x*x
          xnum = a(5)*xsq
@@ -1109,7 +1109,7 @@ implicit none
 !     .. Scalar Arguments ..
  use data_types
  implicit none
-  
+
  integer, intent(in):: i
 !     ..
 !     .. Local Scalars ..

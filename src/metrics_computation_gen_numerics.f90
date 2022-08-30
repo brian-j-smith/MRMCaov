@@ -1,8 +1,8 @@
 ! MOdule containing generic numerical subroutine, like
 ! non linear root finding, bisection rules and so forth
 module gen_numerics
- 
- USE data_types, only: double, operator(.speq.) 
+
+ USE data_types, only: double, operator(.speq.)
 
  IMPLICIT NONE
 
@@ -33,9 +33,9 @@ real(kind=double), parameter:: TINY   = 1.e-20_double
 
 integer, intent(out):: IERROR
 
-real(kind=double),intent(INout):: AX, FA 
-real(kind=double),intent(INout):: BX, FB 
-real(kind=double),intent(out)  :: CX, FC 
+real(kind=double),intent(INout):: AX, FA
+real(kind=double),intent(INout):: BX, FB
+real(kind=double),intent(out)  :: CX, FC
 
 real(kind=double) :: r,q,u,ulim,fu
 
@@ -54,7 +54,7 @@ IF(FB > FA) CALL SWAP_A_B(AX,FA,BX,FB)
 CX=BX+GOLD*(BX-AX)
 FC=FUNC(CX,IERROR)
 if(IERROR.ne.0) return
-  
+
 
 
 ! LOOK FOR THE PROBABLE MINIMUM USING PARABOLAS
@@ -118,11 +118,11 @@ CONTAINS
 
  subroutine swap_a_b(pta,fpta,ptb,fptb)
  implicit none
- ! Swap points a & b in order to have  
+ ! Swap points a & b in order to have
   real(kind=double):: pta, fpta
   real(kind=double):: ptb, fptb
   real(kind=double):: dummy
- 
+
   dummy = pta
   pta = ptb
   ptb = dummy
@@ -145,10 +145,10 @@ real (kind=double) function BRENT(AX,BX,CX,FUNC,TOL,XMIN,IERROR)
 !--------------------------------------------------------------
 ! Given a function FUNC and given a braketing triplet of abscissas AX,BX, and CX
 ! (BX is between AX and CX and FUNC(BX) is less that both FUNC(AX) and FUNC(CX)), this
-! Routine isolates the minimum to a fractional precision about TOL using 
+! Routine isolates the minimum to a fractional precision about TOL using
 ! Brent's method (see "Numerical recipes: the art of scientific computing" for
 ! details).  The abscissa of the minimum is returned as XMIN and the minimum
-! function value is returned as BRENT, the returned function value 
+! function value is returned as BRENT, the returned function value
 
 ! NOTE: THIS PROGRAM WAS ABUSED BY XP IN SOME UNKNOWN WAYS, AND THAT NEEDS TO
 ! BE CLEARED, SINCE HIS COMMENTS ARE ABSENT AND HIS VARIABLE NAMES ARE ABSURD
@@ -287,8 +287,8 @@ end function brent
  real(kind=double) func
  external func
 
-      
- integer, parameter :: ITMAX = 100 
+
+ integer, parameter :: ITMAX = 100
  real(kind=double),parameter:: EPS=1.e-12_double
 
  IERROR = 0
@@ -302,7 +302,7 @@ end function brent
 
 
  if(fb*fa > 0.0_double) IERROR = 1 ! The root wasn't bracketed
-       
+
  fc = fb
 
  ITMAX_LOOP: DO iter=1,itmax

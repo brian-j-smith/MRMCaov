@@ -35,7 +35,7 @@ MODULE Debugging
     LOGICAL, PUBLIC :: DebugANOVA = .FALSE._1
 
     ! Define an INTERFACE to allow for overloading of definitions so that a single calling
-    ! statement can be used to refer to the INTEGER, REAL*8, and LOGICAL variants.  By 
+    ! statement can be used to refer to the INTEGER, REAL*8, and LOGICAL variants.  By
     ! putting the INTERFACE statement in the module, the generic name DisplayState is available
     ! to any procedure which accesses the module via a USES statement.
     INTERFACE DisplayState
@@ -54,7 +54,7 @@ MODULE Debugging
         MODULE PROCEDURE DisplayStateIntArray2
         MODULE PROCEDURE DisplayStateIntArray2R
         MODULE PROCEDURE DisplayStateRL8Array02
-                      
+
     END INTERFACE
 
 CONTAINS
@@ -155,7 +155,7 @@ SUBROUTINE DisplayStateLog ( tempText, logVal )
     LOGICAL :: logVal
     CHARACTER*80 :: text
     CHARACTER(LEN=*) :: tempText
-    INTEGER :: length !, length1, length2 
+    INTEGER :: length !, length1, length2
 
     ! Write the passed text string to a local variable:
     text = TRIM(tempText)
@@ -246,7 +246,7 @@ SUBROUTINE DisplayStateIntArray1 ( tempText, IntVal, Index1 )
 
         WRITE(debugUnit,*)
         WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
-    
+
         DO I = 1, Index1
             WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") I
             WRITE(debugUnit,'(I10, " ")') IntVal(I)
@@ -285,7 +285,7 @@ SUBROUTINE DisplayStateIntArray01 ( tempText, IntVal, LowerIndex, UpperIndex )
 
         WRITE(debugUnit,*)
         WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
-        
+
         DO I = LowerIndex, UpperIndex
             WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") I
         END DO
@@ -300,7 +300,7 @@ SUBROUTINE DisplayStateIntArray01 ( tempText, IntVal, LowerIndex, UpperIndex )
 
         WRITE(debugUnit,*)
         WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
-        
+
         DO I = LowerIndex, UpperIndex
             WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") I
             WRITE(debugUnit,'(I10, " ")') IntVal(I)
@@ -339,7 +339,7 @@ SUBROUTINE DisplayStateRL8Array1 ( tempText, rl8Val, UpperIndex )
 
         WRITE(debugUnit,*)
         WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
-        
+
         DO I = 1, UpperIndex
             WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") I
         END DO
@@ -354,7 +354,7 @@ SUBROUTINE DisplayStateRL8Array1 ( tempText, rl8Val, UpperIndex )
 
         WRITE(debugUnit,*)
         WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
-        
+
         DO I = 1, UpperIndex
             WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") I
             WRITE(debugUnit,'(F12.5, " ")') rl8Val(I)
@@ -392,7 +392,7 @@ SUBROUTINE DisplayStateRL8Array01 ( tempText, rl8Val, LowerIndex, UpperIndex )
 
         WRITE(debugUnit,*)
         WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
-        
+
         DO I = LowerIndex, UpperIndex
             WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") I
         END DO
@@ -407,7 +407,7 @@ SUBROUTINE DisplayStateRL8Array01 ( tempText, rl8Val, LowerIndex, UpperIndex )
 
         WRITE(debugUnit,*)
         WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
-        
+
         DO I = LowerIndex, UpperIndex
             WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") I
             WRITE(debugUnit,'(F12.5, " ")') rl8Val(I)
@@ -443,7 +443,7 @@ SUBROUTINE DisplayStateRL8Array2 ( tempText, rl8Val, UpperRowIndex, UpperColumnI
 !    WRITE(debugUnit, '('//AFMT(length)//'," ",F15.8)') TRIM(text), rl8Val
     WRITE(debugUnit,*)
     WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
-    
+
     WRITE(debugUnit,'("      ")', ADVANCE = "NO")
     DO J = 1, UpperColumnIndex
         WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") J
@@ -485,7 +485,7 @@ SUBROUTINE DisplayStateRL8Array2R ( tempText, rl8Val, UpperRowIndex, UpperColumn
 
     ! Write the text & value to the debugging window:
 !    WRITE(debugUnit, '('//AFMT(length)//'," ",F15.8)') TRIM(text), rl8Val
-    
+
     IF (Reverse) THEN
 
         WRITE(debugUnit,*)
@@ -521,9 +521,9 @@ SUBROUTINE DumpUnitInfo ( fileUnit )
 !=======================================================================
 !***********************************************************************
     INTEGER :: fileUnit
-    LOGICAL :: lopened,lnamed      
+    LOGICAL :: lopened,lnamed
     CHARACTER(64):: fname
-  
+
     WRITE(*,*) ' --------------------------------------------------'
    ! WRITE(*,*) ' Displaying unit connection status for unit: ', fileUnit
     INQUIRE(UNIT=fileUnit,OPENED=lopened,NAMED=lnamed,NAME=fname)
@@ -560,7 +560,7 @@ SUBROUTINE DisplayStateIntArray2 ( tempText, intVal, UpperRowIndex, UpperColumnI
 !    WRITE(debugUnit, '('//AFMT(length)//'," ",F15.8)') TRIM(text), intVal
     WRITE(debugUnit,*)
     WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
-    
+
     WRITE(debugUnit,'("      ")', ADVANCE = "NO")
     DO J = 1, UpperColumnIndex
         WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") J
@@ -601,7 +601,7 @@ SUBROUTINE DisplayStateIntArray2R ( tempText, intVal, UpperRowIndex, UpperColumn
 
     ! Write the text & value to the debugging window:
 !    WRITE(debugUnit, '('//AFMT(length)//'," ",F15.8)') TRIM(text), intVal
-    
+
     IF (Reverse) THEN
 
         WRITE(debugUnit,*)
@@ -655,7 +655,7 @@ SUBROUTINE DisplayStateRL8Array02 ( tempText, rl8Val, UpperRowIndex, LowerColumn
 !    WRITE(debugUnit, '('//AFMT(length)//'," ",F15.8)') TRIM(text), rl8Val
     WRITE(debugUnit,*)
     WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
-    
+
     WRITE(debugUnit,'("      ")', ADVANCE = "NO")
     DO J = LowerColumnIndex, UpperColumnIndex
         WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") J

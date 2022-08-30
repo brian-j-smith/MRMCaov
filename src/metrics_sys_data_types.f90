@@ -1,10 +1,10 @@
 !----------------------------------------------------------------------
 ! File containing data the types standardization module
-! WARNING: 
+! WARNING:
 !         *There is no comparison between mixed types
 !         *Check is needed to find out if IEEE double aren't quadruple
 !          on a specific processor
-!        * Need to add treatment for values like NAN INF and such 
+!        * Need to add treatment for values like NAN INF and such
 !
 ! CONTAINS
 ! PROCEDURE                OPERATION
@@ -18,7 +18,7 @@
 ! 11/19/02   L. Pesce (UC)     added comparison between reals
 !                              for both double and single
 ! 05/18/04   L. Pesce (UC)     added overflow/underflow check (need to verify if it
-!                              is stable across platforms and compilers  
+!                              is stable across platforms and compilers
 !--------------------------------------------------
 module data_types
 !-----------------------------------------------------
@@ -48,7 +48,7 @@ contains
 !-------------------------------------------------
 logical elemental function eqsingle(a,b)
 !-------------------------------------------------
-! Compares the difference between two numbers a,b, with the 
+! Compares the difference between two numbers a,b, with the
 ! possible numerical difference identifiable by the model
 ! used by the real a
 implicit none
@@ -63,7 +63,7 @@ end function eqsingle
 !-------------------------------------------------
 logical elemental function eqdouble(a,b)
 !-------------------------------------------------
-! Compares the difference between two numbers a,b, with the 
+! Compares the difference between two numbers a,b, with the
 ! possible numerical difference identifiable by the model
 ! used by the real a
 implicit none
@@ -79,14 +79,14 @@ end function eqdouble
 !-------------------------------------------------
 logical elemental function nesingle(a,b)
 !-------------------------------------------------
-! Compares the difference between two numbers a,b, with the 
+! Compares the difference between two numbers a,b, with the
 ! possible numerical difference identifiable by the model
 ! used by the real a
 implicit none
 real(kind=single),intent(in):: a,b
-intrinsic spacing 
+intrinsic spacing
 
- nesingle =  abs (a - b)  > 2.0_single * max(  spacing(a),spacing(b)  ) 
+ nesingle =  abs (a - b)  > 2.0_single * max(  spacing(a),spacing(b)  )
 
 !---------------------------------------------------
 end function nesingle
@@ -94,14 +94,14 @@ end function nesingle
 !-------------------------------------------------
 logical elemental function nedouble(a,b)
 !-------------------------------------------------
-! Compares the difference between two numbers a,b, with the 
+! Compares the difference between two numbers a,b, with the
 ! possible numerical difference identifiable by the model
 ! used by the real a
 implicit none
 real(kind=double),intent(in):: a,b
-intrinsic spacing 
+intrinsic spacing
 
- nedouble =  abs (a - b)  > 2.0_double * max(  spacing(a),spacing(b)  )  
+ nedouble =  abs (a - b)  > 2.0_double * max(  spacing(a),spacing(b)  )
 
 !---------------------------------------------------
 end function nedouble
@@ -110,8 +110,8 @@ end function nedouble
 logical elemental function check_number(a)
 ! check in the numerical representation chosen (likely double)
 ! if the number is between huge and tiny which means that the
-! number is neither an overflow nor an underflow. 
-!WARNING: this might not work on all the architectures since 
+! number is neither an overflow nor an underflow.
+!WARNING: this might not work on all the architectures since
 !   the f95 standard does not tell what should the processor
 !   do when such an exception occurs. If the underflow is reckoned as
 !   zero, we can go ahead since 0 behaves properly. 5-5-05

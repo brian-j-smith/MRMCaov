@@ -7,7 +7,7 @@ use data_types, only: double
 
 implicit none
 
-private 
+private
 
 ! Export the meaning of the different values that the fit error flag can have
 public bad_input          ! categorical input has unacceptable values
@@ -30,7 +30,7 @@ integer, parameter :: fit_perfect        = 3 ! positives and negatives are perfe
 integer, parameter :: fit_fail_init_est  = 4 ! initial estimates did not converge
 integer, parameter :: fit_fail_variances = 5 ! estimates of variances did not converge
 integer, parameter :: fit_OK_pseudo      = 6 ! fit was successful, variances are pseudovariances
-integer, parameter :: fit_fail_var_auc_small = 7 ! estimates of var are bad if auc is too small because the 
+integer, parameter :: fit_fail_var_auc_small = 7 ! estimates of var are bad if auc is too small because the
            ! log likelihood becomes cusp like (at least it looks like). Not worthy worrying for bad datasets
            ! of bad method
 integer, parameter :: fit_degenerate = 8     ! the data is such that a snaky fit made of straight segments, as produced by

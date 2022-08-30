@@ -17,7 +17,7 @@
 ! 12/02/02   L. Pesce (UC)     Added pi (using mathematica & memory)
 ! 02/02/08   L. Pesce (UC)     Eliminated some constants, moved the to computation
 !                              constants from the ROC project
-! 03/05/10   L. Pesce (UC)     Removed references to computation constants to avoid double referencing 
+! 03/05/10   L. Pesce (UC)     Removed references to computation constants to avoid double referencing
 !                              and render dependencies more explicit and straightforward.
 !--------------------------------------------------
 module proproc_computation_constants
@@ -30,7 +30,7 @@ public c_almost_zero, c_almost_one
 public d_a_almost_zero, d_a_almost_Infinity
 public max_c_2_d_a
 ! The value of c_almost_zero (and of its complement c_almost_one) is
-! defined so as the largest value after which the bivariate binormal 
+! defined so as the largest value after which the bivariate binormal
 ! distribution subroutine used fails when rho = ( 1 - c**2) / ( 1 + c**2)
 real(kind = double), parameter:: c_almost_zero = 1.0e-11_double
 real(kind = double), parameter:: c_almost_one = 1.0_double - c_almost_zero
@@ -38,7 +38,7 @@ real(kind = double), parameter:: d_a_almost_zero = 1.0e-8_double
 real(kind = double), parameter:: d_a_almost_Infinity = 5.0_double
 ! value is chosen so that the most unstable likelihoods (the one with 2
 ! category data) have a smooth profile before the cutoff
-real(kind = double), parameter:: max_c_2_d_a = 4.0e8_double ! maximal allowed ratio : c/d_a 
+real(kind = double), parameter:: max_c_2_d_a = 4.0e8_double ! maximal allowed ratio : c/d_a
       ! It is used to prevent the optimizer for looking for solutions in the
       ! small d_a large c space where almost identical curves have different
       ! parameters

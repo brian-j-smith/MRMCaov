@@ -1,7 +1,7 @@
 module toms611
 ! Module that contains the Transactions for Mathematical Sofware procedures to
 ! implement the algorithm 611, known as TOMS611.
-! NOTES: 
+! NOTES:
 !       - Some functions that did not do anything have been eliminated (timestamp for example)
 !       - Very archaic syntax have been cleared, more work needs to be done
 !       - All write is done to file pu, which is defined in the calling program (in element iv(21))
@@ -29,7 +29,7 @@ subroutine assst( iv, liv, lv, v )
 !! ASSST: assess a candidate step.
 !
 !
-!   purpose 
+!   purpose
 !
 !        this subroutine is called by an unconstrained minimization
 !     routine to assess the next candidate step.  it may recommend one
@@ -38,7 +38,7 @@ subroutine assst( iv, liv, lv, v )
 !     to convergence or false convergence.  see the return code listing
 !     below.
 !
-!  Parameters: 
+!  Parameters:
 !
 !  iv (i/o) integer parameter and scratch vector -- see description
 !             below of iv values referenced.
@@ -47,7 +47,7 @@ subroutine assst( iv, liv, lv, v )
 !   v (i/o) real parameter and scratch vector -- see description
 !             below of v values referenced.
 !
-!   iv values referenced 
+!   iv values referenced
 !
 !    iv(irc) (i/o) on input for the first step tried in a new iteration,
 !             iv(irc) should be set to 3 or 4 (the value to which it is
@@ -98,7 +98,7 @@ subroutine assst( iv, liv, lv, v )
 !   iv(xirc) (i/o) value that iv(irc) would have in the absence of
 !             convergence, false convergence, and oversized steps.
 !
-!   v values referenced 
+!   v values referenced
 !
 ! v(afctol) (in)  absolute function convergence tolerance.  if the
 !             absolute value of the current function value v(f) is less
@@ -170,22 +170,22 @@ subroutine assst( iv, liv, lv, v )
 !             a small function decrease and v(reldx) <= v(xftol),
 !             then assst returns with iv(irc) = 12.
 !
-!  notes  
+!  notes
 !
-!   application and usage restrictions 
+!   application and usage restrictions
 !
 !        this routine is called as part of the nl2sol (nonlinear
 !     least-squares) package.  it may be used in any unconstrained
 !     minimization solver that uses dogleg, goldfeld-quandt-trotter,
 !     or levenberg-marquardt steps.
 !
-!   algorithm notes 
+!   algorithm notes
 !
 !        see (1) for further discussion of the assessing and model
 !     switching strategies.  while nl2sol considers only two models,
 !     assst is designed to handle any number of models.
 !
-!   usage notes 
+!   usage notes
 !
 !        on the first call of an iteration, only the i/o variables
 !     step, x, iv(irc), iv(model), v(f), v(dstnrm), v(gtstep), and
@@ -196,20 +196,20 @@ subroutine assst( iv, liv, lv, v )
 !     change the stopping tolerances and call assst again, in which
 !     case the stopping tests will be repeated.
 !
-!  Reference: 
+!  Reference:
 !
 !    J E Dennis, David Gay, and R E Welsch,
 !    An Adaptive Nonlinear Least-squares Algorithm,
-!    ACM Transactions on Mathematical Software, 
+!    ACM Transactions on Mathematical Software,
 !    Volume 7, Number 3, 1981.
 !
 !    M J D Powell,
 !    A Fortran Subroutine for Solving Systems of Nonlinear Algebraic Equations,
-!    in Numerical Methods for Nonlinear Algebraic Equations, 
-!    edited by Philip Rabinowitz, 
+!    in Numerical Methods for Nonlinear Algebraic Equations,
+!    edited by Philip Rabinowitz,
 !    Gordon and Breach, London, 1970.
 !
-!   history 
+!   history
 !
 !        john dennis designed much of this routine, starting with
 !     ideas in (2). roy welsch suggested the model switching strategy.
@@ -254,7 +254,7 @@ implicit none
   rfac1 = one
   goodx = .true.
   i = iv(irc)
-  
+
   ! depending on the value of i (iv(irc) ) branch out - LP
   ! ideally this step will not have the gotos anymore, but instead a number of operations followed
   ! by call to functions for operations common to the different branches
@@ -276,10 +276,10 @@ implicit none
   case default ! the value needs to be set, and then we return
         iv(irc) = 13
         return
-  end select       
+  end select
 
 !
-!   initialize for new iteration 
+!   initialize for new iteration
 !
  10   iv(stage) = 1
   iv(radinc) = 0
@@ -289,34 +289,34 @@ implicit none
      iv(xirc) = i
      go to 60
 !
-!   step was recomputed with new model or smaller radius 
-!   first decide which 
+!   step was recomputed with new model or smaller radius
+!   first decide which
 !
  20   if (iv(model) /= iv(mlstgd)) go to 30
-!         old model retained, smaller radius tried 
-!         do not consider any more new models this iteration 
+!         old model retained, smaller radius tried
+!         do not consider any more new models this iteration
      iv(stage) = iv(stglim)
      iv(radinc) = -1
      go to 110
 !
-!   a new model is being tried.  decide whether to keep it. 
+!   a new model is being tried.  decide whether to keep it.
 !
  30   iv(stage) = iv(stage) + 1
 !
-!      now we add the possibiltiy that step was recomputed with 
-!      the same model, perhaps because of an oversized step.    
+!      now we add the possibiltiy that step was recomputed with
+!      the same model, perhaps because of an oversized step.
 !
  40   if (iv(stage) > 0) go to 50
 !
-!         step was recomputed because it was too big. 
+!         step was recomputed because it was too big.
 !
      if (iv(toobig) /= 0) go to 60
 !
-!         restore iv(stage) and pick up where we left off. 
+!         restore iv(stage) and pick up where we left off.
 !
      iv(stage) = -iv(stage)
      i = iv(xirc)
-     
+
      select case(i) ! LP
      case(1)
           goto 20
@@ -327,10 +327,10 @@ implicit none
      case(5)
           goto 70
      end select
-    
+
  50   if (iv(toobig) == 0) go to 70
 !
-!   handle oversize step 
+!   handle oversize step
 !
   if (iv(radinc) > 0) go to 80
      iv(stage) = -iv(stage)
@@ -344,7 +344,7 @@ implicit none
 
  70   if (v(f) < v(flstgd)) go to 110
 !
-!     the new step is a loser.  restore old model. 
+!     the new step is a loser.  restore old model.
 !
   if (iv(model) == iv(mlstgd)) go to 80
      iv(model) = iv(mlstgd)
@@ -382,7 +382,7 @@ implicit none
           iv(radinc) = iv(radinc) - 1
           go to 160
 !
-!  Nontrivial function decrease achieved 
+!  Nontrivial function decrease achieved
 !
  140  iv(nfgcal) = nfc
   rfac1 = 1.0_double
@@ -393,15 +393,15 @@ implicit none
 !   or accept step with decreased radius.
 !
   if (iv(stage) >= iv(stglim)) go to 150
-!         consider switching models 
+!         consider switching models
      iv(irc) = 2
      go to 160
 !
-!      accept step with decreased radius 
+!      accept step with decreased radius
 !
  150  iv(irc) = 4
 !
-!   set v(radfac) to fletcher*s decrease factor 
+!   set v(radfac) to fletcher*s decrease factor
 !
  160  iv(xirc) = iv(irc)
   emax = v(gtstep) + v(fdif)
@@ -411,7 +411,7 @@ implicit none
     v(radfac) = rfac1 * max (v(rdfcmn),half * v(gtstep)/emax)
   end if
 !
-!   do false convergence test 
+!   do false convergence test
 !
  170  if (v(reldx) <= v(xftol)) go to 180
      iv(irc) = iv(xirc)
@@ -421,7 +421,7 @@ implicit none
  180  iv(irc) = 12
   go to 240
 !
-!   handle good function decrease 
+!   handle good function decrease
 !
  190  if (v(fdif) < (-v(tuner3) * v(gtstep))) go to 210
 !
@@ -452,7 +452,7 @@ implicit none
           iv(irc) = 5
           iv(radinc) = iv(radinc) + 1
 !
-!   save values corresponding to good step 
+!   save values corresponding to good step
 !
  200  v(flstgd) = v(f)
   iv(mlstgd) = iv(model)
@@ -469,14 +469,14 @@ implicit none
   iv(irc) = 3
   go to 230
 !
-!   come here for a restart after convergence 
+!   come here for a restart after convergence
 !
  220  iv(irc) = iv(xirc)
   if (v(dstsav) >= 0.0_double ) go to 240
      iv(irc) = 12
      go to 240
 !
-!  Perform convergence tests 
+!  Perform convergence tests
 !
  230  iv(xirc) = iv(irc)
  240  if (iv(restor) == 1 .and. v(flstgd) < v(f0)) iv(restor) = 3
@@ -530,7 +530,7 @@ implicit none
   end if
  270  if (v(nreduc) < 0.0_double ) go to 290
 !
-!   recompute v(preduc) for use in singular convergence test 
+!   recompute v(preduc) for use in singular convergence test
 !
   v(gtslst) = v(gtstep)
   v(dstsav) = v(dstnrm)
@@ -542,7 +542,7 @@ implicit none
   iv(irc) = 6
   return
 !
-!  Perform singular convergence test with recomputed v(preduc) 
+!  Perform singular convergence test with recomputed v(preduc)
 !
  280  v(gtstep) = v(gtslst)
   v(dstnrm) = abs(v(dstsav))
@@ -559,7 +559,7 @@ subroutine dbdog(dig, lv, n, nwtstp, step, v)
 !
 !*******************************************************************************
 !
-!! DBDOG: compute double dogleg step 
+!! DBDOG: compute double dogleg step
 !
 !
 !  Discussion:
@@ -569,7 +569,7 @@ subroutine dbdog(dig, lv, n, nwtstp, step, v)
 !     dennis and mei (ref. 1), which is a variation on powell*s dogleg
 !     scheme (ref. 2, p. 95).
 !
-!  Parameters: 
+!  Parameters:
 !
 !    dig (input) diag(d)**-2 * g -- see algorithm notes.
 !      g (input) the current gradient vector.
@@ -606,9 +606,9 @@ subroutine dbdog(dig, lv, n, nwtstp, step, v)
 !             greater than 2 means 1 / (v(stppar) - 1) times the cauchy
 !             step.
 !
-!  notes 
+!  notes
 !
-!   algorithm notes 
+!   algorithm notes
 !
 !        let  g  and  h  be the current gradient and hessian approxima-
 !     tion respectively and let d be the current scale vector.  this
@@ -621,15 +621,15 @@ subroutine dbdog(dig, lv, n, nwtstp, step, v)
 !  Reference:
 !
 !    J E Dennis, H H W Mei,
-!    Two New Unconstrained Optimization Algorithms Which Use 
-!    Function and Gradient Values, 
+!    Two New Unconstrained Optimization Algorithms Which Use
+!    Function and Gradient Values,
 !    Journal of Optimization Theory and Applications,
 !    Volume 28, pages 453-482, 1979.
 !
 !    M J D Powell,
 !    A Hybrid Method for Non-linear Equations,
-!    in Numerical Methods for Non-linear Equations, 
-!    edited by Philip Rabinowitz, 
+!    in Numerical Methods for Non-linear Equations,
+!    edited by Philip Rabinowitz,
 !    Gordon and Breach, London, 1970.
 !
 implicit none
@@ -655,7 +655,7 @@ implicit none
   v(nwtfac) = 0.0_double
   if (rlambd < 1.0_double ) go to 30
 !
-!  The newton step is inside the trust region 
+!  The newton step is inside the trust region
 !
      v(stppar) = 0.0_double
      v(dstnrm) = nwtnrm
@@ -676,7 +676,7 @@ implicit none
   relax = 1.0_double - v(bias) * ( 1.0_double - gnorm*cnorm/ghinvg)
   if (rlambd < relax) go to 50
 !
-!  Step is between relaxed newton and full newton steps 
+!  Step is between relaxed newton and full newton steps
 !
      v(stppar) = 1.0_double -  (rlambd - relax) / ( 1.0_double - relax)
      t = -rlambd
@@ -691,7 +691,7 @@ implicit none
  50   if (cnorm < v(radius)) go to 70
 !
 !  the cauchy step lies outside the trust region --
-!  step = scaled cauchy step 
+!  step = scaled cauchy step
 !
      t = -v(radius) / gnorm
      v(grdfac) = t
@@ -703,8 +703,8 @@ implicit none
      enddo
      return
 !
-!      compute dogleg step between cauchy and relaxed newton 
-!      femur = relaxed newton step minus cauchy step 
+!      compute dogleg step between cauchy and relaxed newton
+!      femur = relaxed newton step minus cauchy step
 !
  70   ctrnwt = cfact * relax * ghinvg / gnorm
 !
@@ -740,7 +740,7 @@ implicit none
     step(i) = t1*dig(i) + t2*nwtstp(i)
   end do
 
- 
+
 end subroutine dbdog
 !-------------------------------------------------------
 
@@ -837,7 +837,7 @@ implicit none
 
  40   iv(1) = 67
 
- 
+
 end subroutine deflt
 !*************************************************8
 
@@ -845,7 +845,7 @@ real(kind=double) function dotprd(p, x, y)
 !
 !*******************************************************************************
 !
-!! DOTPRD returns the inner product of the p-vectors x and y. 
+!! DOTPRD returns the inner product of the p-vectors x and y.
 !
 implicit none
   integer p
@@ -873,7 +873,7 @@ subroutine dupdu(d, hdiag, iv, liv, lv, n, v)
 !
 !*******************************************************************************
 !
-!! DUPDU: update scale vector d for humsl 
+!! DUPDU: update scale vector d for humsl
 !
 !
 implicit none
@@ -898,7 +898,7 @@ implicit none
   do i = 1, n
      t = max (sqrt(abs(hdiag(i))), vdfac*d(i))
      if (t < v(dtoli)) t = max (v(dtoli), v(d0i))
-     d(i) = t 
+     d(i) = t
      dtoli = dtoli + 1
      d0i = d0i + 1
   end do
@@ -912,9 +912,9 @@ subroutine gqtst(d, dig, dihdi, ka, l, p, step, v, w)
 !*******************************************************************************
 !
 !! GQTST: compute goldfeld-quandt-trotter step by more-hebden technique
-!   (nl2sol version 2.2), modified a la more and sorensen 
+!   (nl2sol version 2.2), modified a la more and sorensen
 !
-!   purpose 
+!   purpose
 !
 !        given the (compactly stored) lower triangle of a scaled
 !     hessian (approximation) and a nonzero scaled gradient vector,
@@ -927,7 +927,7 @@ subroutine gqtst(d, dig, dihdi, ka, l, p, step, v, w)
 !     scale matrix whose diagonal is stored in the parameter d.
 !     (gqtst assumes  dig = d**-1 * g  and  dihdi = d**-1 * h * d**-1.)
 !
-!   parameter description 
+!   parameter description
 !
 !     d (in)  = the scale vector, i.e. the diagonal of the scale
 !              matrix  d  mentioned above under purpose.
@@ -947,7 +947,7 @@ subroutine gqtst(d, dig, dihdi, ka, l, p, step, v, w)
 !     v (i/o) contains various constants and variables described below.
 !     w (i/o) = workspace of length 4*p + 6.
 !
-!   entries in v 
+!   entries in v
 !
 ! v(dgnorm) (i/o) = 2-norm of (d**-1)*g.
 ! v(dstnrm) (output) = 2-norm of d*step.
@@ -972,7 +972,7 @@ subroutine gqtst(d, dig, dihdi, ka, l, p, step, v, w)
 !             (see algorithm notes) is (nearly) singular, however,
 !             then v(stppar) = -alpha.
 !
-!   usage notes 
+!   usage notes
 !
 !     if it is desired to recompute step using a different value of
 !     v(radius), then this routine may be restarted by calling it
@@ -982,7 +982,7 @@ subroutine gqtst(d, dig, dihdi, ka, l, p, step, v, w)
 !     nents v(epslon), v(stppar), v(phmnfc), v(phmxfc), v(radius), and
 !     v(rad0) of v must be initialized.
 !
-!   algorithm notes 
+!   algorithm notes
 !
 !        the desired g-q-t step (ref. 2, 3, 4, 6) satisfies
 !     (h + alpha*d**2)*step = -g  for some nonnegative alpha such that
@@ -1004,7 +1004,7 @@ subroutine gqtst(d, dig, dihdi, ka, l, p, step, v, w)
 !
 !    J E Dennis, David Gay, and R E Welsch,
 !    An Adaptive Nonlinear Least-squares Algorithm,
-!    ACM Transactions on Mathematical Software, 
+!    ACM Transactions on Mathematical Software,
 !    Volume 7, Number 3, 1981.
 !
 !    David Gay,
@@ -1013,7 +1013,7 @@ subroutine gqtst(d, dig, dihdi, ka, l, p, step, v, w)
 !    Volume 2, pages 186-197, 1981.
 !
 !    S M Goldfeld, R E Quandt, H F Trotter,
-!    Maximization by Quadratic Hill-climbing, 
+!    Maximization by Quadratic Hill-climbing,
 !    Econometrica,
 !    Volume 34, pages 541-551, 1966.
 !
@@ -1023,18 +1023,18 @@ subroutine gqtst(d, dig, dihdi, ka, l, p, step, v, w)
 !    AERE Harwell, Oxon., England, 1973.
 !
 !    J J More,
-!    The Levenberg-Marquardt Algorithm, Implementation and Theory, 
+!    The Levenberg-Marquardt Algorithm, Implementation and Theory,
 !    Springer Lecture Notes in Mathematics Number 630, pages 105-116,
-!    edited by G A Watson, 
+!    edited by G A Watson,
 !    Springer-Verlag, Berlin and New York, 1978.
 !
 !    J J More and D C Sorensen,
-!    Computing a Trust Region Step, 
-!    Technical Report ANL-81-83, 
+!    Computing a Trust Region Step,
+!    Technical Report ANL-81-83,
 !    Argonne National Lab, 1981.
 !
 !    Richard Varga,
-!    Minimal Gerschgorin Sets, 
+!    Minimal Gerschgorin Sets,
 !    Pacific Journal of Mathematics,
 !    Volume 15, pages 719-729, 1965.
 !
@@ -1079,7 +1079,7 @@ implicit none
 !
   emax = dggdmx + 1
   emin = emax + 1
-  
+
 !
 !  For use in recomputing step, the final values of lk, uk, dst,
 !  and the inverse derivative of more*s phi at 0 (for pos. def.
@@ -1090,7 +1090,7 @@ implicit none
   phipin = lk0 + 1
   uk0 = phipin + 1
   dstsav = uk0 + 1
-  
+
 !
 !  Store diag of (d**-1)*h*(d**-1) in w(diag),...,w(diag0+p).
 !
@@ -1103,12 +1103,12 @@ implicit none
   q = q0 + 1
 
 !
-!  Allocate storage for scratch vector x 
+!  Allocate storage for scratch vector x
 !
   x = q + p
   rad = v(radius)
   radsq = rad**2
-  
+
 !
 !  phitol = max. error allowed in dst = v(dstnrm) = 2-norm of d*step.
 !
@@ -1117,7 +1117,7 @@ implicit none
   psifac = two * v(epslon) / (three * (four * (v(phmnfc) + 1.0_double ) * &
                     (kappa + 1.0_double )  +  kappa  +  two) * rad**2)
 
-  
+
 !
 !  OLDPHI is used to detect limits of numerical accuracy.  if
 !  we recompute step and it does not change, then we accept it.
@@ -1129,11 +1129,11 @@ implicit none
   kalim = ka + 50
 
 !
-!  Start or restart, depending on ka 
+!  Start or restart, depending on ka
 !
   if (ka >= 0) go to 290
 !
-!   fresh start 
+!   fresh start
 !
   k = 0
   uk = negone
@@ -1148,7 +1148,7 @@ implicit none
 
   if (v(dgnorm) .speq. 0.0_double ) kamin = 0
 !
-!   store diag(dihdi) in w(diag0+1),...,w(diag0+p) 
+!   store diag(dihdi) in w(diag0+1),...,w(diag0+p)
 !
   j = 0
   do i = 1, p
@@ -1157,7 +1157,7 @@ implicit none
     w(k1) = dihdi(j)
   end do
 !
-!  determine w(dggdmx), the largest element of dihdi 
+!  determine w(dggdmx), the largest element of dihdi
 !
   t1 = 0.0_double
   j = p * (p + 1) / 2
@@ -1167,7 +1167,7 @@ implicit none
   end do
   w(dggdmx) = t1
 !
-!   try alpha = 0 
+!   try alpha = 0
 !
  30   call lsqrt(1, p, l, dihdi, irc)
   if (irc == 0) go to 50
@@ -1189,7 +1189,7 @@ implicit none
      if (restrt) go to 210
      go to 70
 !
-!      positive definite h -- compute unmodified newton step. 
+!      positive definite h -- compute unmodified newton step.
 !
  50   lk = 0.0_double
   t = lsvmin(p, l, w(q), w(q))
@@ -1207,7 +1207,7 @@ implicit none
   if (restrt) go to 210
 !
 !  Prepare to compute gerschgorin estimates of largest (and
-!  smallest) eigenvalues. 
+!  smallest) eigenvalues.
 !
  70   k = 0
   do i = 1, p
@@ -1223,7 +1223,7 @@ implicit none
      k = k + 1
   end do
 !
-!   (under-)estimate smallest eigenvalue of (d**-1)*h*(d**-1) 
+!   (under-)estimate smallest eigenvalue of (d**-1)*h*(d**-1)
 !
   k = 1
   t1 = w(diag) - w(1)
@@ -1260,12 +1260,12 @@ implicit none
   if (v(dgnorm) .speq. 0.0_double ) uk = uk + p001 + p001*uk
   if (uk <= 0.0_double) uk = p001
 !
-!   compute gerschgorin (over-)estimate of largest eigenvalue 
+!   compute gerschgorin (over-)estimate of largest eigenvalue
 !
   k = 1
   t1 = w(diag) + w(1)
-  
-  
+
+
   if (p > 1) then
       do i = 2, p
           j = diag0 + i
@@ -1274,8 +1274,8 @@ implicit none
           t1 = t
           k = i
        enddo
-  endif  
-  
+  endif
+
   sk = w(k)
   j = diag0 + k
   akk = w(j)
@@ -1296,7 +1296,7 @@ implicit none
       endif
       k1 = k1 + inc
   enddo
-  
+
   w(emax) = akk + t
   lk = max (lk, v(dgnorm)/rad - w(emax))
 
@@ -1307,14 +1307,14 @@ implicit none
   alphak = abs(v(stppar)) * v(rad0)/rad
   if (irc /= 0) go to 210
 !
-!   compute l0 for positive definite h 
+!   compute l0 for positive definite h
 !
   call livmul(p, w, l, w(q))
   t = v2norm(p, w)
   w(phipin) = dst / t / t
   lk = max (lk, phi*w(phipin))
 !
-!   safeguard alphak and add alphak*i to (d**-1)*h*(d**-1) 
+!   safeguard alphak and add alphak*i to (d**-1)*h*(d**-1)
 !
  210  ka = ka + 1
   if (-v(dst0) >= alphak .or. alphak < lk .or. alphak >= uk) then
@@ -1329,13 +1329,13 @@ implicit none
      dihdi(k) = w(j) + alphak
   enddo
 !
-!   try computing cholesky decomposition 
+!   try computing cholesky decomposition
 !
   call lsqrt(1, p, l, dihdi, irc)
   if (irc == 0) go to 240
 !
 !   (d**-1)*h*(d**-1) + alphak*i  is indefinite -- overestimate
-!   smallest eigenvalue for use in updating lk 
+!   smallest eigenvalue for use in updating lk
 !
   j = (irc*(irc+1))/2
   t = l(j)
@@ -1351,7 +1351,7 @@ implicit none
   go to 210
 !
 !   alphak makes (d**-1)*h*(d**-1) positive definite.
-!   compute q = -d*step, check for convergence. 
+!   compute q = -d*step, check for convergence.
 !
   240  call livmul(p, w(q), l, dig)
   gtsta = dotprd(p, w(q), w(q))
@@ -1363,15 +1363,15 @@ implicit none
   oldphi = phi
   if (phi < 0.0_double) go to 330
 !
-!   unacceptable alphak -- update lk, uk, alphak 
+!   unacceptable alphak -- update lk, uk, alphak
 !
  250  if (ka >= kalim) go to 270
 !
-!      the following dmin1 is necessary because of restarts 
+!      the following dmin1 is necessary because of restarts
 !
   if (phi < 0.0_double) uk = min (uk, alphak)
 !
-!     kamin = 0 only iff the gradient vanishes 
+!     kamin = 0 only iff the gradient vanishes
 !
   if (kamin == 0) go to 210
   call livmul(p, w, l, w(q))
@@ -1380,26 +1380,26 @@ implicit none
   lk = max (lk, alphak)
   go to 210
 !
-!   acceptable step on first try 
+!   acceptable step on first try
 !
  260  alphak = 0.0_double
 !
-!   successful step in general.  compute step = -(d**-1)*q 
+!   successful step in general.  compute step = -(d**-1)*q
 !
  270  do i = 1, p
         j = q0 + i
         step(i) = -w(j)/d(i)
  enddo
-  
+
   v(gtstep) = -gtsta
   v(preduc) = half * (abs(alphak)*dst*dst + gtsta)
   go to 410
 !
-!   restart with new radius 
+!   restart with new radius
 !
  290  if (v(dst0) <= 0.0_double .or. v(dst0) - rad > phimax) go to 310
 !
-!      prepare to return newton step 
+!      prepare to return newton step
 !
      restrt = .true.
      ka = ka + 1
@@ -1425,7 +1425,7 @@ implicit none
   if (uk <= 0.0_double) uk = p001
   if (rad > v(rad0)) go to 320
 !
-!         smaller radius 
+!         smaller radius
 !
      lk = 0.0_double
      if (alphak > 0.0_double) lk = w(lk0)
@@ -1524,10 +1524,10 @@ implicit none
       w(j) = t1*w(i) - w(j)
       step(i) = w(j) / d(i)
    enddo
-     
+
   v(gtstep) = dotprd(p, dig, w(q))
 !
-!   save values for use in a possible restart 
+!   save values for use in a possible restart
 !
  410  v(dstnrm) = dst
   v(stppar) = alphak
@@ -1536,7 +1536,7 @@ implicit none
   v(rad0) = rad
   w(dstsav) = dst
 !
-!  Restore diagonal of dihdi 
+!  Restore diagonal of dihdi
 !
   j = 0
   do i = 1, p
@@ -1556,7 +1556,7 @@ subroutine humit(d, fx, g, h, iv, lh, liv, lv, n, v, x)
 !! HUMIT carries out humsl (unconstrained minimization) iterations, using
 !   hessian matrix provided by the caller.
 !
-!  parameter usage  
+!  parameter usage
 !
 ! d.... scale vector.
 ! fx... function value.
@@ -1570,7 +1570,7 @@ subroutine humit(d, fx, g, h, iv, lh, liv, lv, n, v, x)
 ! v.... floating-point value array.
 ! x.... parameter vector.
 !
-!   discussion 
+!   discussion
 !
 !        parameters iv, n, v, and x are the same as the corresponding
 !     ones to humsl (which see), except that v can be shorter (since
@@ -1615,7 +1615,7 @@ implicit none
   integer temp1, w1, x01
   real(kind=double) t
   real(kind=double) one, onep2
-  
+
   integer cnvcod, dg, dgnorm, dinit, dstnrm, dtinit, dtol
   integer dtype, d0init, f, f0, fdif, gtstep, incfac, irc, kagqt
   integer lmat, lmax0, lmaxs, mode, model, mxfcal, mxiter, nextv
@@ -1640,7 +1640,7 @@ implicit none
   if (i == 1) go to 30
   if (i == 2) go to 40
 !
-!   check validity of iv and v input values 
+!   check validity of iv and v input values
 !
   if (iv(1) == 0) call deflt(2, iv, liv, lv, v)
   if (iv(1) == 12 .or. iv(1) == 13) then
@@ -1652,7 +1652,7 @@ implicit none
     return
   end if
   nn1o2 = n * (n + 1) / 2
-    
+
  if (lh >= nn1o2) then
       select case (i)
       case(1:6)
@@ -1669,11 +1669,11 @@ implicit none
 endif
 
 
-     
+
 iv(1) = 66
 go to 350
 !
-!   storage allocation 
+!   storage allocation
 !
  10   iv(dtol) = iv(lmat) + nn1o2
   iv(x0) = iv(dtol) + 2*n
@@ -1686,7 +1686,7 @@ go to 350
      iv(1) = 14
      return
 !
-!   initialization 
+!   initialization
 !
  20   iv(niter) = 0
   iv(nfcall) = 1
@@ -1717,13 +1717,13 @@ go to 350
      iv(1) = 63
      go to 350
 !
-!   make sure gradient could be computed 
+!   make sure gradient could be computed
 !
  40   if (iv(nfgcal) /= 0) go to 50
      iv(1) = 65
      go to 350
 !
-!   update the scale vector d 
+!   update the scale vector d
 !
  50   dg1 = iv(dg)
   if (iv(dtype) <= 0) go to 70
@@ -1736,7 +1736,7 @@ go to 350
   enddo
   call dupdu(d, v(dg1), iv, liv, lv, n, v)
 !
-!   compute scaled gradient and its norm 
+!   compute scaled gradient and its norm
 !
  70   dg1 = iv(dg)
   k = dg1
@@ -1746,7 +1746,7 @@ go to 350
   enddo
   v(dgnorm) = v2norm(n, v(dg1))
 !
-!   compute scaled hessian 
+!   compute scaled hessian
 !
   k = 1
   do  i = 1, n
@@ -1756,20 +1756,20 @@ go to 350
           k = k + 1
      enddo
   enddo
-  
+
  !
   if (iv(cnvcod) /= 0) go to 340
   if (iv(mode) == 0) go to 300
 !
-!   allow first step to have scaled 2-norm at most v(lmax0) 
+!   allow first step to have scaled 2-norm at most v(lmax0)
 !
   v(radius) = v(lmax0)
 
   iv(mode) = 0
 !
-!  main loop  
+!  main loop
 !
-!   print iteration summary, check iteration limit 
+!   print iteration summary, check iteration limit
 !
  110 call itsum(d, g, iv, liv, lv, n, v, x)
  120  k = iv(niter)
@@ -1779,7 +1779,7 @@ go to 350
 
  130  iv(niter) = k + 1
 !
-!   initialize for start of next iteration 
+!   initialize for start of next iteration
 !
   dg1 = iv(dg)
   x01 = iv(x0)
@@ -1788,11 +1788,11 @@ go to 350
   iv(kagqt) = -1
 
 !
-!      copy x to x0 
+!      copy x to x0
 !
   call vcopy(n, v(x01), x)
 !
-!   update radius 
+!   update radius
 !
   if (k == 0) go to 150
   step1 = iv(step)
@@ -1801,10 +1801,10 @@ go to 350
        v(k) = d(i) * v(k)
        k = k + 1
   enddo
-  
+
   v(radius) = v(radfac) * v2norm(n, v(step1))
 !
-!   check stopx and function evaluation limit 
+!   check stopx and function evaluation limit
 !
  150  if (.not. stopx(dummy)) go to 170
      iv(1) = 11
@@ -1828,7 +1828,7 @@ go to 350
           iv(cnvcod) = iv(1)
           go to 290
 !
-!  Compute candidate step  
+!  Compute candidate step
 !
  190  step1 = iv(step)
   dg1 = iv(dg)
@@ -1837,14 +1837,14 @@ go to 350
   call gqtst(d, v(dg1), h, iv(kagqt), v(l), n, v(step1), v, v(w1))
   if (iv(irc) == 6) go to 210
 !
-!   check whether evaluating f(x0 + step) looks worthwhile 
+!   check whether evaluating f(x0 + step) looks worthwhile
 !
   if (v(dstnrm) <= 0.0_double) go to 210
   if (iv(irc) /= 5) go to 200
   if (v(radfac) <= one) go to 200
   if (v(preduc) <= onep2 * v(fdif)) go to 210
 !
-!   compute f(x0 + step) 
+!   compute f(x0 + step)
 !
  200  x01 = iv(x0)
   step1 = iv(step)
@@ -1873,7 +1873,7 @@ select case(k) ! LP August 2005
 case(1,5)
     goto 230
 case(2:4)
-    goto 260 
+    goto 260
 case(6)
     goto 240
 case(7:12)
@@ -1884,7 +1884,7 @@ case(14)
     goto 300
 end select
 
-!      recompute step with new radius 
+!      recompute step with new radius
 !
  230     v(radius) = v(radfac) * v(dstnrm)
      go to 150
@@ -1894,7 +1894,7 @@ end select
  240  v(radius) = v(lmaxs)
   go to 190
 !
-!  Convergence or false convergence 
+!  Convergence or false convergence
 !
  250  iv(cnvcod) = k - 4
   if (v(f) >= v(f0)) go to 340
@@ -1906,7 +1906,7 @@ end select
  260  if (iv(irc) /= 3) go to 290
      temp1 = lstgst
 !
-!      prepare for gradient tests 
+!      prepare for gradient tests
 !      set  temp1 = hessian * step + g(x0)
 !                 = diag(d) * (h * step + g(x0))
 !
@@ -1924,7 +1924,7 @@ end select
           temp1 = temp1 + 1
      enddo
 !
-!   compute gradient and hessian 
+!   compute gradient and hessian
 !
  290  iv(ngcall) = iv(ngcall) + 1
   iv(1) = 2
@@ -1933,12 +1933,12 @@ end select
  300  iv(1) = 2
   if (iv(irc) /= 3) go to 110
 !
-!   set v(radfac) by gradient tests 
+!   set v(radfac) by gradient tests
 !
   temp1 = iv(stlstg)
   step1 = iv(step)
 !
-!      set  temp1 = diag(d)**-1 * (hessian*step + (g(x0)-g(x))) 
+!      set  temp1 = diag(d)**-1 * (hessian*step + (g(x0)-g(x)))
 !
   k = temp1
   do i = 1, n
@@ -1946,21 +1946,21 @@ end select
      k = k + 1
   enddo
 !
-!  Do gradient tests 
+!  Do gradient tests
 !
   if (v2norm(n, v(temp1)) <= v(dgnorm) * v(tuner4)) go to 320
        if (dotprd(n, g, v(step1)) >= v(gtstep) * v(tuner5))  go to 110
  320            v(radfac) = v(incfac)
             go to 110
 !
-!   misc. details   
+!   misc. details
 !
-!   bad parameters to assess 
+!   bad parameters to assess
 !
  330  iv(1) = 64
   go to 350
 !
-!   print summary of final iteration and other requested items 
+!   print summary of final iteration and other requested items
 !
  340  iv(1) = iv(cnvcod)
   iv(cnvcod) = 0
@@ -1974,10 +1974,10 @@ subroutine humsl(n, d, x, calcf, calcgh, iv, liv, lv, v, uiparm, urparm, ufparm)
 !
 !*******************************************************************************
 !
-!! HUMSL minimizes a general unconstrained objective function using  
-!   (analytic) gradient and hessian provided by the caller.  
+!! HUMSL minimizes a general unconstrained objective function using
+!   (analytic) gradient and hessian provided by the caller.
 !
-!  discussion  
+!  discussion
 !
 !        this routine is like sumsl, except that the subroutine para-
 !     meter calcg of sumsl (which computes the gradient of the objec-
@@ -2066,7 +2066,7 @@ implicit none
 
  10   g1 = iv(g)
   h1 = iv(h)
- 
+
  20 continue
   call humit(d, f, v(g1), v(h1), iv, lh, liv, lv, n, v, x)
   if ( iv(1)  < 2 ) then
@@ -2148,7 +2148,7 @@ implicit none
      preldf = v(preduc) / oldf
  20   if (ol > 0) go to 60
 !
-!         print short summary line 
+!         print short summary line
 !
      if (iv(needhd) == 1 .and. alg == 1) write(pu,30)
  30   format(/"   it   nf",6x,"f",7x,"reldf",3x,"preldf",3x,"reldx",2x,"model  stppar")
@@ -2164,7 +2164,7 @@ implicit none
  50  write(pu,110) iv(niter), nf, v(f), reldf, preldf, v(reldx), v(stppar)
      go to 120
 !
-!      print long summary line 
+!      print long summary line
 !
  60   if (iv(needhd) == 1 .and. alg == 1) write(pu,70)
  70   format(/"    it   nf",6x,"f",7x,"reldf",3x,"preldf",3x,"reldx", &
@@ -2217,7 +2217,7 @@ implicit none
   case(15)
        goto 520
   end select
-           
+
  130  write(pu,140)
  140  format(/' x-convergence')
   go to 430
@@ -2271,7 +2271,7 @@ implicit none
  380  format(/'iv(1) =',i5)
   go to 999
 !
-!   initial call on itsum 
+!   initial call on itsum
 !
  390  if (iv(x0prt) /= 0) write(pu,400) (i, x(i), d(i), i = 1, p)
  400  format(/"     i     initial x(i)",8x,"d(i)"//(1x,i5,d17.6,d14.3))
@@ -2298,7 +2298,7 @@ implicit none
  420  format(/"     0    1",d11.3)
   go to 999
 !
-!   print various information requested on solution 
+!   print various information requested on solution
 !
  430  iv(needhd) = 1
   if (iv(statpr) == 0) go to 480
@@ -2343,7 +2343,7 @@ subroutine litvmu(n, x, l, y)
 !
 !! LITVMU solves  (l**t)*x = y,  where  l  is an  n x n  lower triangular
 !   matrix stored compactly by rows.  x and y may occupy the same
-!   storage. 
+!   storage.
 !
 implicit none
   integer n
@@ -2380,12 +2380,12 @@ subroutine livmul(n, x, l, y)
 !
 !! LIVMUL solves l*x = y, where  l  is an  n x n  lower triangular
 !   matrix stored compactly by rows.  x and y may occupy the same
-!   storage. 
+!   storage.
 !
 implicit none
   integer n
   real(kind=double) x(n), l(n*(n+1)/2), y(n)
-  
+
   integer i, j, k
   real(kind=double) t
 !
@@ -2422,7 +2422,7 @@ subroutine lsqrt(n1, n, l, a, irc)
 !   principal  j x j  submatrix of  a  is not positive definite --
 !   and  l(j*(j+1)/2)  contains the (nonpos.) reduced j-th diagonal.
 !
-!   parameters 
+!   parameters
 !
 implicit none
   integer n1, n, irc, im1
@@ -2471,14 +2471,14 @@ real (kind=double) function lsvmin(p, l, x, y)
 !
 !! LSVMIN estimates smallest sing. value of packed lower triang. matrix l
 !
-!   parameter declarations 
+!   parameter declarations
 !
-!   purpose 
+!   purpose
 !
 !     this function returns a good over-estimate of the smallest
 !     singular value of the packed lower triangular matrix l.
 !
-!   parameter description 
+!   parameter description
 !
 !  p (in)  = the order of l.  l is a  p x p  lower triangular matrix.
 !  l (in)  = array holding the elements of  l  in row order, i.e.
@@ -2496,7 +2496,7 @@ real (kind=double) function lsvmin(p, l, x, y)
 !             and y (nonstandard fortran usage), in which case y over-
 !             writes x (for nonzero lsvmin returns).
 !
-!   algorithm notes 
+!   algorithm notes
 !
 !     the algorithm is based on (1), with the additional provision that
 !     lsvmin = 0 is returned if the smallest diagonal element of l
@@ -2505,12 +2505,12 @@ real (kind=double) function lsvmin(p, l, x, y)
 !     in (4), which passes the spectral test with flying colors -- see
 !     (2) and (3).
 !
-!  Feference: 
+!  Feference:
 !
 !    Alan Cline, Cleve Moler, G Stewart, and J H Wilkinson,
-!    An estimate for the Condition Number of a Matrix, 
+!    An estimate for the Condition Number of a Matrix,
 !    Report TM-310, 1977,
-!    Applied Mathematics Division, 
+!    Applied Mathematics Division,
 !    Argonne National Laboratory.
 !
 !     (2) hoaglin, d.c. (1976), theoretical properties of congruential
@@ -2538,7 +2538,7 @@ implicit none
   ix = 2
   pm1 = p - 1
 !
-!   first check whether to return lsvmin = 0 and initialize x 
+!   first check whether to return lsvmin = 0 and initialize x
 !
   ii = 0
   j0 = p*pm1/2
@@ -2583,18 +2583,18 @@ implicit none
  20           continue
  30      if (sminus > splus) xplus = xminus
      x(j) = xplus
-!        update partial sums 
+!        update partial sums
      if (jm1 > 0) call vaxpy(jm1, x, xplus, l(j0+1), x)
  50      continue
 !
-!   normalize x 
+!   normalize x
 !
  60   t = one/v2norm(p, x)
   do i = 1, p
        x(i) = t*x(i)
   enddo
 !
-!   solve l*y = x and return lsvmin = 1/twonorm(y) 
+!   solve l*y = x and return lsvmin = 1/twonorm(y)
 !
  do j = 1, p
      jm1 = j - 1
@@ -2609,7 +2609,7 @@ implicit none
   return
 
  110  lsvmin = 0.0_double
- 
+
 end function lsvmin
 !*****************************************************
 
@@ -2620,12 +2620,12 @@ subroutine ltvmul(n, x, l, y)
 !
 !! LTVMUL computes  x = (l**t)*y, where  l  is an  n x n  lower
 !   triangular matrix stored compactly by rows.  x and y may
-!   occupy the same storage. 
+!   occupy the same storage.
 !
 implicit none
   integer n
   real(kind=double) x(n), l(n*(n+1)/2), y(n)
- 
+
   integer i, ij, i0, j
   real(kind=double) yi
 !
@@ -2648,10 +2648,10 @@ subroutine lupdat(beta, gamma, l, lambda, lplus, n, w, z)
 !
 !*******************************************************************************
 !
-!! LUPDAT computes lplus = secant update of l 
+!! LUPDAT computes lplus = secant update of l
 !
 !
-!  parameter usage  
+!  parameter usage
 !
 !   beta = scratch vector.
 !  gamma = scratch vector.
@@ -2665,9 +2665,9 @@ subroutine lupdat(beta, gamma, l, lambda, lplus, n, w, z)
 !      z (input, destroyed on output) left singular vector of rank 1
 !             correction to  l.
 !
-!  notes 
+!  notes
 !
-!   application and usage restrictions 
+!   application and usage restrictions
 !
 !        this routine updates the cholesky factor  l  of a symmetric
 !     positive definite matrix to which a secant update is being
@@ -2676,17 +2676,17 @@ subroutine lupdat(beta, gamma, l, lambda, lplus, n, w, z)
 !     and  z  have been chosen so that the updated matrix is strictly
 !     positive definite.
 !
-!   algorithm notes 
+!   algorithm notes
 !
 !        this code uses recurrence 3 of ref. 1 (with d(j) = 1 for all j)
 !     to compute  lplus  of the form  l * (i + z*w**t) * q,  where  q
 !     is an orthogonal matrix that makes the result lower triangular.
 !        lplus may have some negative diagonal elements.
 !
-!  Reference: 
+!  Reference:
 !
-!    D Goldfarb, 
-!    Factorized Variable Metric Methods for Unconstrained Optimization, 
+!    D Goldfarb,
+!    Factorized Variable Metric Methods for Unconstrained Optimization,
 !    Mathematics of Computation,
 !    Volume 30, pages 796-811, 1976.
 !
@@ -2769,15 +2769,15 @@ subroutine lvmul(n, x, l, y)
 !
 !! LVMUL computes x = l*y, where  l  is an  n x n  lower triangular
 !   matrix stored compactly by rows.  x and y may occupy the same
-!   storage. 
+!   storage.
 !
 implicit none
   integer n
   real(kind=double) x(n), l(n*(n+1)/2), y(n)
-  
+
   integer i, ii, ij, i0, j, np1
   real(kind=double) t
-  
+
   np1 = n + 1
   i0 = n*(n+1)/2
   do 20 ii = 1, n
@@ -3073,15 +3073,15 @@ real(kind=double) function reldst (p, d, x, x0)
 !
 !*******************************************************************************
 !
-!! RELDST compute and return relative difference between x and x0 
-!   nl2sol version 2.2 
+!! RELDST compute and return relative difference between x and x0
+!   nl2sol version 2.2
 !
 implicit none
   integer p
   real(kind=double) d(p), x(p), x0(p)
   integer i
   real(kind=double) emax, t, xmax
- 
+
   emax = 0.0_double
   xmax = 0.0_double
   do i = 1, p
@@ -3100,13 +3100,13 @@ real(kind=double) function rmdcon(k)
 !
 !*******************************************************************************
 !
-!! RMDCON return machine dependent constants used by nl2sol 
+!! RMDCON return machine dependent constants used by nl2sol
 !
-! comments below contain data statements for various machines. 
-! to convert to another machine, place a c in column 1 of the  
+! comments below contain data statements for various machines.
+! to convert to another machine, place a c in column 1 of the
 ! data statement line(s) that correspond to the current machine
-! and remove the c from column 1 of the data statement line(s) 
-! that correspond to the new machine.                          
+! and remove the c from column 1 of the data statement line(s)
+! that correspond to the new machine.
 !
 !   the constant returned depends on k...
 !
@@ -3144,7 +3144,7 @@ select case (k)
  case(6:)
      rmdcon = big
  case default ! I doubt that this was intentional,but this is the way the old code worked LP 2005
-     rmdcon = eta 
+     rmdcon = eta
  end select
 
 
@@ -3155,19 +3155,19 @@ subroutine sgrad2 (alpha, d, eta0, fx, g, irc, n, w, x)
 !
 !*******************************************************************************
 !
-!! SGRAD2 computes finite difference gradient by stewart's scheme 
+!! SGRAD2 computes finite difference gradient by stewart's scheme
 !
-!      parameters 
+!      parameters
 !
 !
-!      purpose 
+!      purpose
 !
 !        this subroutine uses an embellished form of the finite-differ-
 !     ence scheme proposed by stewart (ref. 1) to approximate the
 !     gradient of the function f(x), whose values are supplied by
 !     reverse communication.
 !
-!      parameter description 
+!      parameter description
 !
 !  alpha in  (approximate) diagonal elements of the hessian of f(x).
 !      d in  scale vector such that d(i)*x(i), i = 1,...,n, are in
@@ -3201,22 +3201,22 @@ subroutine sgrad2 (alpha, d, eta0, fx, g, irc, n, w, x)
 !             quantities while the caller is evaluating f(x) at a
 !             perturbed x.
 !
-!      application and usage restrictions 
+!      application and usage restrictions
 !
 !        this routine is intended for use with quasi-newton routines
 !     for unconstrained minimization (in which case  alpha  comes from
 !     the diagonal of the quasi-newton hessian approximation).
 !
-!      algorithm notes 
+!      algorithm notes
 !
 !        this code departs from the scheme proposed by stewart (ref. 1)
 !     in its guarding against overly large or small step sizes and its
 !     handling of special cases (such as zero components of alpha or g).
 !
-!  Reference: 
+!  Reference:
 !
 !    G W Stewart,
-!    A Modification of Davidon's Minimization Method to Accept Difference 
+!    A Modification of Davidon's Minimization Method to Accept Difference
 !    Approximations of Derivatives,
 !    Journal of the Association for Computing Machinery,
 !    Volume 14, pages. 72-83, 1967.
@@ -3224,7 +3224,7 @@ subroutine sgrad2 (alpha, d, eta0, fx, g, irc, n, w, x)
 implicit none
   integer irc, n
   real(kind=double) alpha(n), d(n), eta0, fx, g(n), w(6), x(n)
- 
+
   integer fh, fx0, hsave, i, xisave
   real(kind=double) aai, afx, afxeta, agi, alphai, axi, axibar
   real(kind=double) discon, eta, gi, h, hmin
@@ -3244,9 +3244,9 @@ implicit none
  else
        goto 210
  endif
- 
+
 !
-!      fresh start -- get machine-dependent constants 
+!      fresh start -- get machine-dependent constants
 !
 !     store machep in w(1) and h0 in w(2), where machep is the unit
 !     roundoff (the smallest positive number such that
@@ -3258,7 +3258,7 @@ implicit none
 !
   w(fx0) = fx
 !
-!      increment  i  and start computing  g(i) 
+!      increment  i  and start computing  g(i)
 !
  110  i = iabs(irc) + 1
   if (i > n) go to 300
@@ -3289,7 +3289,7 @@ implicit none
  120     h = two*(afxeta*agi/(aai**2))**(one/three)
      h = h*(one - two*agi/(three*aai*h + four*agi))
 !
-!         ensure that  h  is not insignificantly small 
+!         ensure that  h  is not insignificantly small
 !
  130     h = max (h, hmin*axibar)
 !
@@ -3303,12 +3303,12 @@ implicit none
      discon = c2000*afxeta
      h = discon/(agi + sqrt(gi**2 + aai*discon))
 !
-!         ensure that  h  is neither too small nor too big 
+!         ensure that  h  is neither too small nor too big
 !
      h = max (h, hmin*axibar)
      if (h >= hmax0*axibar) h = axibar * h0**(two/three)
 !
-!  compute central difference 
+!  compute central difference
 !
      irc = -i
      go to 200
@@ -3323,7 +3323,7 @@ implicit none
      x(i) = w(xisave)
      go to 110
 !
-!  Compute forward differences in various cases 
+!  Compute forward differences in various cases
 !
  160     if (h >= hmax0*axibar) h = h0 * axibar
      if (alphai*gi < 0.0_double) h = -h
@@ -3336,13 +3336,13 @@ implicit none
      w(hsave) = h
      return
 !
-!      compute actual forward difference 
+!      compute actual forward difference
 !
  210     g(irc) = (fx - w(fx0)) / w(hsave)
      x(irc) = w(xisave)
      go to 110
 !
-!  Restore fx and indicate that g has been computed 
+!  Restore fx and indicate that g has been computed
 !
  300  fx = w(fx0)
   irc = 0
@@ -3354,8 +3354,8 @@ subroutine slvmul(p, y, s, x)
 !
 !*******************************************************************************
 !
-!! SLVMUL sets y = s * x,  s = p x p symmetric matrix. 
-!   lower triangle of  s  stored rowwise.        
+!! SLVMUL sets y = s * x,  s = p x p symmetric matrix.
+!   lower triangle of  s  stored rowwise.
 !
 implicit none
   integer p
@@ -3394,7 +3394,7 @@ subroutine smsno ( n, d, x, calcf, iv, liv, lv, v, uiparm, urparm, ufparm )
 !   finite-difference gradients and secant hessian approximations.
 !
 !
-!   purpose 
+!   purpose
 !
 !        this routine interacts with SNOIT in an attempt
 !     to find an n-vector  x*  that minimizes the (unconstrained)
@@ -3428,10 +3428,10 @@ subroutine smsno ( n, d, x, calcf, iv, liv, lv, v, uiparm, urparm, ufparm )
 !             for computing gradients.  the total number of function
 !             evaluations is thus  iv(nfcall) + iv(ngcall).
 !
-!  Reference: 
+!  Reference:
 !
 !    G W Stewart,
-!    A Modification of Davidon's Minimization Method to Accept Difference 
+!    A Modification of Davidon's Minimization Method to Accept Difference
 !    Approximations of Derivatives,
 !    Journal of the Association for Computing Machinery,
 !    Volume 14, pages. 72-83, 1967.
@@ -3476,14 +3476,14 @@ subroutine snoit ( d, fx, iv, liv, lv, n, v, x )
 !   minimize general unconstrained objective function using
 !   finite-difference gradients and secant hessian approximations.
 !
-!   purpose 
+!   purpose
 !
 !        this routine interacts with subroutine  sumit  in an attempt
 !     to find an n-vector  x*  that minimizes the (unconstrained)
 !     objective function  fx = f(x)  computed by the caller.  (often
 !     the  x*  found is a local minimizer rather than a global one.)
 !
-!   parameters 
+!   parameters
 !
 !        the parameters for snoit are the same as those for sumsl
 !     (which see), except that calcf, calcg, uiparm, urparm, and ufparm
@@ -3512,10 +3512,10 @@ subroutine snoit ( d, fx, iv, liv, lv, n, v, x )
 !             for computing gradients.  the total number of function
 !             evaluations is thus  iv(nfcall) + iv(ngcall).
 !
-!  Reference: 
+!  Reference:
 !
 !    G W Stewart,
-!    A Modification of Davidon's Minimization Method to Accept Difference 
+!    A Modification of Davidon's Minimization Method to Accept Difference
 !    Approximations of Derivatives,
 !    Journal of the Association for Computing Machinery,
 !    Volume 14, pages. 72-83, 1967.
@@ -3526,7 +3526,7 @@ implicit none
   real(kind=double) d(n), fx, x(n), v(lv)
 !     dimension v(77 + n*(n+17)/2)
 !
- 
+
   integer alpha, g1, i, iv1, j, k, w
   real(kind=double)  zero
 
@@ -3557,13 +3557,13 @@ implicit none
   ! Note that this function should be rewritten without gotos - LP august 2005
   if (iv(1) == 2) then
     goto 30
-  elseif(iv(1) < 2) then 
+  elseif(iv(1) < 2) then
     goto 999
   else
     goto 70
   endif
 !
-!   compute gradient 
+!   compute gradient
 !
  30   if (iv(niter) == 0) call vscopy(n, v(g1), zero)
   j = iv(lmat)
@@ -3574,11 +3574,11 @@ implicit none
      j = j + i
   end do
 !
-!      undo increment of iv(ngcall) done by sumit 
+!      undo increment of iv(ngcall) done by sumit
 !
   iv(ngcall) = iv(ngcall) - 1
 !
-!      store return code from sgrad2 in iv(sgirc) 
+!      store return code from sgrad2 in iv(sgirc)
 !
   iv(sgirc) = 0
 !
@@ -3587,7 +3587,7 @@ implicit none
   fx = v(f)
   go to 60
 !
-!      gradient loop 
+!      gradient loop
 !
  50   if (iv(toobig) == 0) go to 60
   iv(nfgcal) = 0
@@ -3605,7 +3605,7 @@ implicit none
         return
       end if
 !
-!   storage allocation 
+!   storage allocation
 !
   iv(g) = iv(nextv) + n + 6
   iv(nextv) = iv(g) + n
@@ -3652,7 +3652,7 @@ subroutine sumit(d, fx, g, iv, liv, lv, n, v, x)
 !! SUMIT carry out  (unconstrained minimization) iterations, using
 !   double-dogleg/bfgs steps.
 !
-!  parameter usage  
+!  parameter usage
 !
 ! d.... scale vector.
 ! fx... function value.
@@ -3664,7 +3664,7 @@ subroutine sumit(d, fx, g, iv, liv, lv, n, v, x)
 ! v.... floating-point value array.
 ! x.... vector of parameters to be optimized.
 !
-!   discussion 
+!   discussion
 !
 !        parameters iv, n, v, and x are the same as the corresponding
 !     ones to sumsl (which see), except that v can be shorter (since
@@ -3703,7 +3703,7 @@ implicit none
   integer        temp1, w, x01, z
   real(kind=double) t
   real(kind=double) half, negone, one, onep2, zero
- 
+
   integer cnvcod, dg, dgnorm, dinit, dstnrm, dst0, f, f0, fdif
   integer gthg, gtstep, g0, incfac, inith, irc, kagqt, lmat, lmax0
   integer lmaxs, mode, model, mxfcal, mxiter, nextv, nfcall, nfgcal
@@ -3729,7 +3729,7 @@ implicit none
   if (i == 1) go to 50
   if (i == 2) go to 60
 !
-!   check validity of iv and v input values 
+!   check validity of iv and v input values
 !
   if (iv(1) == 0) call deflt(2, iv, liv, lv, v)
   if (iv(1) == 12 .or. iv(1) == 13) then
@@ -3737,7 +3737,7 @@ implicit none
   end if
   call parck(2, d, iv, liv, lv, n, v)
   i = iv(1) - 2
-  
+
   select case (i)
   case(1:6)
     goto 180
@@ -3752,8 +3752,8 @@ implicit none
   case default
     return
   end select
-  
-!   storage allocation 
+
+!   storage allocation
 !
 10    l = iv(lmat)
   iv(x0) = l + n*(n+1)/2
@@ -3767,7 +3767,7 @@ implicit none
      iv(1) = 14
      return
 !
-!   initialization 
+!   initialization
 !
  20   iv(niter) = 0
   iv(nfcall) = 1
@@ -3783,7 +3783,7 @@ implicit none
   if (v(dinit) >= 0.0_double) call vscopy(n, d, v(dinit))
   if (iv(inith) /= 1) go to 40
 !
-!      set the initial hessian approximation to diag(d)**-2 
+!      set the initial hessian approximation to diag(d)**-2
 !
      l = iv(lmat)
      call vscopy(n*(n+1)/2, v(l), zero)
@@ -3795,7 +3795,7 @@ implicit none
           v(k) = t
  30           continue
 !
-!   compute initial function value 
+!   compute initial function value
 !
  40   iv(1) = 1
   return
@@ -3809,7 +3809,7 @@ implicit none
      iv(1) = 63
      go to 300
 !
-!   make sure gradient could be computed 
+!   make sure gradient could be computed
 !
  60   if (iv(nfgcal) /= 0) go to 70
      iv(1) = 65
@@ -3822,15 +3822,15 @@ implicit none
   if (iv(cnvcod) /= 0) go to 290
   if (iv(mode) == 0) go to 250
 !
-!   allow first step to have scaled 2-norm at most v(lmax0) 
+!   allow first step to have scaled 2-norm at most v(lmax0)
 !
   v(radius) = v(lmax0)
 
   iv(mode) = 0
 !
-!  main loop  
+!  main loop
 !
-!   print iteration summary, check iteration limit 
+!   print iteration summary, check iteration limit
 !
  80    call itsum(d, g, iv, liv, lv, n, v, x)
  90   k = iv(niter)
@@ -3838,12 +3838,12 @@ implicit none
      iv(1) = 10
      go to 300
 !
-!   update radius 
+!   update radius
 !
  100  iv(niter) = k + 1
   if(k>0)v(radius) = v(radfac) * v(dstnrm)
 !
-!   initialize for start of next iteration 
+!   initialize for start of next iteration
 !
   g01 = iv(g0)
   x01 = iv(x0)
@@ -3851,12 +3851,12 @@ implicit none
   iv(irc) = 4
   iv(kagqt) = -1
 !
-!      copy x to x0, g to g0 
+!      copy x to x0, g to g0
 !
   call vcopy(n, v(x01), x)
   call vcopy(n, v(g01), g)
 !
-!   check stopx and function evaluation limit 
+!   check stopx and function evaluation limit
 !
  110  if (.not. stopx(dummy)) go to 130
      iv(1) = 11
@@ -3879,7 +3879,7 @@ implicit none
           iv(cnvcod) = iv(1)
           go to 240
 !
-!  Compute candidate step  
+!  Compute candidate step
 !
  150  step1 = iv(step)
   dg1 = iv(dg)
@@ -3898,14 +3898,14 @@ implicit none
  160  call dbdog(v(dg1), lv, n, v(nwtst1), v(step1), v)
   if (iv(irc) == 6) go to 180
 !
-!   check whether evaluating f(x0 + step) looks worthwhile 
+!   check whether evaluating f(x0 + step) looks worthwhile
 !
   if (v(dstnrm) <= 0.0_double) go to 180
   if (iv(irc) /= 5) go to 170
   if (v(radfac) <= one) go to 170
   if (v(preduc) <= onep2 * v(fdif)) go to 180
 !
-!  Compute f(x0 + step) 
+!  Compute f(x0 + step)
 !
  170  x01 = iv(x0)
   step1 = iv(step)
@@ -3930,7 +3930,7 @@ implicit none
      v(reldx) = reldst(n, d, x, v(x01))
 
  190  k = iv(irc)
- 
+
   select case (k)
   case(1,5)
      goto 200
@@ -3942,12 +3942,12 @@ implicit none
       goto 220
   case(13)
        goto 280
-  case(14) 
+  case(14)
        goto 250
   end select
-   
-  
-!      recompute step with changed radius 
+
+
+!      recompute step with changed radius
 !
  200     v(radius) = v(radfac) * v(dstnrm)
      go to 110
@@ -3957,7 +3957,7 @@ implicit none
  210  v(radius) = v(lmaxs)
   go to 150
 !
-!   convergence or false convergence 
+!   convergence or false convergence
 !
  220  iv(cnvcod) = k - 4
   if (v(f) >= v(f0)) go to 290
@@ -3970,19 +3970,19 @@ implicit none
      step1 = iv(step)
      temp1 = iv(stlstg)
 !
-!      set  temp1 = hessian * step  for use in gradient tests 
+!      set  temp1 = hessian * step  for use in gradient tests
 !
      l = iv(lmat)
      call ltvmul(n, v(temp1), v(l), v(step1))
      call lvmul(n, v(temp1), v(l), v(temp1))
 !
-!   compute gradient 
+!   compute gradient
 !
  240  iv(ngcall) = iv(ngcall) + 1
   iv(1) = 2
   return
 !
-!   initializations -- g0 = g - g0, etc. 
+!   initializations -- g0 = g - g0, etc.
 !
  250  g01 = iv(g0)
   call vaxpy(n, v(g01), negone, v(g01), g)
@@ -3990,14 +3990,14 @@ implicit none
   temp1 = iv(stlstg)
   if (iv(irc) /= 3) go to 270
 !
-!   set v(radfac) by gradient tests 
+!   set v(radfac) by gradient tests
 !
-!  Set  temp1 = diag(d)**-1 * (hessian*step + (g(x0)-g(x))) 
+!  Set  temp1 = diag(d)**-1 * (hessian*step + (g(x0)-g(x)))
 !
      call vaxpy(n, v(temp1), negone, v(g01), v(temp1))
      call vvmulp(n, v(temp1), v(temp1), d, -1)
 !
-!  Do gradient tests 
+!  Do gradient tests
 !
      if (v2norm(n, v(temp1)) <= v(dgnorm) * v(tuner4)) then
        go to 260
@@ -4009,7 +4009,7 @@ implicit none
 
  260               v(radfac) = v(incfac)
 !
-!   update h, loop 
+!   update h, loop
 !
  270  w = iv(nwtstp)
   z = iv(x0)
@@ -4022,14 +4022,14 @@ implicit none
   iv(1) = 2
   go to 80
 !
-!   misc. details   
+!   misc. details
 !
-!   bad parameters to assess 
+!   bad parameters to assess
 !
  280  iv(1) = 64
   go to 300
 !
-!  Print summary of final iteration and other requested items 
+!  Print summary of final iteration and other requested items
 !
  290  iv(1) = iv(cnvcod)
   iv(cnvcod) = 0
@@ -4042,17 +4042,17 @@ subroutine sumsl(n, d, x, calcf, calcg, iv, liv, lv, v, uiparm, urparm, ufparm)
 !
 !*******************************************************************************
 !
-!! SUMSL minimizes a general unconstrained objective function using  
-!   analytic gradient and hessian approx. from secant update 
+!! SUMSL minimizes a general unconstrained objective function using
+!   analytic gradient and hessian approx. from secant update
 !
-!   purpose 
+!   purpose
 !
 !        this routine interacts with subroutine  sumit  in an attempt
 !     to find an n-vector  x*  that minimizes the (unconstrained)
 !     objective function computed by  calcf.  (often the  x*  found is
 !     a local minimizer rather than a global one.)
 !
-!  parameter usage  
+!  parameter usage
 !
 ! n  (input) the number of variables on which  f  depends, i.e.,
 !                  the number of components in  x.
@@ -4135,7 +4135,7 @@ subroutine sumsl(n, d, x, calcf, calcg, iv, liv, lv, v, uiparm, urparm, ufparm)
 ! ufparm... (input) user external subroutine or function passed without
 !                  change to calcf and calcg.
 !
-!   iv input values (from subroutine deflt) 
+!   iv input values (from subroutine deflt)
 !
 ! iv(1)...  on input, iv(1) should have a value between 0 and 14......
 !             0 and 12 mean this is a fresh start.  0 means that
@@ -4284,7 +4284,7 @@ subroutine sumsl(n, d, x, calcf, calcg, iv, liv, lv, v, uiparm, urparm, ufparm)
 !             calcg).
 ! iv(niter).... iv(31) is the number of iterations performed.
 !
-!   (selected) v input values (from subroutine deflt) 
+!   (selected) v input values (from subroutine deflt)
 !
 ! v(bias)..... v(43) is the bias parameter used in subroutine dbldog --
 !             see that subroutine for details.  default = 0.8.
@@ -4341,7 +4341,7 @@ subroutine sumsl(n, d, x, calcf, calcg, iv, liv, lv, v, uiparm, urparm, ufparm)
 !             i = decfac, incfac, phmnfc, phmxfc, rdfcmn, rdfcmx,
 !             tuner2, tuner3, tuner4, tuner5.
 !
-!   (selected) v output values 
+!   (selected) v output values
 !
 ! v(dgnorm)... v(1) is the 2-norm of (diag(d)**-1)*g, where g is the
 !             most recently computed gradient.
@@ -4369,9 +4369,9 @@ subroutine sumsl(n, d, x, calcf, calcg, iv, liv, lv, v, uiparm, urparm, ufparm)
 !                     max(d(i)*(abs(x(i))+abs(x0(i))), 1 <= i <= p),
 !             where x = x0 + step.
 !
-!  notes 
+!  notes
 !
-!   algorithm notes 
+!   algorithm notes
 !
 !        this routine uses a hessian approximation computed from the
 !     bfgs update (see ref 3).  only a cholesky factor of the hessian
@@ -4379,7 +4379,7 @@ subroutine sumsl(n, d, x, calcf, calcg, iv, liv, lv, v, uiparm, urparm, ufparm)
 !     ref. 4.  steps are computed by the double dogleg scheme described
 !     in ref. 2.  the steps are assessed as in ref. 1.
 !
-!   usage notes 
+!   usage notes
 !
 !        after a return with iv(1) <= 11, it is possible to restart,
 !     i.e., to change some of the iv and v input values described above
@@ -4402,7 +4402,7 @@ subroutine sumsl(n, d, x, calcf, calcg, iv, liv, lv, v, uiparm, urparm, ufparm)
 !     may make v longer than specified above and may allow calcg to use
 !     elements of g beyond the first n as scratch storage.
 !
-!   portability notes 
+!   portability notes
 !
 !        the sumsl distribution tape contains both single- and double-
 !     precision versions of the sumsl source code, so it should be un-
@@ -4431,25 +4431,25 @@ subroutine sumsl(n, d, x, calcf, calcg, iv, liv, lv, v, uiparm, urparm, ufparm)
 !     appear nearly everywhere.)  these changes also add save state-
 !     ments for variables given machine-dependent constants by rmdcon.
 !
-!   references 
+!   references
 !
 !    J E Dennis, David Gay, and R E Welsch,
 !    An Adaptive Nonlinear Least-squares Algorithm,
-!    ACM Transactions on Mathematical Software, 
+!    ACM Transactions on Mathematical Software,
 !    Volume 7, Number 3, 1981.
 !
 !    J E Dennis, H H W Mei,
-!    Two New Unconstrained Optimization Algorithms Which Use 
-!    Function and Gradient Values, 
+!    Two New Unconstrained Optimization Algorithms Which Use
+!    Function and Gradient Values,
 !    Journal of Optimization Theory and Applications,
 !    Volume 28, pages 453-482, 1979.
 !
 !    J E Dennis, J J More,
-!    Quasi-Newton Methods, Motivation and Theory, 
-!    SIAM Review, 
+!    Quasi-Newton Methods, Motivation and Theory,
+!    SIAM Review,
 !    Volume 19, pages 46-89, 1977.
 !
-!    D Goldfarb, 
+!    D Goldfarb,
 !    Factorized Variable Metric Methods for Unconstrained Optimization,
 !    Mathematics of Computation,
 !    Volume 30, pages 796-811, 1976.
@@ -4488,7 +4488,7 @@ implicit none
       goto 30
  else
       goto 50
- endif  
+ endif
 
  30   nf = iv(nfcall)
   call calcf(n, x, nf, f, uiparm, urparm, ufparm)
@@ -4516,8 +4516,8 @@ real(kind=double) function v2norm(p, x)
 !
 !*******************************************************************************
 !
-!! V2NORM returns the 2-norm of the p-vector x, taking 
-!   care to avoid the most likely underflows.   
+!! V2NORM returns the 2-norm of the p-vector x, taking
+!   care to avoid the most likely underflows.
 !
 implicit none
   integer p
@@ -4527,7 +4527,7 @@ implicit none
   real(kind=double)  r, scale
   real(kind=double), save :: sqteta = 0.0_double
   real(kind=double) t, xi
- 
+
 !
   v2norm = 0.0_double
 
@@ -4585,7 +4585,7 @@ subroutine vaxpy(p, w, a, x, y)
 !
 !*******************************************************************************
 !
-!! VAXPY sets w = a*x + y  --  w, x, y = p-vectors, a = scalar 
+!! VAXPY sets w = a*x + y  --  w, x, y = p-vectors, a = scalar
 !
   implicit none
 !
@@ -4604,7 +4604,7 @@ subroutine vcopy(p, y, x)
 !
 !*******************************************************************************
 !
-!! VCOPY sets y = x, where x and y are p-vectors 
+!! VCOPY sets y = x, where x and y are p-vectors
 !
   implicit none
 !
@@ -4699,7 +4699,7 @@ subroutine vscopy(p, y, s)
 !
 !*******************************************************************************
 !
-!! VSCOPY sets p-vector y to scalar s 
+!! VSCOPY sets p-vector y to scalar s
 !
   implicit none
 !
@@ -4716,7 +4716,7 @@ subroutine vvmulp(n, x, y, z, k)
 !
 !*******************************************************************************
 !
-!! VVMULP sets x(i) = y(i) * z(i)**k, 1 <= i <= n (for k = 1 or -1) 
+!! VVMULP sets x(i) = y(i) * z(i)**k, 1 <= i <= n (for k = 1 or -1)
 !
   implicit none
 !
@@ -4744,7 +4744,7 @@ subroutine wzbfgs (l, n, s, w, y, z)
 !! WZBFGS compute  y  and  z  for  lupdat  corresponding to bfgs update.
 !
 !
-!  parameter usage  
+!  parameter usage
 !
 ! l (i/o) cholesky factor of hessian, a lower triang. matrix stored
 !             compactly by rows.
@@ -4754,9 +4754,9 @@ subroutine wzbfgs (l, n, s, w, y, z)
 ! y (input) change in gradients corresponding to s.
 ! z (output) left singular vector of rank 1 correction to l.
 !
-!  notes 
+!  notes
 !
-!   algorithm notes 
+!   algorithm notes
 !
 !        when  s  is computed in certain ways, e.g. by  gqtstp  or
 !     dbldog,  it is possible to save n**2/2 operations since  (l**t)*s
@@ -4772,7 +4772,7 @@ subroutine wzbfgs (l, n, s, w, y, z)
 !
   real(kind=double) l(n*(n+1)/2), s(n), w(n), y(n), z(n)
 !
-  
+
   integer i
   real(kind=double) cs, cy, eps, epsrt, shs, ys, theta
   parameter (eps=0.1_double)

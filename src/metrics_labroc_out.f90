@@ -1,4 +1,4 @@
-! Written by L Pesce - U Chicago, starting fall (autumn) 2009 
+! Written by L Pesce - U Chicago, starting fall (autumn) 2009
 ! Module that returns specific quantities for a proper ROC curve.
 ! This quantities are things like:
 ! 1) Sequence of points on the curve, for plotting purposes
@@ -9,10 +9,10 @@
  module labroc_out
 
  use data_types, only: double, operator (.speq.), operator (.spne.)
- use computation_constants, only: pi 
+ use computation_constants, only: pi
  use labroc_functions, only: fpf_CVBM, tpf_CVBM
  use io
- use error_flags 
+ use error_flags
 
  implicit none
 
@@ -20,7 +20,7 @@
  public points_on_curve_CVBM ! procedure returns a fpf, tpf sequence for
                                ! plotting purposes. Points are evenly spread
 
- public points_at_cutoffs_CVBM ! procedure returns a sequence of fpf and tpf for a 
+ public points_at_cutoffs_CVBM ! procedure returns a sequence of fpf and tpf for a
                           ! prespecified (input) sequence of cutoffs (category or run
                           ! boundaries))
 
@@ -33,17 +33,17 @@
  !PURPOSE:  procedure returns a sequence of fpf and tpf for a prespecified (input) sequence of cutoffs (category
  !           boundaries).
  !ALGORITHM: Verify whether the cutoffs and parameters have acceptable values, then simply compute the FPF, TPF values
-            
- 
+
+
  implicit none
- 
+
  real(kind=double), intent(IN):: a_par_in, b_par_in ! curve parameters
  integer, intent(IN) :: num_cutoffs ! number of cutoffs at which (FPF, TPF)  values are  desired
  real(kind=double), dimension(num_cutoffs), intent(in) :: cutoffs ! the actual cutoffs values
  real(kind=double), dimension(2, num_cutoffs + 1), intent(OUT) :: CurvePoints ! the actual
                   !  array with the fpf, tpf values
  integer, intent(OUT):: ierror  ! fit_OK -> OK; fit_failed -> Failed; bad_input -> wrong input
- 
+
  real(kind=double):: fpf, tpf, junk
  real(kind=double):: a_par, b_par ! curve parameters
  real(kind=double):: x
@@ -52,7 +52,7 @@
 
  ! We are producing points for the purpose of plotting them, so we certainly don't
  ! need an accuracy of more than six digits (which is numerically unattainable anyway
- ! because of the double precision arithmetic and the numerical precision of the 
+ ! because of the double precision arithmetic and the numerical precision of the
  ! various functions used)
 
 
@@ -98,11 +98,11 @@
  !           parameters  a_par, b_par.
  !ALGORITHM: the points will be put at the intersection of a sequence of equally
  !           spaced radii with origin in the point (1,0) of the ROC plot. This choice
- !           has been made to make plotting of skewed curve smooth.  
+ !           has been made to make plotting of skewed curve smooth.
  !NOTES    : included 0,0 and 1,1.
 
  implicit none
- 
+
  real(kind=double), intent(IN):: a_par_in, b_par_in ! curve parameters
  integer, intent(IN) :: num_pts ! number of curve points whose value is desired
  real(kind=double), dimension(2, num_pts), intent(OUT) :: CurvePoints ! the actual
@@ -111,7 +111,7 @@
 
 
  real(kind = double) :: pi2   = pi/2.0_double
- real(kind=double):: target_angle, current_angle ! used to determine the radii 
+ real(kind=double):: target_angle, current_angle ! used to determine the radii
  real(kind=double):: fpf, tpf, junk, temp
  real(kind=double):: a_par, b_par ! curve parameters
 real(kind=double):: x, x_min, x_max ! curve cutoffs
@@ -120,11 +120,11 @@ real(kind=double):: x_upper, x_lower ! curve cutoffs
  integer, parameter :: max_iter = 1000
  integer :: i, j_iter ! index for the points to be plotted, and iteration counter
 
- 
+
  ! Take care of values which produce numerically unstable data points. In this case
  ! we are producing points for the purpose of plotting them, so we certainly don't
  ! need an accuracy of more than six digits (which is numerically unattainable anyway
- ! because of the double precision arithmetic and the numerical precision of the 
+ ! because of the double precision arithmetic and the numerical precision of the
  ! various functions used)
 
  ! CHECK the value of c_par.  c_par == 1 creates numerical problems because the equations lose
@@ -143,13 +143,13 @@ real(kind=double):: x_upper, x_lower ! curve cutoffs
 ! All cutoffs should be acceptable for this routine.
 
 ! Determine the minimum value of x that it is worthy using.
-! Since the curve does not need to be proper and can cross the 45 degree line, and be worse than random everywhere, it 
+! Since the curve does not need to be proper and can cross the 45 degree line, and be worse than random everywhere, it
 ! follows that we need to check for both FPF and TPF to be about 1.
 
  call find_x_min(a_par, b_par, x_min, ierror)
  if (ierror == fit_OK) call find_x_max(a_par, b_par, x_max, ierror)
  if(ierror /= fit_OK) return ! failed to bracket solutions, return error message
-  
+
 ! Verify that the lower boundary for v_c is not too negative, so that the value of
 ! tpf and fpf doesn't change while the cutoff is halved
  temp = x_min / 2.0_double
@@ -164,7 +164,7 @@ real(kind=double):: x_upper, x_lower ! curve cutoffs
           endif
  enddo
 
-! If we could not make the value of fpf(min) change, it means that there was a 
+! If we could not make the value of fpf(min) change, it means that there was a
 ! problem
 if (i > max_iter) then
     ierror  = fit_failed
@@ -185,7 +185,7 @@ endif
  enddo
 
 
-! If we could not make the value of fpf(max) change, it means that there was a 
+! If we could not make the value of fpf(max) change, it means that there was a
 ! problem
 if (i > max_iter) then
     ierror  = fit_failed
@@ -194,7 +194,7 @@ endif
 
 
  ! Compute the points on the curve
- 
+
  x = x_max
 
  target_angle = 0.0_double  ! start sampling angles in ROC space starting from 0,
@@ -221,8 +221,8 @@ endif
           else ! if fpf == 1, then it is the upper right corner
                 current_angle = pi2
           endif
-          
-          ! Determine if the current angle is too large or too small and 
+
+          ! Determine if the current angle is too large or too small and
           ! seek another bisection if needed
           if(   (current_angle > target_angle - pi2 / ( (num_pts - 1) * 10) ) &
               .and.  &
@@ -264,7 +264,7 @@ endif
 !-------------------------------------------------------
   subroutine  find_x_max(a_par, b_par, x_max , ierror)
 ! PURPOSE: find a cutoffs value that produces a value of FPF and TPF very close
-!          to 0. 
+!          to 0.
 ! ALGORITHM: Stewise increase (superlinear increase)
 
   implicit none
@@ -274,12 +274,12 @@ endif
   integer, intent(out):: ierror ! error flag
 
   real(kind=double):: tpf, one_minus_tpf
-  real(kind=double):: step 
+  real(kind=double):: step
   integer, parameter:: num_iter = 10000 ! it never takes too long, but just in case
   integer:: i ! loop counter
- 
+
  ! size of largest change for the FPF and TPF  function as a function of x
- step =  max (1.0_double / b_par , 1.0_double) 
+ step =  max (1.0_double / b_par , 1.0_double)
 
  x_max = 4.0_double ! the maximum is always >= 4, because of the negative cases
 
@@ -290,9 +290,9 @@ endif
        else
            x_max = x_max + i * step ! make change more than linear
        endif
- enddo 
+ enddo
 
- if ( i > num_iter) then 
+ if ( i > num_iter) then
      ierror = fit_failed
  else
      ierror = fit_OK
@@ -306,7 +306,7 @@ endif
 !-------------------------------------------------------
  subroutine  find_x_min(a_par, b_par, x_min, ierror)
 ! PURPOSE: find a cutoffs value that produces a value of FPF and TPF very close
-!          to 1. 
+!          to 1.
 ! ALGORITHM: Stewise increase (superlinear increase)
 
   implicit none
@@ -316,12 +316,12 @@ endif
   integer, intent(out):: ierror ! error flag
 
   real(kind=double):: tpf, one_minus_tpf
-  real(kind=double):: step 
+  real(kind=double):: step
   integer, parameter:: num_iter = 10000 ! it never takes too long, but just in case
   integer:: i ! loop counter
- 
+
  ! size of largest change for the FPF and TPF  function as a function of x
- step =  max (1.0_double / b_par , 1.0_double) 
+ step =  max (1.0_double / b_par , 1.0_double)
 
  x_min = - 4.0_double ! the minimum is always <= 0
 
@@ -332,9 +332,9 @@ endif
        else
            x_min = x_min - i * step ! make change more than linear
        endif
- enddo 
+ enddo
 
-  if ( i > num_iter) then 
+  if ( i > num_iter) then
      ierror = fit_failed
   else
      ierror = fit_OK

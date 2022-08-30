@@ -1,45 +1,45 @@
-! THIS MODULE contains fortran 95 ANSI procedures (subroutines and functions) to  
+! THIS MODULE contains fortran 95 ANSI procedures (subroutines and functions) to
 ! categorize  continuously distributed test results via the creation of truth-state
 ! runs of rank ordered data and subsequent reduction in the number of truth-state runs
-! via the so called LABROC5 algorithm. 
+! via the so called LABROC5 algorithm.
 
-! DEFINITIONS: 
-!               ACTUALLY POSITIVE: a case, with a specific TEST RESULT VALUES, which is known by some other 
+! DEFINITIONS:
+!               ACTUALLY POSITIVE: a case, with a specific TEST RESULT VALUES, which is known by some other
 !                   RELIABLE analysis to have the disease, or signal that we are looking for.
 !                   Also called "abnormal cases" or signal cases
-!               ACTUALLY NEGATIVE: a case, with a specific TEST RESULT VALUES, which is known by some other 
+!               ACTUALLY NEGATIVE: a case, with a specific TEST RESULT VALUES, which is known by some other
 !                   RELIABLE analysis to show *no* signs of the disease, or signal we are looking for.
 !                    Also called "normal cases" or noise cases (all what is measure is noise with regards to this
 !                    experiment)
 !               CATEGORY: a category is normally defined as the set of cases with some caracteristics. The characteristic
 !                    in the case of this categorization module is to have TEST RESULT VALUE between two boundaries, which
-!                    include at least one TRUTH RUN, and all of the included TRUTH RUNS are included completely. 
+!                    include at least one TRUTH RUN, and all of the included TRUTH RUNS are included completely.
 !                    When ratings are used the category is simply the set of cases which are classified with that rating.
 !               CATEGORY BOUNDARY: the TEST RESULT VALUE that separates the TEST RESULTS VALUES of one category to the ones
-!                    of another one. Typically we use the mean of the smallest test value results of one and the largest 
+!                    of another one. Typically we use the mean of the smallest test value results of one and the largest
 !                    of the other one (chosen so that they are contiguous)
-!               CORNER: when the raw data is plotted on an ROC plot, the LBAROC4 points (or CATEGORY BOUNDARIES between 
+!               CORNER: when the raw data is plotted on an ROC plot, the LBAROC4 points (or CATEGORY BOUNDARIES between
 !                        TRUTH RUNS) look like corners. For this reason they are sometimes calles LABROC4 corners
 !               FPF or FALSE Positive Fraction: the fraction of actually negative cases (or normal cases) that have
 !                   TEST RESULT VALUE larger than a threshold
-!               OPERATING POINT: an operating point is a point on an ROC curve, and it is normally defined with it 
+!               OPERATING POINT: an operating point is a point on an ROC curve, and it is normally defined with it
 !                   coordinates as (FPF,TPF). It corresponds to a Category Boundary in terms of TEST RESULT VALUE, since
 !                   the FPF and TPF of the OPERATING POINT are the fraction of cases which have TEST RESULT VALUE larger
 !                   than the last category boundary included in the calculation of the FPF & TPF.
 !               TPF or TRUE Positive Fraction: the fraction of actually positive cases (or abnormal cases) that have
 !                   TEST RESULT VALUE larger than a threshold. Typically considered with the corresponding FPF
 !               TEST RESULT VALUE: The test result value is simply the measurement that is made, it could be a
-!                   glucose concentration level or a category for a radiography. Every case will have a 
+!                   glucose concentration level or a category for a radiography. Every case will have a
 !                   TEST RESULT VALUE otherwise it cannot be used to asses the methodology we are trying to
 !                   asses
-!              TRUTH STATE: if the case ware found to be actually positive (or abnormal, or with "signal" present) 
+!              TRUTH STATE: if the case ware found to be actually positive (or abnormal, or with "signal" present)
 !                    or negative (or "normal", or only with "noise" present). One needs some sort of truth to able
 !                    to tell if a method is working or not.
 !              TRUTH RUN OR TRUTH STATE RUN: A truth state run is a contiguous sequence of cases either of the
 !                   same truth state (actualy positive or actually negative) or of different truth states but
 !                   with the same test result value. Their are the atoms of a categorization algorithm for an
 !                   ROC curve, because separation between truth states, and thus True Positive Fraction (TPF) vs
-!                   False Positive Fraction tradeoff analysis, cannot be done within these truth state runs. I.e, 
+!                   False Positive Fraction tradeoff analysis, cannot be done within these truth state runs. I.e,
 !                   we cannot set a threshold which would allow us in the detection to tell any of this states from
 !                   the other using the test result value
 
@@ -50,7 +50,7 @@
 !       which appear in the module and that are commented right now. Search for Write(* or stop.
 ! REFERENCE: Charles E. Metz, Benjamin A. Herman and Jong-Her Shen
 !            "MAXIMUM LIKELIHOOD ESTIMATION OF RECEIVER OPERATING CHARACTERISTIC (ROC)
-!             CURVES FROM CONTINUOUSLY-DISTRIBUTED DATA" 
+!             CURVES FROM CONTINUOUSLY-DISTRIBUTED DATA"
 !                   - STATISTICS IN MEDICINE 17, 1033-1053 (1998)
 !            NOTE: THIS PAPER WILL REFERRED FROM NOW ON AS the Continuous ROC paper
 
@@ -65,18 +65,18 @@
 
 ! WARNING:          1) the array which contains the final categories is dimensioned from above using a the integer
 !                      MAX_NUM_CATEGORIES. This is done for a number of reasons, among which are:
-!                      A)  because we do not know how many categories we are going to 
+!                      A)  because we do not know how many categories we are going to
 !                          have until we analyze the data and it is complicated to have a subroutine dimension an array
 !                          for the main program (We will deal with it at some point in the future)
 !                      B)  The speed of the calculation scales at least with the cube of the number of categories, while the
 !                          accuracy of the calculation does not change too much over 20 categories, so it can be a good idea
 !                          to collapse them to 20.
 !                     WE RECOMMEND TO CALL CATGRZ USING about 400 AS MAX_NUM_CATEGORIES (but it works also for more or less)
-!                       AS FAR AS WE KNOW THE ERROR IN THE ROC AREA INDUCED BY COLLAPSING THE CATEGORIES TO about 20 
-!                       CAN BE A LARGE AS 0.01. SO IF YOU HAVE LARGE DATASETS WITH SMALL SE BE CAREFUL. 
+!                       AS FAR AS WE KNOW THE ERROR IN THE ROC AREA INDUCED BY COLLAPSING THE CATEGORIES TO about 20
+!                       CAN BE A LARGE AS 0.01. SO IF YOU HAVE LARGE DATASETS WITH SMALL SE BE CAREFUL.
 ! CHANGES:
 ! 1/11/06 LP : Added the optional array CASE_CAT in the call to catgrz that contains the category in which each case is allocated.
-!              To be used by MRMC. 
+!              To be used by MRMC.
 !              Added val_index to compute CASE_CAT
 ! 3/21/06 LP: Added public procedure  LABROC4_Collapser. Subroutine analyzes a set of categorical data (array with number of
 !             actually positive cases per category  and array with number of actually negative cases per category) to find
@@ -110,15 +110,15 @@ public categorize_mod1_mod2 ! categorize partially-paired two modality data into
                         ! everywhere and it is a parameter, so there is no risk to mess it up. It is private to
                         ! this module because all of these arrays are internal to the module.
 
-! Subroutines and functions code follows 
-CONTAINS 
+! Subroutines and functions code follows
+CONTAINS
 
 !---------------------------------------------------------------------------
 !---------------------------------------------------------------------------
 subroutine categorize_mod1_mod2 (mn, ms, data_neg, data_pos, des_neg, des_pos, num_cat1, num_cat2, &
                                  catn1, catn12, catn2, cats1, cats12, cats2, ierror)
 !---------------------------------------------------------------------------
-! PURPOSE: convert input of partially-paired two modality data into categorical data split into unpaired and 
+! PURPOSE: convert input of partially-paired two modality data into categorical data split into unpaired and
 !          fully paired data
 ! NOTE:    the number of categories is taken externally, both to have no issues with dimensioning of arrays and
 !          to leave the decisions about the maximum number of truth runs accepted to the calling program. This
@@ -139,7 +139,7 @@ integer, dimension(2, mn), intent(IN):: des_neg ! actually-negative design matri
 integer, dimension(2, ms), intent(IN):: des_pos ! actually-positive design matrix (whether a case is present (1) or absent (0)
                                                 ! for each the two modalities to be analyzed
 
-integer, intent(IN):: num_cat1, num_cat2 ! number of categories in modality one and two. 
+integer, intent(IN):: num_cat1, num_cat2 ! number of categories in modality one and two.
 
 integer, dimension(num_cat1), intent(OUT):: catn1, cats1 ! categorical data by truth, independent part for mod1
 integer, dimension(num_cat2), intent(OUT):: catn2, cats2 ! categorical data by truth, independent part for mod2
@@ -161,7 +161,7 @@ integer, dimension(2,ms):: index_pos  ! has the location in the array data_pos1,
 integer:: index1, index2 ! location of a datavalue in arrays data_neg1 (data_pos1) and data_neg2 (data_pos2)
 
 integer:: num_cat1_loc, num_cat2_loc ! maximum number of categories found in the data
-integer, dimension(2,num_cat1):: cat1 ! categorical data for modality 1 
+integer, dimension(2,num_cat1):: cat1 ! categorical data for modality 1
 integer, dimension(2,num_cat2):: cat2 ! categorical data for modality 2
 
 integer:: i
@@ -172,7 +172,7 @@ if(ierror /= 0) return
 
 
 ! Allocate arrays with the data by modality. These arrays are necessary to categorize the data by modality before creating the
-! categorical data which includes the information about how the data is paired. However the categorization has to be done 
+! categorical data which includes the information about how the data is paired. However the categorization has to be done
 ! independently and with all the data because there is no reason to expect that the two scales are identical or even comparable.
 allocate(data_neg1(mn1+mn12))
 allocate(data_pos1(ms1+ms12))
@@ -234,7 +234,7 @@ do i = 1, ms
      endif
 enddo
 
-! Categorize data, independently for the two categories because in general there is no relationship between the 
+! Categorize data, independently for the two categories because in general there is no relationship between the
 ! two
 
 ! modality 1
@@ -260,7 +260,7 @@ catn12 = 0; cats12 = 0
 ! the dimension is truth (case_cat1, case_cat2)  for other is modality (index_neg, index_pos)
 do i = 1, mn
      if(des_neg(1,i) == 1 .and. des_neg(2,i) == 1) then
-            catn12( case_cat1(1,index_neg(1,i)), case_cat2(1,index_neg(2,i)) ) =  & 
+            catn12( case_cat1(1,index_neg(1,i)), case_cat2(1,index_neg(2,i)) ) =  &
                                 catn12( case_cat1(1,index_neg(1,i)),case_cat2(1,index_neg(2,i)) ) + 1
      elseif(des_neg(1,i) == 1 .and. des_neg(2,i) == 0) then
             catn1( case_cat1(1,index_neg(1,i)) ) = catn1( case_cat1(1,index_neg(1,i)) )  + 1
@@ -271,7 +271,7 @@ enddo
 
 do i = 1, ms
      if(des_pos(1,i) == 1 .and. des_pos(2,i) == 1) then
-            cats12( case_cat1(2,index_pos(1,i)), case_cat2(2,index_pos(2,i)) ) =  & 
+            cats12( case_cat1(2,index_pos(1,i)), case_cat2(2,index_pos(2,i)) ) =  &
                                 cats12(case_cat1(2,index_pos(1,i)), case_cat2(2,index_pos(2,i)) ) + 1
      elseif(des_pos(1,i) == 1 .and. des_pos(2,i) == 0) then
             cats1( case_cat1(2,index_pos(1,i)) ) = cats1(case_cat1(2,index_pos(1,i)) )  + 1
@@ -385,11 +385,11 @@ integer, intent(IN):: ms_tot ! number of positive cases
 real(kind=double), dimension(mn_tot), intent(IN):: data_neg_tot ! actually-negative input data, including cases not used here
 real(kind=double), dimension(ms_tot), intent(IN):: data_pos_tot ! actually-positive input data  including cases not used here
 
-! Design matrices. Here we assume that if there are values different from 0 or 1, there is an input error 
+! Design matrices. Here we assume that if there are values different from 0 or 1, there is an input error
 integer, dimension(mn_tot), intent(IN):: des_neg ! actually-negative design matrix (whether a case is present (1) or absent (0)
 integer, dimension(ms_tot), intent(IN):: des_pos ! actually-positive design matrix (whether a case is present (1) or absent (0)
 
-integer, intent(OUT):: num_truth_runs ! number of truth runs found in the dataset described by the datamatrices data* and 
+integer, intent(OUT):: num_truth_runs ! number of truth runs found in the dataset described by the datamatrices data* and
                                       ! design matrices des*
 integer, intent(IN):: max_num_truth_runs ! Maximum number of truth runs to be considered, it should be set to mn+ms to make sure
                               ! that no collapsing is done to reduce the number to a smaller value
@@ -398,7 +398,7 @@ integer, intent(OUT):: ierror ! error flag: 0 -> fit worked properly ; 2 -> wron
 
 real(kind=double), allocatable, dimension(:) :: data_neg! actually-negative used here, full array
 real(kind=double), allocatable, dimension(:) :: data_pos! actually-positive used here, full array
-integer, dimension(max_num_truth_runs):: cat ! categorical data 
+integer, dimension(max_num_truth_runs):: cat ! categorical data
 
 integer:: mn, ms
 
@@ -465,13 +465,13 @@ end subroutine find_truthruns_d
 !----------------------------------------------------------------------------------------
 !----------------------------------------------------------------------------------------
 SUBROUTINE LABROC4_Collapser(catn, cats, num_cat, debug_flag, new_cat_index)
-! PURPOSE: receive categorical data as input and eliminate empty categories or 
-!          categories that have the same truth as their neighboring categories. 
+! PURPOSE: receive categorical data as input and eliminate empty categories or
+!          categories that have the same truth as their neighboring categories.
 !          This is done because the elimination of the category boundaries between
-!          those categories does not affect the Maximum Likelihood estimation of 
+!          those categories does not affect the Maximum Likelihood estimation of
 !          the curve parameters or of the other cutoffs.
 !          In general we call categorize if we the method is applied to list data
-!          while we call it collapse if it is applied to categorical data. the 
+!          while we call it collapse if it is applied to categorical data. the
 !          operation is mathematically almost isomorph, but computationally they
 !          work differently because they are used differently.
 !          NOTE: No check on the number of categories is done here. Most fitting routines
@@ -479,7 +479,7 @@ SUBROUTINE LABROC4_Collapser(catn, cats, num_cat, debug_flag, new_cat_index)
 !          are different.
 ! Created march 21st 2006 by Lorenzo Pesce, starting from the code of Kevin Schartz.
 ! ---------------------------------------------------------------------
-! 
+!
 !
 ! Example:
 !
@@ -497,7 +497,7 @@ SUBROUTINE LABROC4_Collapser(catn, cats, num_cat, debug_flag, new_cat_index)
 !
 !           After the first pass: Deleting columns
 !
-!              1     2     3     5   
+!              1     2     3     5
 !           _________________________
 !           |     |     |     |     |
 !           |  1  |  1  |  2  |  0  |
@@ -509,7 +509,7 @@ SUBROUTINE LABROC4_Collapser(catn, cats, num_cat, debug_flag, new_cat_index)
 !
 !           Second pass: Collapsing columns
 !
-!              1     3   
+!              1     3
 !           _____________
 !           |     |     |
 !           |  4  |  0  |
@@ -525,7 +525,7 @@ SUBROUTINE LABROC4_Collapser(catn, cats, num_cat, debug_flag, new_cat_index)
 ! =====================================================================
 
  USE Debugging
-  
+
  implicit none
 
 ! dummy variables.
@@ -547,7 +547,7 @@ SUBROUTINE LABROC4_Collapser(catn, cats, num_cat, debug_flag, new_cat_index)
       write (debugUnit, *) 'Start LABROC4_Collapser ...'
  endif
 
- ! The data in the first category goes to the new first category, independently from 
+ ! The data in the first category goes to the new first category, independently from
  ! its nature (including being empty)
  new_cat_index (1) = 1
  new_cat = 1
@@ -586,7 +586,7 @@ SUBROUTINE LABROC4_Collapser(catn, cats, num_cat, debug_flag, new_cat_index)
                  prev_cat = icat
                  new_cat = new_cat + 1
          endif
-   
+
          ! Load the collapsed category index for the current category
          new_cat_index (icat) = new_cat
 
@@ -594,7 +594,7 @@ SUBROUTINE LABROC4_Collapser(catn, cats, num_cat, debug_flag, new_cat_index)
 
 
   if (debug_flag==1) then
-	
+
       write (debugUnit, *) '--------------------------------------------------'
       write (debugUnit, *) 'Number of categories', num_cat
       write (debugUnit, *) 'Indices of categories after collapsing,'
@@ -623,7 +623,7 @@ end subroutine LABROC4_Collapser
 !
 ! CATEGORIZE POSSIBLY CONTINUOUS TEST RESULT DATA  INTO CATEGORICAL  DATA USING THE LABROC4/LABROC5 ALGORITHM
 ! SEE Continuous ROC paper for algorithmic and validation information
- !CHAGES: LP 2008 dec U of C : changed the size of the array CASE_CAT, to make unnecessary to use a predefined 
+ !CHAGES: LP 2008 dec U of C : changed the size of the array CASE_CAT, to make unnecessary to use a predefined
 !                          maximum number of cases
 ! CHANGE: LP U of C January 19th 2010: split the summations as the old one was wrongly only on the negative cases
  implicit none
@@ -637,38 +637,38 @@ end subroutine LABROC4_Collapser
  REAL(kind=DOUBLE),INTENT(IN),DIMENSION(NUM_ABNORMAL_CASES)::POS_INPUT ! negative TEST RESULT VALUEs are stored
 
  INTEGER, INTENT(IN) :: MAX_NUM_CATEGORIES ! MAXIMUM NUMBER OF CATEGORIES ALLOWED BY THE DIMENSIONING IN THE
-                                           ! MAIN PROGRAM, THE MODULE WILL SEEK TO PRODUCE MAX_NUM_CATEGORIES. 
+                                           ! MAIN PROGRAM, THE MODULE WILL SEEK TO PRODUCE MAX_NUM_CATEGORIES.
                                            ! IF LESS THAT THAT ARE AVAILABLE (SAY N_CAT) IT WILL RETURN N_CAT
                                            ! IF MORE ARE AVAILABLE, IT WILL RETURN MAX_NUM_CATEGORIES
 
- INTEGER, INTENT(out), DIMENSION(ACT_NEG:ACT_POS, MAX_NUM_CATEGORIES) :: CAT0 ! CONTAINS THE CATEGORIES 
+ INTEGER, INTENT(out), DIMENSION(ACT_NEG:ACT_POS, MAX_NUM_CATEGORIES) :: CAT0 ! CONTAINS THE CATEGORIES
                     ! CREATED BY THIS CATEGORIZATION ALGORITHM ON EXIT
  INTEGER, INTENT(out):: NUM_CATEGORIES ! THE NUMBER OF CATEGORIES FOUND
- INTEGER, OPTIONAL, INTENT(out),DIMENSION(ACT_NEG:ACT_POS,max(NUM_NORMAL_CASES,NUM_ABNORMAL_CASES))::CASE_CAT 
+ INTEGER, OPTIONAL, INTENT(out),DIMENSION(ACT_NEG:ACT_POS,max(NUM_NORMAL_CASES,NUM_ABNORMAL_CASES))::CASE_CAT
                    ! This array stores for each case the category where it is allocated. Mostly to be
-                   ! used by MRMC schemes, and this is why it is optional 
+                   ! used by MRMC schemes, and this is why it is optional
 
 ! INTERNAL VARIABLES
 !   NOTE: 6/4/03 THESE ARRAYS ARE NOT DIMENSIONED EXACTLY TO FIT THEIR DATA, BUT RATHER TO FIT THE SIZE OF THE
 !                INPUT CURRENTLY USED. THIS PREVENTS FROM HAVING TO CREATE HUGE ARAYS TO ACCOMODATE POSSIBLE LARGE
-!                INPUTS, WHICH WOULD CREATE PROBLEMS FOR PEOPLE RUNNING SMALL DATASETS ON SMALL OR CROWDED 
-!                COMPUTERS, OR TO HAVE TO USE POYNTERS OR LINKED LISTS ALL OVER THE PLACE. THE SMALL DIMENSIONALITY 
-!                OF THESE ARRAYS (ESSENTIALLY 1-DIMENSIONAL) RENDER THE MEMORY WASTE OF THIS CONFIGUARATION 
+!                INPUTS, WHICH WOULD CREATE PROBLEMS FOR PEOPLE RUNNING SMALL DATASETS ON SMALL OR CROWDED
+!                COMPUTERS, OR TO HAVE TO USE POYNTERS OR LINKED LISTS ALL OVER THE PLACE. THE SMALL DIMENSIONALITY
+!                OF THESE ARRAYS (ESSENTIALLY 1-DIMENSIONAL) RENDER THE MEMORY WASTE OF THIS CONFIGUARATION
 !                NON RRELEVANT. ARRAYS ARE NOT DEALLOCATED BECAUSE F90 DOES THAT AUTOMATICALLY.
 
  REAL(kind=DOUBLE),DIMENSION(2,NUM_NORMAL_CASES + NUM_ABNORMAL_CASES)     :: ALL_CASES
- REAL(kind=DOUBLE), DIMENSION(ACT_NEG:ACT_POS,2 , max(NUM_NORMAL_CASES,NUM_ABNORMAL_CASES)):: val_index 
- REAL(kind=DOUBLE), DIMENSION(ACT_NEG:ACT_POS,2 , max(NUM_NORMAL_CASES,NUM_ABNORMAL_CASES)):: val_index2 
+ REAL(kind=DOUBLE), DIMENSION(ACT_NEG:ACT_POS,2 , max(NUM_NORMAL_CASES,NUM_ABNORMAL_CASES)):: val_index
+ REAL(kind=DOUBLE), DIMENSION(ACT_NEG:ACT_POS,2 , max(NUM_NORMAL_CASES,NUM_ABNORMAL_CASES)):: val_index2
  REAL(kind=DOUBLE),DIMENSION(TST_RES_VAL:act_pos,NUM_NORMAL_CASES + NUM_ABNORMAL_CASES) :: VALUE_CATEGORIES
  REAL(kind=DOUBLE),DIMENSION(TST_RES_VAL:act_pos,NUM_NORMAL_CASES + NUM_ABNORMAL_CASES) :: TRUTH_RUNS_CATEGORIES
-              ! values of the 
+              ! values of the
               ! test result value which separate two different truth runs, with the number of
               ! actually normal and abnormal cases in that truth run
  REAL(kind=DOUBLE), DIMENSION(2, NUM_NORMAL_CASES + NUM_ABNORMAL_CASES) :: CITY_BLOCK_DIST ! THIS ARRAY IS A DOUBLE ARRAY:
-                                                  ! city_block_dist(1,:) = TPF+FPF FOR THIS CATEGORY BOUNDARY 
-                                                  ! city_block_dist(2,:) = IS A FLAG FOR THE PROCEDURE WHICH CREATES THE 
-                                                  !              FINAL CATEGORY. IF IT IS + 1 THE OPERATING 
-                                                  !              POINT IS TAKEN, IF NOT IT IS REJECTED 
+                                                  ! city_block_dist(1,:) = TPF+FPF FOR THIS CATEGORY BOUNDARY
+                                                  ! city_block_dist(2,:) = IS A FLAG FOR THE PROCEDURE WHICH CREATES THE
+                                                  !              FINAL CATEGORY. IF IT IS + 1 THE OPERATING
+                                                  !              POINT IS TAKEN, IF NOT IT IS REJECTED
  REAL(kind=DOUBLE), DIMENSION(2, NUM_NORMAL_CASES + NUM_ABNORMAL_CASES) :: FPF_TPF
  REAL(kind=DOUBLE), ALLOCATABLE, DIMENSION(:)   :: TST_RES_VAL_CATEGORY_BOUNDARY
                                                   !This array contains the test result values that separate categories from
@@ -676,7 +676,7 @@ end subroutine LABROC4_Collapser
 
 
  INTEGER:: NUM_CASES ! Total number of cases, positive plus negative
- INTEGER:: NUM_DIFFERENT_VALUES ! number of different TEST RESULT VALUEs of this data set 
+ INTEGER:: NUM_DIFFERENT_VALUES ! number of different TEST RESULT VALUEs of this data set
  INTEGER:: NUM_TRUTH_RUNS ! Number of truth state runs found in the raw data.
  INTEGER:: NUM_BOUNDARIES ! number of boundaries between truth runs or categories (N - 1)
  INTEGER:: I, INDEX_POS, INDEX_NEG ! Innocent loop variable and some index variables
@@ -705,7 +705,7 @@ end subroutine LABROC4_Collapser
  ENDIF
  ! Load the truth
  ALL_CASES(2,1:NUM_NORMAL_CASES) =  -1.0_double
- ALL_CASES(2,NUM_NORMAL_CASES+1:NUM_CASES) = 1.0_double  
+ ALL_CASES(2,NUM_NORMAL_CASES+1:NUM_CASES) = 1.0_double
 
 
 ! Sort the values independently from their truth state, sort in ascending value
@@ -717,12 +717,12 @@ end subroutine LABROC4_Collapser
 ! The ascending order in test result values is maintained in the array VALUE_CATEGORIES
 CALL COLLAPSE_IDENTICAL_VALUES( VALUE_CATEGORIES, NUM_DIFFERENT_VALUES, ALL_CASES, NUM_CASES )
 
- 
-! Take value_categories and find the truth state runs of this data set, the boundaries between these 
+
+! Take value_categories and find the truth state runs of this data set, the boundaries between these
 ! truth state runs, and the city block distance between these points and 0,0 on an ROC plot
 ! (which corresponds to infinity on the test results value axis.
 ! The ith boundary is between the current truth runs and the one with index i + 1, i.e, the cases have
-! TEST RESULT VALUE larger equal to the value with their index and smaller the one before them 
+! TEST RESULT VALUE larger equal to the value with their index and smaller the one before them
 ! (apart from the first one which is simply any measured value largeer that the value of the boundary).
 ! Ascending order is preserved.
 CALL  CREATE_TRUTH_RUNS( NUM_TRUTH_RUNS,CITY_BLOCK_DIST(1,:),TRUTH_RUNS_CATEGORIES,  &
@@ -739,9 +739,9 @@ CALL  CREATE_TRUTH_RUNS( NUM_TRUTH_RUNS,CITY_BLOCK_DIST(1,:),TRUTH_RUNS_CATEGORI
  CITY_BLOCK_DIST(2,:) = -1.0_double
 
 IF (NUM_TRUTH_RUNS > MAX_NUM_CATEGORIES) THEN
-     NUM_CATEGORIES = MAX_NUM_CATEGORIES 
+     NUM_CATEGORIES = MAX_NUM_CATEGORIES
      CALL FIND_LABROC5_POINTS(NUM_TRUTH_RUNS, NUM_CATEGORIES, idebug, CITY_BLOCK_DIST)
-ELSE ! In this case the number of categories is the same as the number of truth runs 
+ELSE ! In this case the number of categories is the same as the number of truth runs
      ! so all the points need to be selcted (set array value to 1, see initialization above
      NUM_CATEGORIES = NUM_TRUTH_RUNS
      CITY_BLOCK_DIST(2,2:NUM_TRUTH_RUNS) = 1.0_double
@@ -757,7 +757,7 @@ ALLOCATE(TST_RES_VAL_CATEGORY_BOUNDARY(NUM_CATEGORIES-1))
 NUM_BOUNDARIES = 0
 DO  I = 1, NUM_TRUTH_RUNS
 
-  IF (CITY_BLOCK_DIST(2,I) > 0.0_double ) THEN 
+  IF (CITY_BLOCK_DIST(2,I) > 0.0_double ) THEN
      NUM_BOUNDARIES = NUM_BOUNDARIES + 1
      TST_RES_VAL_CATEGORY_BOUNDARY(NUM_BOUNDARIES) = TRUTH_RUNS_CATEGORIES(TST_RES_VAL,I)
   ENDIF
@@ -766,7 +766,7 @@ ENDDO
 
 ! THIS CHECK SHOULD BE REINSTATED ANY TIMES ONE WANTS TO FIDDLE WITH THE CATEGORIZATION
 ! SCHEME
-!    CHECK IF THE algorithm used is actually consistent, SINCE THE 2 NUMBERS COME FROM 
+!    CHECK IF THE algorithm used is actually consistent, SINCE THE 2 NUMBERS COME FROM
 !    DIFFFERENT CALCULATIONS.
 !IF (NUM_CATEGORIES /= NUM_BOUNDARIES + 1) THEN
 !  WRITE(*,*) "ERROR::SUBROUTINE CATGRZ"
@@ -796,7 +796,7 @@ category_by_case: IF( PRESENT(CASE_CAT) ) then
        val_index(act_neg, 1, 1:NUM_NORMAL_CASES)    =  NEG_INPUT(1:NUM_NORMAL_CASES)
        val_index(act_pos, 1, 1: NUM_ABNORMAL_CASES) =  POS_INPUT(1:NUM_ABNORMAL_CASES)
    ENDIF
-   ! Load the original indexing 
+   ! Load the original indexing
    val_index(act_neg, 2, 1:NUM_NORMAL_CASES)    = (/  (1.0_double*I, I = 1, NUM_NORMAL_CASES) /)
    val_index(act_pos, 2, 1: NUM_ABNORMAL_CASES) = (/  (1.0_double*I, I = 1, NUM_ABNORMAL_CASES) /)
 
@@ -808,8 +808,8 @@ category_by_case: IF( PRESENT(CASE_CAT) ) then
 
    ! Use a scratch val_index to load in the first index the case index, we don't need the value
    ! anymore (we can find the value with the index, so we don't need it)
-   val_index2(act_neg, 1, 1: NUM_NORMAL_CASES)   =  val_index(act_neg, 2, 1: NUM_NORMAL_CASES) 
-   val_index2(act_pos, 1, 1: NUM_ABNORMAL_CASES) =  val_index(act_pos, 2, 1: NUM_ABNORMAL_CASES) 
+   val_index2(act_neg, 1, 1: NUM_NORMAL_CASES)   =  val_index(act_neg, 2, 1: NUM_NORMAL_CASES)
+   val_index2(act_pos, 1, 1: NUM_ABNORMAL_CASES) =  val_index(act_pos, 2, 1: NUM_ABNORMAL_CASES)
 
    ! Load the category number in the cases, since categories are in order and the values are
    ! also in increasing value, we can apply the categories straight to the arrays, without
@@ -824,10 +824,10 @@ category_by_case: IF( PRESENT(CASE_CAT) ) then
    ENDDO
 
 
-   ! Sort the arrays by case index. Now we have the category by case data we need 
+   ! Sort the arrays by case index. Now we have the category by case data we need
    CALL SORT(NUM_NORMAL_CASES,val_index2(act_neg,:,:))
    CALL SORT(NUM_ABNORMAL_CASES,val_index2(act_pos,:,:))
- 
+
 
 ! CHANGE: LP U of C January 19th 2010: split the summations as the old one was wrongly only on the negative cases
    forall(i=1:NUM_NORMAL_CASES)
@@ -869,21 +869,21 @@ END SUBRoutINE CATGRZ
 
 
 ! INPUT DUMMY VARIABLES
- INTEGER,INTENT(IN):: NUM_NORMAL_CASES 
+ INTEGER,INTENT(IN):: NUM_NORMAL_CASES
  INTEGER,INTENT(IN):: NUM_ABNORMAL_CASES
  INTEGER,INTENT(IN):: NUM_DIFFERENT_VALUES ! number of different TEST RESULT VALUEs of this data set
- REAL(kind=DOUBLE),DIMENSION (TST_RES_VAL:act_pos,NUM_NORMAL_CASES+NUM_ABNORMAL_CASES), INTENT(IN):: VALUE_CATEGORIES 
-           
+ REAL(kind=DOUBLE),DIMENSION (TST_RES_VAL:act_pos,NUM_NORMAL_CASES+NUM_ABNORMAL_CASES), INTENT(IN):: VALUE_CATEGORIES
+
 
 ! outPUT DUMMY VARIABLES
  INTEGER,INTENT(out):: NUM_TRUTH_RUNS
- REAL(kind=DOUBLE),DIMENSION (NUM_NORMAL_CASES+NUM_ABNORMAL_CASES),INTENT(out)::CITY_BLOCK_DIST 
-                       ! City block distance  
- REAL(kind=DOUBLE),DIMENSION (TST_RES_VAL:act_pos,NUM_NORMAL_CASES+NUM_ABNORMAL_CASES), INTENT(out)::TRUTH_RUNS_CATEGORIES 
-              ! values of the 
+ REAL(kind=DOUBLE),DIMENSION (NUM_NORMAL_CASES+NUM_ABNORMAL_CASES),INTENT(out)::CITY_BLOCK_DIST
+                       ! City block distance
+ REAL(kind=DOUBLE),DIMENSION (TST_RES_VAL:act_pos,NUM_NORMAL_CASES+NUM_ABNORMAL_CASES), INTENT(out)::TRUTH_RUNS_CATEGORIES
+              ! values of the
               ! test result value which separate two different truth runs, with the number of
               ! actually normal and abnormal cases in that truth run
- REAL(kind=DOUBLE),DIMENSION (2,NUM_NORMAL_CASES+NUM_ABNORMAL_CASES),INTENT(out):: FPF_TPF ! This contains the FPF and TPF for 
+ REAL(kind=DOUBLE),DIMENSION (2,NUM_NORMAL_CASES+NUM_ABNORMAL_CASES),INTENT(out):: FPF_TPF ! This contains the FPF and TPF for
               ! EACH operating point, which would be a boundary between categories (and in terms of indices, contains the
               ! category with the same index
 
@@ -896,8 +896,8 @@ END SUBRoutINE CATGRZ
                                               ! it is real because of the array it is stored into
  REAL(kind=DOUBLE)::FPF_INC ! the value the FTF increments every time there is a normal case
  REAL(kind=DOUBLE)::TPF_INC ! the value the TPF increments every time there is a abnormal case
- REAL(kind=DOUBLE)::TPF 
- REAL(kind=DOUBLE)::FPF 
+ REAL(kind=DOUBLE)::TPF
+ REAL(kind=DOUBLE)::FPF
 
  ! This is how much are the FPF and TPF increased by adding one normal or abnormal case respectively.
  FPF_INC = 1.0_double/NUM_NORMAL_CASES
@@ -910,21 +910,21 @@ END SUBRoutINE CATGRZ
  TPF = 0.0_double
  NUM_TRUTH_RUNS = 0
 
- 
+
  ! LOOP OVER THE DIFFERENT VALUES TO FIND THE TRUTH RUNS. IN ROC ANALYSIS THER REFERENCE POINT IS
  ! THE ONES WHERE THE PROBABILITY OF ABNORMAILTY IS LARGEST, WHICH IN THIS CASE IS ASSUMED TO BE FOR LARGER VALUES
  ! SO, SINCE THE ARRAYS ARE ORDERED IN ASCENDING ORDER, THE COUNTER WILL MAKE A COUNT DOWN. THIS MEANS THAT THE TRUTH RUNS
  ! ARRAYS WILL BE IN OPPOSITVE ORDER AS THE OTHER ARRAYS. FOR THIS REASON AT THE END THE NEW ARRAYS ORDERING IS INVERTED
 
- ! THE ALGORITHM BASICALLY LOOKS FOR A CHANGE IN TRUTH RUN (SEE COMMENTS AT THE BEGINNING OF THE MODULE, THE REFERENCES THERE 
+ ! THE ALGORITHM BASICALLY LOOKS FOR A CHANGE IN TRUTH RUN (SEE COMMENTS AT THE BEGINNING OF THE MODULE, THE REFERENCES THERE
  ! AND THE COMMENTS RIGHT BELOW HERE), WHILE SUMMING ALL THE VALUES FOUND BETWEEN THE PREVIOUS TRUTH RUN BOUNDARY THE ONE
- ! IT IS LOOKING FOR. ONCE THE BOUNDARY IS FOUND THE SUMMED VALUES ARE LOADED IN THE NEW TRUTH RUN DATA ARRAYS. 
- OVER_DIFFERENT_VALUES: DO I_VALUE = NUM_DIFFERENT_VALUES, 2 , -1 
+ ! IT IS LOOKING FOR. ONCE THE BOUNDARY IS FOUND THE SUMMED VALUES ARE LOADED IN THE NEW TRUTH RUN DATA ARRAYS.
+ OVER_DIFFERENT_VALUES: DO I_VALUE = NUM_DIFFERENT_VALUES, 2 , -1
    ! If one value has both normal and abnormal cases, than it is a truth run of its own
     FPF = FPF + VALUE_CATEGORIES(act_neg,I_VALUE) * FPF_INC
     TPF = TPF + VALUE_CATEGORIES(act_pos,I_VALUE) * TPF_INC
-    NUM_NORMAL_IN_TRUTH_RUN = NUM_NORMAL_IN_TRUTH_RUN + VALUE_CATEGORIES(act_neg,I_VALUE) 
-    NUM_ABNORMAL_IN_TRUTH_RUN = NUM_ABNORMAL_IN_TRUTH_RUN + VALUE_CATEGORIES(act_pos,I_VALUE) 
+    NUM_NORMAL_IN_TRUTH_RUN = NUM_NORMAL_IN_TRUTH_RUN + VALUE_CATEGORIES(act_neg,I_VALUE)
+    NUM_ABNORMAL_IN_TRUTH_RUN = NUM_ABNORMAL_IN_TRUTH_RUN + VALUE_CATEGORIES(act_pos,I_VALUE)
 
    ! THERE ARE TWO SITUATIONS WHERE A BOUNDAY BETWEEN TWO NEIGHBORING VALUE-CATEOGRIES COULD BE:
    ! A)  IF THE NUMBER OF BOTH THE NORMAL AND THE ABNORMAL CASES IS DIFFERENT FROM 0
@@ -976,29 +976,29 @@ END SUBRoutINE CATGRZ
 
  FPF = FPF + VALUE_CATEGORIES(act_neg, 1) * FPF_INC
  TPF = TPF + VALUE_CATEGORIES(act_pos, 1) * TPF_INC
- NUM_NORMAL_IN_TRUTH_RUN = NUM_NORMAL_IN_TRUTH_RUN + VALUE_CATEGORIES(act_neg,1) 
- NUM_ABNORMAL_IN_TRUTH_RUN = NUM_ABNORMAL_IN_TRUTH_RUN + VALUE_CATEGORIES(act_pos,1) 
+ NUM_NORMAL_IN_TRUTH_RUN = NUM_NORMAL_IN_TRUTH_RUN + VALUE_CATEGORIES(act_neg,1)
+ NUM_ABNORMAL_IN_TRUTH_RUN = NUM_ABNORMAL_IN_TRUTH_RUN + VALUE_CATEGORIES(act_pos,1)
 
  NUM_TRUTH_RUNS = NUM_TRUTH_RUNS + 1
 
  FPF_TPF(1,NUM_TRUTH_RUNS)= FPF
  FPF_TPF(2,NUM_TRUTH_RUNS)= TPF
  CITY_BLOCK_DIST(NUM_TRUTH_RUNS) = FPF + TPF
- TRUTH_RUNS_CATEGORIES (TST_RES_VAL,NUM_TRUTH_RUNS) =  VALUE_CATEGORIES(TST_RES_VAL, 1 ) 
+ TRUTH_RUNS_CATEGORIES (TST_RES_VAL,NUM_TRUTH_RUNS) =  VALUE_CATEGORIES(TST_RES_VAL, 1 )
  TRUTH_RUNS_CATEGORIES (act_neg,NUM_TRUTH_RUNS) = NUM_NORMAL_IN_TRUTH_RUN
  TRUTH_RUNS_CATEGORIES (act_pos,NUM_TRUTH_RUNS) = NUM_ABNORMAL_IN_TRUTH_RUN
 
 ! Since at this point the truth runs are order in descending order of TEST RESULT VALUEs while
-! the rest of the arrays are in ascending order, we turn them in ascending order too 
+! the rest of the arrays are in ascending order, we turn them in ascending order too
  FORALL(I_VALUE = 1:NUM_TRUTH_RUNS)
-    FPF_TPF(1,I_VALUE)  =   FPF_TPF(1,NUM_TRUTH_RUNS - I_VALUE + 1) 
-    FPF_TPF(2,I_VALUE)  =   FPF_TPF(2,NUM_TRUTH_RUNS - I_VALUE + 1) 
-    CITY_BLOCK_DIST(I_VALUE) =  CITY_BLOCK_DIST(NUM_TRUTH_RUNS - I_VALUE + 1) 
-    TRUTH_RUNS_CATEGORIES (TST_RES_VAL,I_VALUE) = TRUTH_RUNS_CATEGORIES (TST_RES_VAL,NUM_TRUTH_RUNS - I_VALUE + 1) 
+    FPF_TPF(1,I_VALUE)  =   FPF_TPF(1,NUM_TRUTH_RUNS - I_VALUE + 1)
+    FPF_TPF(2,I_VALUE)  =   FPF_TPF(2,NUM_TRUTH_RUNS - I_VALUE + 1)
+    CITY_BLOCK_DIST(I_VALUE) =  CITY_BLOCK_DIST(NUM_TRUTH_RUNS - I_VALUE + 1)
+    TRUTH_RUNS_CATEGORIES (TST_RES_VAL,I_VALUE) = TRUTH_RUNS_CATEGORIES (TST_RES_VAL,NUM_TRUTH_RUNS - I_VALUE + 1)
     TRUTH_RUNS_CATEGORIES (act_neg,I_VALUE) = TRUTH_RUNS_CATEGORIES (act_neg,NUM_TRUTH_RUNS - I_VALUE + 1)
     TRUTH_RUNS_CATEGORIES (act_pos,I_VALUE) = TRUTH_RUNS_CATEGORIES (act_pos,NUM_TRUTH_RUNS - I_VALUE + 1)
  END FORALL
-    
+
 
 !-------------------------------------------------
  END SUBRoutINE CREATE_TRUTH_RUNS
@@ -1021,21 +1021,21 @@ SUBRoutINE COLLAPSE_IDENTICAL_VALUES (VALUE_CATEGORIES,NUM_DIFFERENT_VALUES,ALL_
  implicit none
 
 ! These are the input variables
- INTEGER,INTENT(IN):: NUM_CASES !total number of cases, inclusing positive and negative 
+ INTEGER,INTENT(IN):: NUM_CASES !total number of cases, inclusing positive and negative
  REAL(kind=DOUBLE),DIMENSION (2,NUM_CASES),INTENT(IN)::ALL_CASES ! Sorted array with all the cases
            ! in ascending order by TEST RESULT VALUE, second dimension in truth state (+1 or -1)
 
  REAL(kind=DOUBLE),DIMENSION (TST_RES_VAL:act_pos,NUM_CASES), INTENT(out):: VALUE_CATEGORIES ! computed array, see
             ! header of subroutine for its shape and meaning
  INTEGER,INTENT(out):: NUM_DIFFERENT_VALUES ! number of different TEST RESULT VALUEs of this data set
- 
+
  ! Work variables
  INTEGER:: ICASE ! index pointing to the current case
 
 
  REAL(KIND=DOUBLE):: CURRENT_TEST_VALUE_RESULT
 
- ! initialize the array 
+ ! initialize the array
  VALUE_CATEGORIES = 0.0_double
  ! inizialize the counter to one, since the different values are at least one
  NUM_DIFFERENT_VALUES = 1
@@ -1070,7 +1070,7 @@ END SUBROUTINE COLLAPSE_IDENTICAL_VALUES
 
 
 !--------------------------------------------
-  SUBROUTINE SORT(NUM_VALUES,THE_ARRAY)    
+  SUBROUTINE SORT(NUM_VALUES,THE_ARRAY)
 !--------------------------------------------
 ! SORT THE TWO VALUED REAL (KIND = *) ARRAY THE_ARRAY OF DIMENSIONS (2,NUM_VALUES)
 ! IN ASCENDING ORDER ACCORDING TO ITS FIRST VALUES:: THE_ARRAY(1,:)
@@ -1078,7 +1078,7 @@ END SUBROUTINE COLLAPSE_IDENTICAL_VALUES
 
  implicit none
 
- INTEGER,INTENT(IN):: NUM_VALUES 
+ INTEGER,INTENT(IN):: NUM_VALUES
  REAL(kind=DOUBLE),INTENT(INOUT),DIMENSION(2,NUM_VALUES)::THE_ARRAY ! ON entry the raw data with their qualification
                     ! at the second index, on exit the same values but in ascending order (according to the first
                     ! value
@@ -1097,7 +1097,7 @@ END SUBROUTINE COLLAPSE_IDENTICAL_VALUES
 ! NOTE: a forall statement would not work, because of array operations precedence which would not
 !       allow THE_ARARAY TO BE UPDATED on the right.
 ! DO I = 1, NUM_VALUES - 1
-!      J =  I - 1 + MINLOC( THE_ARRAY(1,I:NUM_VALUES) ) !MINLOC gives the minimum of the current 
+!      J =  I - 1 + MINLOC( THE_ARRAY(1,I:NUM_VALUES) ) !MINLOC gives the minimum of the current
 !      TEMP =  THE_ARRAY(:,I)
 !      THE_ARRAY(:,I) =  THE_ARRAY(:, J(1))
 !      THE_ARRAY(:, J(1)) =  TEMP
@@ -1113,7 +1113,7 @@ forall(I=1:NUM_VALUES) THE_ARRAY(:,I) = TEMP1(:,VAL_IND(I))
 
 
 !---------------------!--------------------------------------------
- END SUBRoutINE SORT  
+ END SUBRoutINE SORT
 !---------------------!--------------------------------------------
 !---------------------!--------------------------------------------
 
@@ -1125,11 +1125,11 @@ forall(I=1:NUM_VALUES) THE_ARRAY(:,I) = TEMP1(:,VAL_IND(I))
 !  Select a NUM_CATEGORIES - 1 big subset of the labroc4 corners (which are contained in the array CITY_BLOCK_DISTANCE)
 !  (NOTE: this is because there are n-1 boundaries between n categories.)
 !
-!  The LABROC5 algorithm is based upon city block distances (the sum of the TPF and FPF for each corner) after they are 
-!  streched/compressed according to a normal distribution 
-! (see reference the Continuous ROC paper at the beginning of this module) 
+!  The LABROC5 algorithm is based upon city block distances (the sum of the TPF and FPF for each corner) after they are
+!  streched/compressed according to a normal distribution
+! (see reference the Continuous ROC paper at the beginning of this module)
 
-!  Note that the city block distance goes inversely with the boundary/threshold value, since we are 
+!  Note that the city block distance goes inversely with the boundary/threshold value, since we are
 ! assuming that the larger values have higher probability of abnormality or positivity.
 ! Thus, the lower is the threshold the more  cases will be included, and
 !  accordingly the larger the TPF and FPF.  This is the reason why arrays are worked on "backwards", i.e., to produce
@@ -1138,10 +1138,10 @@ forall(I=1:NUM_VALUES) THE_ARRAY(:,I) = TEMP1(:,VAL_IND(I))
 ! Notation follow the reference " Continuous ROC paper" at the beginning of module whenever possible.
 
 ! ALGORITHM NOTES:
-! The algorithm is a 2 step process which attempts to set the points as uniformly distributed as possible on a stretched 
+! The algorithm is a 2 step process which attempts to set the points as uniformly distributed as possible on a stretched
 ! scale (the scale is stretched so that distances between operating points that lie close to the -45 degrees diagonal
 ! on the ROC plot are stretched, while for points that are far from that diagoal they are compressed.)
- 
+
 ! The two steps are:
 ! 1) set points close to some ideal uniform distances and at least as far from each other as some value (this is the "coverage
 !    phase", because it is meant to cover the ROC space, possibly at the expense of leaving large gaps between chosen points)
@@ -1153,7 +1153,7 @@ forall(I=1:NUM_VALUES) THE_ARRAY(:,I) = TEMP1(:,VAL_IND(I))
 ! ROC plot). Moreover, the algorithm looks for the  point closest to the ideal, under the condition that the new point is more
 ! than some number of categories dependent distance from the previously selected one. This distance is half
 ! then the previous algorithm and measured from the previously selected point not from the previous ideal point.
-! After the previous phase points are chosen accoding to the add_one_point_in_between subroutine, which is different from 
+! After the previous phase points are chosen accoding to the add_one_point_in_between subroutine, which is different from
 ! the one described in the paper too. (see the subroutine "ADD_ONE_POINT_IN_BETWEEN" for details)
 
  USE statistic_functions ! for the distribution functions
@@ -1164,33 +1164,33 @@ forall(I=1:NUM_VALUES) THE_ARRAY(:,I) = TEMP1(:,VAL_IND(I))
  INTEGER,INTENT(INout):: NUM_CATEGORIES
  INTEGER,INTENT(IN):: idebug
  REAL(kind=DOUBLE),DIMENSION (2,NUM_TRUTH_RUNS), INTENT(INout)::CITY_BLOCK_DIST !
-                                                  ! city_block_dist(1,:) = TPF+FPF FOR THIS CATEGORY BOUNDARY 
-                                                  ! city_block_dist(2,:) = IS A FLAG FOR THE PROCEDURE WHICH CREATES THE 
-                                                  !              FINAL CATEGORY. IT IS SET TO + 1 IF THE OPERATING 
+                                                  ! city_block_dist(1,:) = TPF+FPF FOR THIS CATEGORY BOUNDARY
+                                                  ! city_block_dist(2,:) = IS A FLAG FOR THE PROCEDURE WHICH CREATES THE
+                                                  !              FINAL CATEGORY. IT IS SET TO + 1 IF THE OPERATING
                                                   !              POINT IS SELECTED.
 
 ! work variables
  REAL(kind=DOUBLE):: D_R_minus_1 ! max city block distance, (see reference the Continuous ROC paper at tge beginning of module)
  REAL(kind=DOUBLE):: D_1         ! min city block distance, (see reference the Continuous ROC paper at tge beginning of module)
 
- REAL(KIND=DOUBLE),PARAMETER :: RANGE_D = 1.96_double ! This is the value the city block distances 
+ REAL(KIND=DOUBLE),PARAMETER :: RANGE_D = 1.96_double ! This is the value the city block distances
                   ! are normalized to before being mapped to a normal distribution. RIght now it is set to 2 sigmas (1.96)
 
- INTEGER:: new_points_search_start ! The subroutine uses this variable to decide from which truth state run to start 
+ INTEGER:: new_points_search_start ! The subroutine uses this variable to decide from which truth state run to start
                                    ! selecting the LABROC5 points. The coverage algorithm might start from 1 or 2 depending
                                    ! upon where the first point is (it might be preselcted, before the stretching.)
  INTEGER:: new_points_search_end   ! This is the same as tnew_points_seach_start, but for large indices.
-                                   ! this value is NUM_TRUTH_RUNS - 1 at most since the last point is 
+                                   ! this value is NUM_TRUTH_RUNS - 1 at most since the last point is
                                    ! the fixed point (1,1), and it should not be selected.
 
  REAL(kind=DOUBLE):: STEP          ! If we look for N operating points, STEP is the nearest neighbor distance for N uniformly
-                                   ! distributed points 
- REAL(kind=DOUBLE),DIMENSION(1:NUM_TRUTH_RUNS):: D_R_PRIME ! array containing the stretched city block distances 
- REAL(KIND=DOUBLE):: D_R_PRIME_IDEAL_LARGE 
- REAL(KIND=DOUBLE):: D_R_PRIME_IDEAL_SMALL 
+                                   ! distributed points
+ REAL(kind=DOUBLE),DIMENSION(1:NUM_TRUTH_RUNS):: D_R_PRIME ! array containing the stretched city block distances
+ REAL(KIND=DOUBLE):: D_R_PRIME_IDEAL_LARGE
+ REAL(KIND=DOUBLE):: D_R_PRIME_IDEAL_SMALL
  INTEGER:: LAST_LARGE_TRUTH_RUN
  INTEGER:: LAST_SMALL_TRUTH_RUN
- INTEGER,DIMENSION(1)::  FORTRAN_BUG ! This array is used to correct for the incapability of the intel compiler to use 
+ INTEGER,DIMENSION(1)::  FORTRAN_BUG ! This array is used to correct for the incapability of the intel compiler to use
                        ! size one one dimensional arrays as scalars
  INTEGER::   POINT_CLOSEST_CENTER ! location of point closest to the -45 degrees diagonal
 
@@ -1198,7 +1198,7 @@ forall(I=1:NUM_VALUES) THE_ARRAY(:,I) = TEMP1(:,VAL_IND(I))
  INTEGER:: SELECTED_BOUNDARIES ! Number of boundaries selected by the LABROC5 algorithm
 
  INTEGER:: I   ! LOOP COUNTER
- INTEGER:: POINTS_TO_BE_ADDED  ! THIS IS THE NUMBER OF OPERATING POINT WHICH NEEDS TO BE ADDED IN CASES 
+ INTEGER:: POINTS_TO_BE_ADDED  ! THIS IS THE NUMBER OF OPERATING POINT WHICH NEEDS TO BE ADDED IN CASES
             ! THE FIRST PART OF THE SEARCH DOES NOT PROVIDE ENOUGH, SEE HEADER OF SUBRoutINE FOR CLARIFICATION
 
  D_R_PRIME = 0.0_double
@@ -1206,7 +1206,7 @@ forall(I=1:NUM_VALUES) THE_ARRAY(:,I) = TEMP1(:,VAL_IND(I))
 
 ! THIS CHECK SHOUD BE REINSTATED IF ONE WANTS TO MODIFY THE CATEGORIZATION SCHEME TO MAKE SURE
 ! THAT IT IS WORKING PROPERLY
-! FIRST CHECK IF WE HAVE ENOUGH TRUTH RUNS TO FIND THE NUMBER OF CATEGORIES WE ARE LOOKING 
+! FIRST CHECK IF WE HAVE ENOUGH TRUTH RUNS TO FIND THE NUMBER OF CATEGORIES WE ARE LOOKING
 ! FOR (I.E., CHECK FOR CONSISTENCY IN INPUT)
 ! IF(NUM_CATEGORIES > NUM_TRUTH_RUNS) THEN
 !  WRITE(*,*) "ERROR::SUBROUTINE FIND_LABROC5_POINTS"
@@ -1223,9 +1223,9 @@ NEW_POINTS_SEARCH_END             =  NUM_TRUTH_RUNS
 
 
 ! Note that the largest meaningful value for a new point is one less that the total
-! number of truth state runs, since the last one is *always* 1,1 by contruct so it has 2 as 
+! number of truth state runs, since the last one is *always* 1,1 by contruct so it has 2 as
 ! city block distance and it is of no insterest (it rovides no information)
- 
+
 D_R_minus_1                       =  2.0_double
 D_R_PRIME(1)                      = 1.0_double
 NEW_POINTS_SEARCH_START           = 2
@@ -1245,7 +1245,7 @@ NEW_POINTS_SEARCH_START           = 2
            (    PHI(  - RANGE_D * ( 1.0_double - city_block_dist (1,NEW_POINTS_SEARCH_START:NEW_POINTS_SEARCH_END)  ) / &
                                ( 1.0_double -                                     D_1                             )   &
                     ) &
-               - 0.5_double   )/ ( 0.5_double - PHI(- RANGE_D) ) 
+               - 0.5_double   )/ ( 0.5_double - PHI(- RANGE_D) )
  ELSEWHERE
        D_R_PRIME(NEW_POINTS_SEARCH_START:NEW_POINTS_SEARCH_END) = &
            (    PHI(  RANGE_D * ( city_block_dist (1,NEW_POINTS_SEARCH_START:NEW_POINTS_SEARCH_END)  - 1.0_double ) / &
@@ -1259,15 +1259,15 @@ NEW_POINTS_SEARCH_START           = 2
 ! the INTEL compiler to consider size one 1-dimensional arrays as scalars. I kept 2 variables because I hope that the bug
 ! will be removed and I will be able to live with a scalar.
 
-  FORTRAN_BUG =  MINLOC( ABS( D_R_PRIME(NEW_POINTS_SEARCH_START:NEW_POINTS_SEARCH_END) )) 
+  FORTRAN_BUG =  MINLOC( ABS( D_R_PRIME(NEW_POINTS_SEARCH_START:NEW_POINTS_SEARCH_END) ))
   POINT_CLOSEST_CENTER =  FORTRAN_BUG(1)
-  ! Check if the middle point isn't also an extreme (for very skewed data sets) 
-  IF( CITY_BLOCK_DIST(2,POINT_CLOSEST_CENTER) .speq. -1.0_double) THEN  
+  ! Check if the middle point isn't also an extreme (for very skewed data sets)
+  IF( CITY_BLOCK_DIST(2,POINT_CLOSEST_CENTER) .speq. -1.0_double) THEN
     CITY_BLOCK_DIST(2,POINT_CLOSEST_CENTER) = 1.0_double ! setting this value to 1 impliest that it is selected
     SELECTED_BOUNDARIES =   SELECTED_BOUNDARIES + 1      ! One more point was se;ected
   ENDIF
 
- 
+
 ! Set the step size, this is used to determine how far each point should be from the previous one. Note that
 ! the size of the step depends upon the number of points that we still need to select and not on the total
 ! number of points. If we could select uniformly distributed points, this would be their nearest-neighbor distance.
@@ -1289,12 +1289,12 @@ NEW_POINTS_SEARCH_START           = 2
   D_R_PRIME_IDEAL_SMALL = D_R_PRIME(POINT_CLOSEST_CENTER) - step
   LAST_SMALL_TRUTH_RUN = POINT_CLOSEST_CENTER + 1
 
-! To understand this algorithm one has to keep in mind that when the category boundary goes up, the index goes up, but the 
-! city block distance goes down and the points becomes closer to (0,0) on the ROC plot. This is because the cumulative 
+! To understand this algorithm one has to keep in mind that when the category boundary goes up, the index goes up, but the
+! city block distance goes down and the points becomes closer to (0,0) on the ROC plot. This is because the cumulative
 ! distributions of the ROC curves are taken from + infinity to the current threshold, or category boundary related to the
 ! operating point.
 
- TRUTH_RUNS: DO 
+ TRUTH_RUNS: DO
      IF(LAST_LARGE_TRUTH_RUN >= 1) THEN
         CALL  FIND_ONE_BOUNDARY( LAST_LARGE_TRUTH_RUN,   NEW_POINTS_SEARCH_START, - 1, &
                D_R_PRIME_IDEAL_LARGE , FOUND_LARGE)
@@ -1304,7 +1304,7 @@ NEW_POINTS_SEARCH_START           = 2
 
      IF (FOUND_LARGE) THEN
             ! Increment the next ideal point, making sure that it is not too close to the 1,1 vertex
-            D_R_PRIME_IDEAL_LARGE = MIN(D_R_PRIME_IDEAL_LARGE + step, 1.0_double - .5_double * step) 
+            D_R_PRIME_IDEAL_LARGE = MIN(D_R_PRIME_IDEAL_LARGE + step, 1.0_double - .5_double * step)
             CITY_BLOCK_DIST(2,LAST_LARGE_TRUTH_RUN) = 1.0_double ! Tag the cutoff J as a labroc5 cutoff
             SELECTED_BOUNDARIES = SELECTED_BOUNDARIES + 1
             LAST_LARGE_TRUTH_RUN = LAST_LARGE_TRUTH_RUN - 1
@@ -1313,7 +1313,7 @@ NEW_POINTS_SEARCH_START           = 2
     ! If we have found enough so far, no need to look for another small one
     IF( SELECTED_BOUNDARIES >= NUM_CATEGORIES - 1)   EXIT TRUTH_RUNS
 
-    IF(LAST_SMALL_TRUTH_RUN <= NEW_POINTS_SEARCH_END) THEN 
+    IF(LAST_SMALL_TRUTH_RUN <= NEW_POINTS_SEARCH_END) THEN
        CALL FIND_ONE_BOUNDARY( LAST_SMALL_TRUTH_RUN,   NEW_POINTS_SEARCH_END, +1, &
                 D_R_PRIME_IDEAL_SMALL ,FOUND_SMALL)
     ELSE
@@ -1322,7 +1322,7 @@ NEW_POINTS_SEARCH_START           = 2
 
      IF (FOUND_SMALL) THEN
             ! Decrement the next ideal point, making sure that it is not too close to the 0,0 vertex
-            D_R_PRIME_IDEAL_SMALL = MAX(D_R_PRIME_IDEAL_SMALL - step, - 1.0_double + .5_double * step) 
+            D_R_PRIME_IDEAL_SMALL = MAX(D_R_PRIME_IDEAL_SMALL - step, - 1.0_double + .5_double * step)
             CITY_BLOCK_DIST(2,LAST_SMALL_TRUTH_RUN) = 1.0_double ! Tag the cutoff J as a labroc5 cutoff
             SELECTED_BOUNDARIES = SELECTED_BOUNDARIES + 1
             LAST_SMALL_TRUTH_RUN = LAST_SMALL_TRUTH_RUN + 1
@@ -1341,7 +1341,7 @@ NEW_POINTS_SEARCH_START           = 2
 
  IF(SELECTED_BOUNDARIES < NUM_CATEGORIES - 1) THEN
     POINTS_TO_BE_ADDED = (NUM_CATEGORIES - 1) - SELECTED_BOUNDARIES
-    DO I = 1, POINTS_TO_BE_ADDED 
+    DO I = 1, POINTS_TO_BE_ADDED
       CALL ADD_ONE_POINT_IN_BETWEEN(NEW_POINTS_SEARCH_START, NEW_POINTS_SEARCH_END, CITY_BLOCK_DIST,D_R_PRIME,idebug)
       SELECTED_BOUNDARIES = SELECTED_BOUNDARIES + 1
     ENDDO
@@ -1350,11 +1350,11 @@ NEW_POINTS_SEARCH_START           = 2
 
 CONTAINS
      SUBRoutINE FIND_ONE_BOUNDARY(START_TRUTH_RUN,END_TRUTH_RUN,INCREMENT,D_R_PRIME_IDEAL,FOUND)
-     ! THIS IS AN INTERNAL PROCEDURE TO THE SUBRoutINE FIND_LABROC5_POINTS. 
+     ! THIS IS AN INTERNAL PROCEDURE TO THE SUBRoutINE FIND_LABROC5_POINTS.
      ! IT LOOKS FOR A POINT WHICH IS AS CLOSE AS POSSIBLE TO AN IDEAL POINT BUT FARTHER AWAY FROM
      ! THE PREVIOUSLY SELECTED POINT BY AT LEAST HALF THE QUANTITY CALLED STEP Defined in the calling subroutine.)
      ! IF IT FINDS A POINT, IT RETURNS THE ADDRESS OF THE POINT AND SETS THE VARIABLE "FOUND" TO .TRUE.
-     ! NOTE THAT IT WORKS BOTH BY SEARCHING UP AND DOWN THE STRETCHED DISTANCE ARRAY, SINCE IT TAKES 
+     ! NOTE THAT IT WORKS BOTH BY SEARCHING UP AND DOWN THE STRETCHED DISTANCE ARRAY, SINCE IT TAKES
      ! AN INCREMENT AS INPUT.
      ! NOTE: it is an internal subroutine because in this way it can share the subroutine's global variables and
      !       we can make the call leaner.
@@ -1364,10 +1364,10 @@ CONTAINS
      INTEGER,INTENT(INout):: START_TRUTH_RUN
      INTEGER,INTENT(IN):: INCREMENT
      INTEGER,INTENT(IN):: END_TRUTH_RUN
-     REAL(KIND=DOUBLE),INTENT(IN):: D_R_PRIME_IDEAL 
+     REAL(KIND=DOUBLE),INTENT(IN):: D_R_PRIME_IDEAL
      LOGICAL,INTENT(out):: FOUND
-     INTEGER :: CURRENT_TRUTH_RUN 
- 
+     INTEGER :: CURRENT_TRUTH_RUN
+
       FOUND = .FALSE.
       ! loops over the remaining LABROC4 points, moving up or down depending upon the call
       DO CURRENT_TRUTH_RUN = START_TRUTH_RUN, END_TRUTH_RUN - INCREMENT , INCREMENT
@@ -1378,12 +1378,12 @@ CONTAINS
                <                                                                   &
                  ABS( D_R_PRIME(CURRENT_TRUTH_RUN) - D_R_PRIME_IDEAL )                     )       &
               .OR. &
-               ! 2) THE POINT IS CLOSER TO THE PREVIOUSLY SELECTED POINT THAN ... 
+               ! 2) THE POINT IS CLOSER TO THE PREVIOUSLY SELECTED POINT THAN ...
                (  ABS(D_R_PRIME( CURRENT_TRUTH_RUN) - D_R_PRIME( START_TRUTH_RUN - INCREMENT)) < .5_double* step)     &
               .OR. &
                ! 3) IT IS TOO CLOSE TO THE ROC PLOT CORNERS.
                ( 1.0_double -  ABS(D_R_PRIME(CURRENT_TRUTH_RUN)) <  .5_double * step )     &
-             ) CYCLE 
+             ) CYCLE
              ! If this pooint wasn't skipped, it means it is good.
              FOUND = .TRUE.
              EXIT
@@ -1391,19 +1391,19 @@ CONTAINS
       ENDDO
 
       IF (FOUND) THEN
-         START_TRUTH_RUN = CURRENT_TRUTH_RUN 
+         START_TRUTH_RUN = CURRENT_TRUTH_RUN
       ELSE
          IF( CURRENT_TRUTH_RUN  == END_TRUTH_RUN & ! The do loop was exited at the largest value, which
             .AND.   &                              ! then it is at the minimum distance (if acceptable). We take it.
             (ABS(D_R_PRIME( CURRENT_TRUTH_RUN) - D_R_PRIME( START_TRUTH_RUN - INCREMENT)) < .5_double* step)     &
             .AND. &
             ( 1.0_double -  ABS(D_R_PRIME(CURRENT_TRUTH_RUN)) <  .5_double * step )     &
-           ) THEN 
-            START_TRUTH_RUN = END_TRUTH_RUN          
+           ) THEN
+            START_TRUTH_RUN = END_TRUTH_RUN
             FOUND = .TRUE.
          ENDIF
       ENDIF
-    
+
      END SUBRoutINE FIND_ONE_BOUNDARY
 
  END SUBRoutINE FIND_LABROC5_POINTS
@@ -1415,11 +1415,11 @@ SUBRoutINE CREATE_ORDINAL_CATEGORIES(NUM_TRUTH_RUNS,TRUTH_RUNS_CATEGORIES,NUM_CA
      TST_RES_VAL_CATEGORY_BOUNDARY,CAT0)
 !--------------------------------------------------
 !
-!  CONVERT TEST RESULT VALUES INTO ORDINAL CATEGORICAL DATA. 
+!  CONVERT TEST RESULT VALUES INTO ORDINAL CATEGORICAL DATA.
 !  It is based on the assumtion that the arrays are sorted in INCREASING test result value starting from
 ! the index 1. The array TST_RES_VAL_CATEGORY_BOUNDARY has element which separate category in the following way
 ! category(i) = x/x, TST_RES_VAL_CATEGORY_BOUNDARY[i] < x < TST_RES_VAL_CATEGORY_BOUNDARY[i-1]
-! It sums all the actually postive together and all the actually negative together, for all the test result values which are 
+! It sums all the actually postive together and all the actually negative together, for all the test result values which are
 ! between 2 boundary values which were selected before by previously called subroutines.
 
  implicit none
@@ -1434,13 +1434,13 @@ SUBRoutINE CREATE_ORDINAL_CATEGORIES(NUM_TRUTH_RUNS,TRUTH_RUNS_CATEGORIES,NUM_CA
                                                   ! from each other
   INTEGER, INTENT(out),DIMENSION(ACT_NEG:ACT_POS,NUM_CATEGORIES):: CAT0 ! ORDINAL CATEGORICAL DATA: CONTAINTS THE
                   ! NUMBER OF ACTUALLY POSITIVE (ABNORMAL) AND ACTUALLY NEGATIVE (NORMAL) CASES PER CATEGORY.
- 
+
   INTEGER:: I_CATEGORY,I_TRUTH_RUN
 
 ! Initialize the category array
   CAT0 = 0
 
-! Start the category counter, which is used to update the boundary/threshold value and the category array  
+! Start the category counter, which is used to update the boundary/threshold value and the category array
   I_CATEGORY = NUM_CATEGORIES
 
  ! Since in ROC integration is started at + infinity, the arrays are scanned backwards
@@ -1465,7 +1465,7 @@ SUBRoutINE CREATE_ORDINAL_CATEGORIES(NUM_TRUTH_RUNS,TRUTH_RUNS_CATEGORIES,NUM_CA
 !-----------------------------------------------
 ! THE SUBRoutINE SELECTS A NEW POINT FROM THE SET OF THE  LABROC4 POINTS THAT HAVE NOT BEEN SELECTED YET.
 ! IT LOOKS FOR THE LARGEST GAP BETWEEN 2 PREVIOUSLY SELECTED POINTS, AND TRIES TO PICK A POINT THERE, UNLESS THE MINIMAL
-! DISTANCE OF THIS NEW POINT TO ALREADY SELECTED POINTS (I.E., THE DISTANCE BETWEEN THIS POINT AND THE CLOSEST OF THE ALREADY 
+! DISTANCE OF THIS NEW POINT TO ALREADY SELECTED POINTS (I.E., THE DISTANCE BETWEEN THIS POINT AND THE CLOSEST OF THE ALREADY
 ! SELECTED POINTS) IS LESS THAN HALF OF THE LARGEST MINIMAL DISTANCE BETWEEN ANY UNSELECTED POINT AND AN ALREADY
 ! SELECTED ONE (I.E., LOOK AT ALL THE NON SELECTED POINTS, AND FIND THE ONE WHICH IS FATHER APART FROM ITS CLOSEST ALREADY
 ! SEECTED POINT).
@@ -1487,12 +1487,12 @@ SUBRoutINE CREATE_ORDINAL_CATEGORIES(NUM_TRUTH_RUNS,TRUTH_RUNS_CATEGORIES,NUM_CA
 
 ! INTERNAL VARIABLES
  INTEGER:: I_TRUTH_RUN ! COUNTER FOR THE CURRENTLY CHECKED TRUTH RUN
- INTEGER:: MAX_DELTA_LOWER_BOUND 
- INTEGER:: MAX_DELTA_UPPER_BOUND 
+ INTEGER:: MAX_DELTA_LOWER_BOUND
+ INTEGER:: MAX_DELTA_UPPER_BOUND
  INTEGER:: LAST_DELTA_LOWER_BOUND ! THE INDEX OF THE LOWER BOUND OF THE CURRENT INTERVAL OF NON SELECTED POINTS
  INTEGER:: LAST_DELTA_UPPER_BOUND ! THE INDEX OF THE UPPER BOUND OF THE CURRENT INTERVAL OF NON SELECTED POINTS
  REAL(kind=DOUBLE):: MAX_DELTA    ! MAXIMUM GAP BETWEEN TWO PREVIOUSLY SELECTED POINTS
- REAL(kind=DOUBLE):: LAST_DELTA   ! SIZE OF THE GAP BETWEEN SELECTED POINTS CURRENTLY ANALIZED 
+ REAL(kind=DOUBLE):: LAST_DELTA   ! SIZE OF THE GAP BETWEEN SELECTED POINTS CURRENTLY ANALIZED
  REAL(kind=DOUBLE):: MIN_DELTA    ! MINIMUM DISTANCE FROM ITS BOUNDARIES FOR A NON SELECTED POINT IN THE LARGEST GAP TO BE
                                   ! A SELECTION CANDIDATE. THE DISTANCE DEPENDS UPON THE POINT MOST DISTANT FROM ITS BOUNDARY
                                   ! OR FROM THE LAST SELECTION CANDIDATE (SEE CODE)
@@ -1512,7 +1512,7 @@ SUBRoutINE CREATE_ORDINAL_CATEGORIES(NUM_TRUTH_RUNS,TRUTH_RUNS_CATEGORIES,NUM_CA
  SCAN_UNUSED_POINTS: DO
 
  ! FIND THE NEXT LOWER BOUND OF AN INTERVAL CONTANING NON SELECTED POINTS, I.E., POINTS WITH NEGATIVE SECOND
- ! ELEMENT OF subarray ARRAY CITY_BLOCK_DIST(2,LAST_DELTA_LOWER_BOUND:LAST_TRUTH_RUN) 
+ ! ELEMENT OF subarray ARRAY CITY_BLOCK_DIST(2,LAST_DELTA_LOWER_BOUND:LAST_TRUTH_RUN)
     FOUND_LOWER_BOUND = .FALSE.
 
     LOWER_BOUND: DO LAST_DELTA_LOWER_BOUND = I_TRUTH_RUN, LAST_TRUTH_RUN
@@ -1529,7 +1529,7 @@ SUBRoutINE CREATE_ORDINAL_CATEGORIES(NUM_TRUTH_RUNS,TRUTH_RUNS_CATEGORIES,NUM_CA
            EXIT LOWER_BOUND
       ENDIF
     ENDDO LOWER_BOUND
-   
+
     ! IF IT CAN'T FIND A LOWER BOUND, IT MEANS THAT THERE ARE NO MORE INTERVALS.
     IF (.NOT.FOUND_LOWER_BOUND)  EXIT SCAN_UNUSED_POINTS
 
@@ -1550,7 +1550,7 @@ SUBRoutINE CREATE_ORDINAL_CATEGORIES(NUM_TRUTH_RUNS,TRUTH_RUNS_CATEGORIES,NUM_CA
      I_TRUTH_RUN = LAST_DELTA_UPPER_BOUND + 1! The next lower bound can be the same as the previous upper + 1, but no less than
                                              ! that
 
-! DETERMINE THE SIZE OF THE CURRENT INTERVAL. SINCE THE LOWER AND UPPER BOUNDS PREVIOUSLY FOUND ARE 
+! DETERMINE THE SIZE OF THE CURRENT INTERVAL. SINCE THE LOWER AND UPPER BOUNDS PREVIOUSLY FOUND ARE
 ! POINTS WHICH WERE NOT SELECTED PREVIOUSLY, AND WE WANT THE DISTANCE BETWEEN THE POINTS WHICH WERE SELECTED ALREADY,
 ! WE TAKE THE LAST_DELTA_LOWER_BOUND-1 AND LAST_DELTA_UPPER_BOUND+1. NOTE THAT WE COMPUTE THE LOWER MINUS THE UPPER BECAUSE
 ! THE DISTANCE ON THE ROC PLOT GOES IN OPPOSITVE ORDER THAN THE DISTANCE ON THE REST RESULT VALUE
@@ -1577,7 +1577,7 @@ SUBRoutINE CREATE_ORDINAL_CATEGORIES(NUM_TRUTH_RUNS,TRUTH_RUNS_CATEGORIES,NUM_CA
               THIS_MIN_DIST =  MIN( 1.0_double + D_R_PRIME(I_THIS_MIN_DIST), &
                     -D_R_PRIME(I_THIS_MIN_DIST) + D_R_PRIME(LAST_DELTA_LOWER_BOUND - 1)  )
         ENDIF
-        ! CHECK IF THIS DISTANCE IS THE LARGEST ONE SO FAR. IF IT IS RECORD THIS AS THE CURRENTLY CANDIDATE FOR 
+        ! CHECK IF THIS DISTANCE IS THE LARGEST ONE SO FAR. IF IT IS RECORD THIS AS THE CURRENTLY CANDIDATE FOR
         ! THE NEXT POINT TO BE SELECTED
        IF(THIS_MIN_DIST >= MAX_MIN) THEN
         THE_POINT = I_THIS_MIN_DIST
@@ -1594,7 +1594,7 @@ SUBRoutINE CREATE_ORDINAL_CATEGORIES(NUM_TRUTH_RUNS,TRUTH_RUNS_CATEGORIES,NUM_CA
 
   DO I_TRUTH_RUN = MAX_DELTA_LOWER_BOUND, MAX_DELTA_UPPER_BOUND
      LAST_DELTA = MIN(- D_R_PRIME(I_TRUTH_RUN) +  D_R_PRIME(MAX_DELTA_LOWER_BOUND-1), &
-                       - D_R_PRIME(MAX_DELTA_UPPER_BOUND+1) + D_R_PRIME(I_TRUTH_RUN) ) 
+                       - D_R_PRIME(MAX_DELTA_UPPER_BOUND+1) + D_R_PRIME(I_TRUTH_RUN) )
      ! IF THIS MINIMUM DISTANCE IS LARGER THAN THE PRESELECTED VALUE, THE POINT BECOMES THE SELECTION CANDIDATE
      IF (LAST_DELTA >= MIN_DELTA) THEN
            MIN_DELTA = LAST_DELTA
@@ -1603,9 +1603,9 @@ SUBRoutINE CREATE_ORDINAL_CATEGORIES(NUM_TRUTH_RUNS,TRUTH_RUNS_CATEGORIES,NUM_CA
 
   ENDDO
 
-  ! THE POINT WHICH IS RECORDED AS SELECTION CANDIDATE AT THIS POINT IS THE POINT WE WANT 
+  ! THE POINT WHICH IS RECORDED AS SELECTION CANDIDATE AT THIS POINT IS THE POINT WE WANT
   CITY_BLOCK_DIST(2, THE_POINT) = 1.0_double
- 
+
 
 !------------------------------------------------
   END SUBRoutINE ADD_ONE_POINT_IN_BETWEEN

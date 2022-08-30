@@ -16,17 +16,17 @@ use error_flags ! module containing the values associated with specific errors, 
 ! GENERAL SETTING FOR THE WHOLE MODULE
 implicit none
 
-private ! All the variables and functions that are not set as public 
+private ! All the variables and functions that are not set as public
         ! are not acessible
-! Procedures for sensitivity- and specificity-like measures 
+! Procedures for sensitivity- and specificity-like measures
 public  empirical_TPF ! Compute the TPF (sensitivity) associated with a specific threshold value
 public  empirical_FPF ! Compute the FPF (1 - specificity) associated with a specific threshold value
 
-public exact_CI_empirical_FPF ! compute exact confidence intervals for the non-parametric estimate of FPF 
-public exact_CI_empirical_TPF ! compute exact confidence intervals for the non-parametric estimate of TPF 
+public exact_CI_empirical_FPF ! compute exact confidence intervals for the non-parametric estimate of FPF
+public exact_CI_empirical_TPF ! compute exact confidence intervals for the non-parametric estimate of TPF
 
-! Global measures, mostly empirical AUC ~ Mann-Whitney form of the Wilcoxon statistics  
-public  wilcoxon, fast_wilcoxon ! compute wilcoxon from two arrays of data, one for the positive and one for the 
+! Global measures, mostly empirical AUC ~ Mann-Whitney form of the Wilcoxon statistics
+public  wilcoxon, fast_wilcoxon ! compute wilcoxon from two arrays of data, one for the positive and one for the
                  ! negatives.
 public  wilcoxon_cat ! compute wilcoxon from operating points or cumulative fractions
 public  ZhouAndGatsonis ! provide Wilcoxon estimates and variance-covariance matrix for a set of
@@ -41,7 +41,7 @@ public  DeLongAndDeLong ! provide Wilcoxon estimates and variance-covariance mat
 ! Curve plotting and calculation of empirical operating points
 public  empirical_operating_points_cat ! compute operating points from categorical data
 public  empirical_operating_points_list ! compute operating points from list data
- 
+
 contains
 
 !------------------------------------------------------------------
@@ -55,11 +55,11 @@ contains
  implicit none
 
  integer, intent(IN):: num_categories
- real(kind=double),dimension(2, num_categories+1),intent(IN) ::  op_pts 
+ real(kind=double),dimension(2, num_categories+1),intent(IN) ::  op_pts
                   ! Positive and negative fractions, assumes that point 1 is FPF = TPF = 0
                   ! and point n+1 is FPF = TPF = 1 or the opposite.
                   ! array is : ( (FPF_1,TPF_1), (FPF_2,TPF_2), ...)
-         
+
 
  integer:: i  ! Loop counter
 
@@ -71,10 +71,10 @@ contains
  do i = 2, num_categories + 1
        wilcoxon_cat =  wilcoxon_cat + &
                             ( op_pts(1,i) - op_pts(1,i-1) ) * &
-                             ( op_pts(2,i) + op_pts(2,i-1) ) 
+                             ( op_pts(2,i) + op_pts(2,i-1) )
  end do
 
-! The division is because one should use the average of the positive fractions not their sum, 
+! The division is because one should use the average of the positive fractions not their sum,
 ! so first we sum them then we divide them by 2
  wilcoxon_cat = wilcoxon_cat/2.0_double
 
@@ -88,8 +88,8 @@ contains
 
 !------------------------------------------------------------------------------
 ! PURPOSE: produce a number of values that can help create a relationship between the test result
-!          values and the latent variable space. 
-! NOTE:    The subroutine prints directly because currently there seem to be no purpose in returning the 
+!          values and the latent variable space.
+! NOTE:    The subroutine prints directly because currently there seem to be no purpose in returning the
 !          data to the calling program.
 ! NOTE1:   The algorithm tests for large AUC values because when the AUC is too large the estimate of beta
 !          tends to become unstable.
@@ -118,7 +118,7 @@ contains
 if(mn <= 0 .or. ms <= 0) then
     ierror = 2
 else
-    ierror = 0 ! I can't find a way to make this routine fail when the input is correct 
+    ierror = 0 ! I can't find a way to make this routine fail when the input is correct
 endif
 
 ! construct ordinal categories from the real data calling catgrz.
@@ -155,7 +155,7 @@ end subroutine  empirical_operating_points_list
 ! ----------------------------------------------
 ! computes the cumultive truth fraction for the categories from input
 ! it assumes that the categories are swept from larger values to smaller
-! values as. Note that in this way the ordering of the operating points will be 
+! values as. Note that in this way the ordering of the operating points will be
 ! the opposite as it is for the categories themselves (i.e., category i will match to
 ! operating point num_categories + 2 - i -- the first is (0,0)  and the last one is (1,1))
 
@@ -167,11 +167,11 @@ end subroutine  empirical_operating_points_list
 
  real(kind = double), dimension(num_categories+1), intent(out):: op_pts !(empirical operating
         ! points from (0,0) to (1,1)
- 
+
  integer:: i ! loop counter
- 
+
  op_pts  = 0.0_double
-  
+
  do i = 2, num_categories + 1
       op_pts(i) = op_pts(i-1) + real( categories(num_categories-i+2), kind = double ) / num_cases
  enddo
@@ -179,7 +179,7 @@ end subroutine  empirical_operating_points_list
 !------------------------------------------------
  end subroutine empirical_operating_points_cat
 !------------------------------------------------
-!------------------------------------------------- 
+!-------------------------------------------------
 
 !------------------------------------------------
  pure subroutine exact_CI_empirical_FPF(mn, k , confidence_level, type_of_CI,  lb, ub, ierror)
@@ -212,7 +212,7 @@ call empirical_k_CI(mn, k , confidence_level, type_of_CI,  lb, ub, ierror )
 !------------------------------------------------
  end subroutine exact_CI_empirical_FPF
 !------------------------------------------------
-!------------------------------------------------- 
+!-------------------------------------------------
 
 
 !------------------------------------------------
@@ -246,7 +246,7 @@ call empirical_k_CI(ms, k , confidence_level, type_of_CI,  lb, ub, ierror )
 !------------------------------------------------
  end subroutine exact_CI_empirical_TPF
 !------------------------------------------------
-!------------------------------------------------- 
+!-------------------------------------------------
 
 
 !------------------------------------------------
@@ -257,8 +257,8 @@ pure subroutine empirical_k_CI(N, k , confidence_level, type_of_CI,  lb, ub, ier
 !          specific wrappers for FPF and TPF because it would do exactly the same thing, so we have
 !          just one function here. We decided to create to different functions to add some flexibility
 !          avoid potential portability issues
-!ALGORITHM:from Fleiss "statistical methods for rates and proportions", third edition, Wiley, page 22. 
-!          the search of largest (smallest) value of p (the probability of observing a success) that 
+!ALGORITHM:from Fleiss "statistical methods for rates and proportions", third edition, Wiley, page 22.
+!          the search of largest (smallest) value of p (the probability of observing a success) that
 !          has at at least a 5% chance of generating at least as few (at most as many) successes as k
 !          is done by first simply bounding the value and applying bisection. More refined approaches can
 !          be used, but it did not seem necessary at this point.We use the log of the probability of each
@@ -284,7 +284,7 @@ pure subroutine empirical_k_CI(N, k , confidence_level, type_of_CI,  lb, ub, ier
  integer, intent(OUT) :: ierror ! error value for the CI calculation :
                                 ! fit_OK -> Procedure did not detect any computation issues
                                 ! bad_input -> input values are not acceptable
- 
+
  ! work variables
  integer i ! Loop counter
  real(kind=double) :: tail ! size of the tail of the binomial distribution at fixed number of successes, for which we need to find
@@ -293,30 +293,30 @@ pure subroutine empirical_k_CI(N, k , confidence_level, type_of_CI,  lb, ub, ier
  real(kind=double), dimension(0:N) :: lcoeff    ! array of factorial related coefficients, we compute them first to avoid doing it a
                                                 ! million times over. coff(i) = log( N!/(k! (N-k)!)) (binomial coeffs). We use a real
                                                 ! array both to avoid multiple conversions and to reduce the chance of overflow.
- real(kind=double) :: lb_kn, lb1, lb1_kn, lb2, lb2_kn ! Bounding values for the lower bound in the success probability with their associated 
+ real(kind=double) :: lb_kn, lb1, lb1_kn, lb2, lb2_kn ! Bounding values for the lower bound in the success probability with their associated
                                                       ! binomial tails for generating at least k successes (from k to N)
  real(kind=double) :: ub_0k, ub1, ub1_0k, ub2, ub2_0k ! Bounding values for the upper bound in the success probability with their associated
-                                                      ! binomial tails for generating at most k successes ( from 0 to k) 
+                                                      ! binomial tails for generating at most k successes ( from 0 to k)
  real(kind=double), parameter:: tol = .001_double ! accepted error in the calculation of the tail, doesn't need to be very small. We tried a few
                                                   ! values and this one seems fine
- integer, parameter :: max_iter = 1000 ! max number of iterations 
+ integer, parameter :: max_iter = 1000 ! max number of iterations
 
  ! check whether values are acceptable, N needs to be larger than 1 or no variance can be estimated
  if(   k > N .or. k < 0 .or. N <= 1 & ! unacceptable integer values
        .or. confidence_level > 1.0 .or. confidence_level < 0.0 & ! unacceptale confidence values
-       .or.(  (type_of_CI.ne.1) .and. (type_of_CI.ne.0) .and. (type_of_CI.ne.1)) & ! wrong input value for the type of CI 
-    ) then 
+       .or.(  (type_of_CI.ne.1) .and. (type_of_CI.ne.0) .and. (type_of_CI.ne.1)) & ! wrong input value for the type of CI
+    ) then
          ! Initialize the return values for some absurd values -- this 666 comes from Kevin Schatz, UoI :-)
          ! values are in wrong order to make sure user has to realize there is a problem
          lb = +666.0_double
          ub = -666.0_double
-         ierror = bad_input 
+         ierror = bad_input
          return
- elseif( confidence_level .speq. 1.0_double ) then 
-        !Only way to be sure is to cover every possible answer. Test done for completeness. It is absurd but acceptable 
+ elseif( confidence_level .speq. 1.0_double ) then
+        !Only way to be sure is to cover every possible answer. Test done for completeness. It is absurd but acceptable
          lb = 0.0_double
          ub = 1.0_double
-         ierror = 0 
+         ierror = 0
          return
  elseif( confidence_level .speq. 0.0_double ) then
          !This one is a little obscure to me, but this seems that as the confidence level descreases
@@ -333,15 +333,15 @@ pure subroutine empirical_k_CI(N, k , confidence_level, type_of_CI,  lb, ub, ier
  ! compute the log binomial coefficients, they are rarely all needed in the calcs, but I can't find an elegant to avoid computing all of them
  ! anyway and since the  memory is more or less irrelevant, it cleaner to just keep them all. Double precision overflows for N > ~ 1000, so
  ! we used logarithms.
- lcoeff(0) = 0.0_double 
+ lcoeff(0) = 0.0_double
  do i = 1, N
        lcoeff(i) = lcoeff(i-1) + log(real(N-i+1, kind=double))  -log(real(i,kind=double))
  enddo
 
 
 ! first estimate the expected value of p, the proportion.
- est_p = real(k, kind=double) /real(N, kind=double) 
- 
+ est_p = real(k, kind=double) /real(N, kind=double)
+
 
 
 ! We need to know if there is one tail or two tails for that specific confidence level.
@@ -353,7 +353,7 @@ pure subroutine empirical_k_CI(N, k , confidence_level, type_of_CI,  lb, ub, ier
 
 ! We have already corrected for the tail size, now we have to see if the lower bound tail is
 ! present:
-! - if we look only for an upper bound (type_of_CI = -1), it means we are not interested in a 
+! - if we look only for an upper bound (type_of_CI = -1), it means we are not interested in a
 !   lower bound, i.e., the bound can be set to zero (the lowest possible value)
 ! - if we observed zero successes, then the lower bound can only be zero (because the cumulative
 !   (probability of measures at least as large as 0 becomes 1 and there are no smaller
@@ -365,8 +365,8 @@ pure subroutine empirical_k_CI(N, k , confidence_level, type_of_CI,  lb, ub, ier
                          ! a couple of iterations.
         lb1_kn = 0.0_double ! if  the probability of success is 0, it impossible to generate
                             ! k > 0 successes
-        lb2 = est_p ! the lower bound has to be smaller than the estimated value. 
-        lb2_kn = bin_dist_kn(lb2) 
+        lb2 = est_p ! the lower bound has to be smaller than the estimated value.
+        lb2_kn = bin_dist_kn(lb2)
 
         ! iterate between the two values to find a value that it is close enough
         do i = 1, max_iter
@@ -383,13 +383,13 @@ pure subroutine empirical_k_CI(N, k , confidence_level, type_of_CI,  lb, ub, ier
              else ! lb is too large, so we set it as upper bound
                   lb2 = lb
                   lb2_kn = lb_kn
-             endif 
-        enddo     
+             endif
+        enddo
  endif search_lb
 
 ! We have already corrected for the tail size, now we have to see if the upperer bound tail is
 ! present:
-! - if we look only for an lower bound (type_of_CI = +1), it means we are not interested in a 
+! - if we look only for an lower bound (type_of_CI = +1), it means we are not interested in a
 !   upper bound, i.e., the bound can be set to 1 (the largest possible value)
 ! - if we observed N successes, then the upper bound can only be 1 (because the cumulative
 !   (probability of measures at most as extreme as N becomes 1 and there are no larger
@@ -418,10 +418,10 @@ pure subroutine empirical_k_CI(N, k , confidence_level, type_of_CI,  lb, ub, ier
              else ! ub is too small, so it is the new lower bound
                   ub1 = ub
                   ub1_0k = ub_0k
-             endif 
-        enddo     
+             endif
+        enddo
  endif search_ub
-      
+
 
 contains
 
@@ -433,20 +433,20 @@ contains
 
  real(kind=double)::  p_at, q_at ! probability at the power of
  integer:: j ! loop counter
- 
+
  ! initialize with the value probabide by zero successes and then add up to k
- 
+
  p_at = 0.0_double
  q_at = N*log(1.0_double - p)
  bin_dist_0k = exp(p_at + q_at + lcoeff(0))
 
- 
+
  do j = 1, k
      p_at = p_at+log(p)
      q_at = q_at - log(1.0_double - p)
      bin_dist_0k = bin_dist_0k + exp(  p_at + q_at + lcoeff(j)  )
  enddo
- 
+
 
 end function bin_dist_0k
 
@@ -471,7 +471,7 @@ end function bin_dist_0k
      q_at = q_at - log(1.0_double - p)
      bin_dist_kn = bin_dist_kn   +  exp(p_at + q_at + lcoeff(j))
  enddo
- 
+
 
 end function bin_dist_kn
 
@@ -493,7 +493,7 @@ end function bin_dist_kn
 ! Declaration of the interface
  integer, intent(IN):: ms ! number of actually-negative cases
  real(kind=double), dimension (ms),intent(IN):: act_pos     ! actually-negative cases
- real(kind=double), intent(IN):: threshold ! value under which the FPF value is desired 
+ real(kind=double), intent(IN):: threshold ! value under which the FPF value is desired
 
  real(kind=double),intent(out):: emp_TPF    ! estimated TPF or sensitivity value
  integer, intent(OUT) :: ierror ! bad_input  <- unacceptable input values
@@ -520,7 +520,7 @@ end function bin_dist_kn
  enddo
 
   emp_TPF  =  emp_TPF/ real( ms, kind=double )
- 
+
 
 !------------------------------------------------
  end subroutine empirical_TPF
@@ -539,7 +539,7 @@ end function bin_dist_kn
 ! Declaration of the interface
  integer, intent(IN):: mn ! number of actually-negative cases
  real(kind=double), dimension (mn),intent(IN):: act_neg     ! actually-negative cases
- real(kind=double), intent(IN):: threshold ! value under which the FPF value is desired 
+ real(kind=double), intent(IN):: threshold ! value under which the FPF value is desired
 
  real(kind=double),intent(out):: emp_FPF    ! estimated FPF or 1 - specificity
  integer, intent(OUT) :: ierror ! bad_input  <- unacceptable input values
@@ -550,7 +550,7 @@ end function bin_dist_kn
      emp_FPF = 666.0_double
      ierror = bad_input
      return
- else 
+ else
      ierror = 0
  endif
 
@@ -565,7 +565,7 @@ end function bin_dist_kn
            endif
  enddo
   emp_FPF  =  emp_FPF/ real( mn, kind=double )
- 
+
 
 !------------------------------------------------
  end subroutine empirical_FPF
@@ -601,8 +601,8 @@ end function bin_dist_kn
 
 ! Internal variables. Needed only if placement values are used
 ! real(kind=double), dimension(mn):: V01 ! Array with the act-negative cases placement values
-! real(kind=double), dimension(ms):: V10 ! Array with the act-positive cases placement values 
- 
+! real(kind=double), dimension(ms):: V10 ! Array with the act-positive cases placement values
+
  integer I,J ! Loop counters, needed only for straight comparison
 
 
@@ -614,7 +614,7 @@ end function bin_dist_kn
 ! be shown to be equivalent to some sort of Jackknife.
 
 ! se_wilcoxon =      dot_product(V01 - wilcoxon_stat, V01 - wilcoxon_stat)/ ( (mn-1)*ms ) + &
-!                    dot_product(V10 - wilcoxon_stat, V10 - wilcoxon_stat)/ ( (ms-1)*mn ) 
+!                    dot_product(V10 - wilcoxon_stat, V10 - wilcoxon_stat)/ ( (ms-1)*mn )
 
 ! Straight comparison and Hanley et al. error estimation.
 
@@ -633,7 +633,7 @@ end function bin_dist_kn
  wilcoxon_stat = wilcoxon_stat /( real( mn, kind=double )* ms)
 
  var_wilcoxon = Var_hanley_exponential(wilcoxon_stat, mn, ms)
- 
+
 
 !------------------------------------------------
  end subroutine wilcoxon
@@ -642,7 +642,7 @@ end function bin_dist_kn
 
 !------------------------------------------------------------------------------------
 pure real(kind=double) function Var_hanley_exponential(W, mn, ms) result(Var_W)
-!------------------------------------------------------------------------------------ 
+!------------------------------------------------------------------------------------
 !PURPOSE: COMPUTATION OF THE STANDARD ERROR THE WILCONXON STAT. IT FOLLOWS THE FORMULA
 !         FOR AN EXPONENTIAL DISTRIBUTION FROM:
 !         HANLEY, J.A. AND MCNEIL, B.J. - RADIOLOGY, 143:29-36, 1982.
@@ -651,14 +651,14 @@ pure real(kind=double) function Var_hanley_exponential(W, mn, ms) result(Var_W)
  real(kind=double), intent(IN):: W ! value of the Wilcoxon statistic
 
 
-! Internal variables 
+! Internal variables
  real (kind=double):: q1,q2 ! quantities related to the mathematical definition of the
                             ! standard error term for the wilcoxon in the original hanley & McNeil paper
 
  q1 = W / (2.0_double - W)
  q2 = (2.0_double * W**2)  /  (1.0_double + W)
 
- Var_W =  ( W*(1.0_double-W) + (ms-1)*(q1-W**2) + (mn-1)*(q2-W**2) )  /  (real(mn, kind=double)*ms)  
+ Var_W =  ( W*(1.0_double-W) + (ms-1)*(q1-W**2) + (mn-1)*(q2-W**2) )  /  (real(mn, kind=double)*ms)
 
 !------------------------------------------------------------------------------------
  end function Var_hanley_exponential
@@ -683,18 +683,18 @@ pure real(kind=double) function Var_hanley_exponential(W, mn, ms) result(Var_W)
 !          relevance).
 !          The algorithm could be written as a single double loop over r and s, but I find it more straightforward in this
 !          form and I can't see many efficiency gains from making a single loop.
-! SOURCE:  Academic Radiology 15,1234 
+! SOURCE:  Academic Radiology 15,1234
 ! NOTE:    It works also for fully paired datasets. We kept the general notation
-!          of DeLong and DeLong because the notation! 
+!          of DeLong and DeLong because the notation!
 !          modalities are indexed using r and s and cases are indexed using k. We also consider either cases that are in both
-!          the modalities or all the cases that are in each modalities. 
+!          the modalities or all the cases that are in each modalities.
 ! NOTE1:   Assumes that for the input data larger values have larger "positivity", i.e., they are more likely to be
 !          actually-positive according to the algorithm being tested. If your dataset has not this characterist, just find the
 !          elementary transformation necessary to do so. (if you can't find it, it is a good sign that you should not be meddling
 !          with this code).
 ! NOTE2:   r is assumed to be the first index (therefore the only one for runs over only one index)
 ! WARNING: the variance covariance matrix has in the i>=j elements the variance covariance matrix and in the i< j elements
-!          it will have the Var{U_i - U_j). This is done to have a more stable estimate of that variance as opposed to 
+!          it will have the Var{U_i - U_j). This is done to have a more stable estimate of that variance as opposed to
 !          Var{i} + var{j} - 2*cov{i,j}
 use statistic_functions
 implicit none
@@ -717,15 +717,15 @@ integer, dimension(mn,num_mod), intent(IN):: des_neg ! actually-negative design 
 integer, dimension(ms,num_mod), intent(IN):: des_pos ! actually-positive design matrix (whether a case is present (1) or absent (0)
                                                 ! for each the two modalities to be analyzed?
 Real(kind=double),dimension(num_mod), intent(out):: U_vec    ! Array of Wilcoxon statistics, one per treatment
-real(kind=double),dimension(num_mod,num_mod), intent(out):: U_vec_cov ! Variance-covariance matrix of the U_vec in the i>=j 
+real(kind=double),dimension(num_mod,num_mod), intent(out):: U_vec_cov ! Variance-covariance matrix of the U_vec in the i>=j
                                                                  ! elements the variance covariance matrix and in the i< j elements
-                                                                 ! it will have the Var{U_i - U_j). This is done to 
-                                                                 ! have a more stable estimate of that variance as opposed to 
+                                                                 ! it will have the Var{U_i - U_j). This is done to
+                                                                 ! have a more stable estimate of that variance as opposed to
                                                                  ! Var{i} + var{j} - 2*cov{i,j}
 
 integer, intent(IN):: n_boot ! number of bootstrap sets
 
-! Internal variables: 
+! Internal variables:
 
 !complete set description for r and s
 integer:: mn_r, mn_rs, mn_s ! number of actually-negative cases in modality r, in both modalities (rs) and  in modality s
@@ -749,7 +749,7 @@ real(kind=double), dimension(n_boot):: w_r_s ! Array with the values for W for r
 real(kind=double):: wr_avg, ws_avg, w_r_s_avg, wr_delta, ws_delta   ! bootstrap averages and deltas
 real(kind=double):: s_r, s_s, s_rs, s_r_s   ! var-cov elements and variance of the difference
 
-integer:: r_mod, s_mod, j_case ! Loop counters for modality r, s and case i positive case j negative 
+integer:: r_mod, s_mod, j_case ! Loop counters for modality r, s and case i positive case j negative
 
 integer:: ib
 
@@ -759,13 +759,13 @@ r_loop: do r_mod = 1, num_mod ! Loop over modalities
               ! initialize for each combination the cases in modality r (or s) will always
               ! be the same, but the ones only in r or in both might change, therefore it is
               ! easier to reset it every time. Cases are separated in the three groups (r,s,rs)
-              mn_r = 0; mn_rs = 0; mn_s = 0 
+              mn_r = 0; mn_rs = 0; mn_s = 0
               act_neg_r = 0.0_double; act_neg_rs = 0.0_double; act_neg_s = 0.0_double
               ! note that the the act_neg_{r.s} array is compactly stored as opposed to act_neg
               loop_negatives: do j_case = 1, mn
                          ! Check whether the case in in both modalities or else
                          if(des_neg(j_case,r_mod) == 1 .and. des_neg(j_case,s_mod) == 1) then
-                                mn_rs = mn_rs + 1 
+                                mn_rs = mn_rs + 1
                                 act_neg_rs(mn_rs,1) = act_neg(j_case,r_mod)
                                 act_neg_rs(mn_rs,2) = act_neg(j_case,s_mod)
                           elseif(des_neg(j_case,r_mod) == 1 .and. des_neg(j_case,s_mod) == 0) then
@@ -776,13 +776,13 @@ r_loop: do r_mod = 1, num_mod ! Loop over modalities
                                 act_neg_s(mn_s) = act_neg(j_case,s_mod)
                          endif
               enddo loop_negatives
-              ms_r = 0; ms_rs = 0; ms_s = 0 
+              ms_r = 0; ms_rs = 0; ms_s = 0
               act_pos_r = 0.0_double; act_pos_rs = 0.0_double; act_pos_s = 0.0_double
               ! note that the the act_pos_{r,s} array is compactly stored as opposed to act_pos
               loop_positives: do j_case = 1, ms
                          ! Check whether the case in in both modalities or else
                          if(des_pos(j_case,r_mod) == 1 .and. des_pos(j_case,s_mod) == 1) then
-                                ms_rs = ms_rs + 1 
+                                ms_rs = ms_rs + 1
                                 act_pos_rs(ms_rs,1) = act_pos(j_case,r_mod)
                                 act_pos_rs(ms_rs,2) = act_pos(j_case,s_mod)
                          elseif(des_pos(j_case,r_mod) == 1 .and. des_pos(j_case,s_mod) == 0) then
@@ -808,19 +808,19 @@ r_loop: do r_mod = 1, num_mod ! Loop over modalities
                      ! NEGATIVES
                      ! build the only r part
                      call bootstrap_set(1, mn_r, mn_r, boot_set(1:mn_r))
-                     forall(j_case=1:mn_r) act_neg_boot(j_case,1) = act_neg_r(boot_set(j_case))                                    
+                     forall(j_case=1:mn_r) act_neg_boot(j_case,1) = act_neg_r(boot_set(j_case))
                      ! build the r,s part
                      call bootstrap_set(1, mn_rs, mn_rs, boot_set(1:mn_rs))
                      forall(j_case=1:mn_rs) act_neg_boot(mn_r+j_case,1) = act_neg_rs(boot_set(j_case),1)
-                     forall(j_case=1:mn_rs) act_neg_boot(j_case,2) = act_neg_rs(boot_set(j_case),2)                               
+                     forall(j_case=1:mn_rs) act_neg_boot(j_case,2) = act_neg_rs(boot_set(j_case),2)
                      ! build the only s part
                      call bootstrap_set(1, mn_s, mn_s, boot_set(1:mn_s))
                      forall(j_case=1:mn_s) act_neg_boot(mn_rs+j_case,2) = act_neg_s(boot_set(j_case))
-   
+
                      ! POSITIVES
                      ! build the only r part
                      call bootstrap_set(1, ms_r, ms_r, boot_set(1:ms_r))
-                     forall(j_case=1:ms_r) act_pos_boot(j_case,1) = act_pos_r(boot_set(j_case))                               
+                     forall(j_case=1:ms_r) act_pos_boot(j_case,1) = act_pos_r(boot_set(j_case))
                      ! build the r,s part
                      call bootstrap_set(1, ms_rs, ms_rs, boot_set(1:ms_rs))
                      forall(j_case=1:ms_rs) act_pos_boot(ms_r+j_case,1) = act_pos_rs(boot_set(j_case),1)
@@ -872,8 +872,8 @@ end subroutine gandpboot
 !-------------------------------------------------------------------------------------------
 ! PURPOSE  : Compute the wilcoxon statistics very quickly, returns not SE, just the wilcoxon.
 ! ALGORITHM:Uses quick sort algorithm to create two ranked sequences, one for X (the positives) and one for
-!           Y (the negatives) -- Notation follows approximately the original article. Then the two sequences are 
-!           scanned (together) from the smallest value to the largest value. 
+!           Y (the negatives) -- Notation follows approximately the original article. Then the two sequences are
+!           scanned (together) from the smallest value to the largest value.
 ! NOTE:     Positivity is assumed to be for larger values, one can submit -X and -Y if this is not the case.
 ! NOTE1:    Here we follow the The Long and the Long notation and give 10 to the positives and 01 to the negatives.
 !           I usually prefer to do the opposite so be mindful when looking at other functions.
@@ -893,7 +893,7 @@ integer, dimension(mn):: index_Y ! Array with the sorting indexes of the act-neg
 integer, dimension(ms):: index_X ! Array with the sorting indexes of the act-pos cases
 integer:: i_neg, i_pos ! value of the current count for the act-negative and act-positive cases arrays
 integer:: index_i_neg, index_i_pos ! location of the current counter index for the negative and positive cases
-integer:: i_neg_old, i_pos_old ! counters for the negative and positive cases used to locate the beginning of a tie between act-pos and 
+integer:: i_neg_old, i_pos_old ! counters for the negative and positive cases used to locate the beginning of a tie between act-pos and
                                ! act-neg cases (see body of procedure to see why we do this).
 logical:: prev_pos ! previous increment was a positive
 
@@ -901,14 +901,14 @@ logical:: prev_pos ! previous increment was a positive
 call qsortd(Y, index_Y, mn)
 call qsortd(X, index_X, ms)
 
-! Start from the smallest values. We will count how many act-neg are smaller or equal then the current act-pos and 
+! Start from the smallest values. We will count how many act-neg are smaller or equal then the current act-pos and
 ! by reciprocity how many act-pos are larger or equal than the current act-neg.
 ! We  work the cases from smallest to largest using the indexes i_neg and i_pos to know which rank are we at and the
 ! convert to the  indices index_i_neg and index_i_pos tell us where the corresponding values are and which V01 and V10
 ! functions to update. In this way the resulting functions will have the same ordering as the input arrays.
 
-! Initialize variables used in the loop to the first two cases. 
-i_neg = 1 ; index_i_neg = index_Y(i_neg) 
+! Initialize variables used in the loop to the first two cases.
+i_neg = 1 ; index_i_neg = index_Y(i_neg)
 i_pos = 1;  index_i_pos = index_X(i_pos)
 i_neg_old = 1
 i_pos_old = 1
@@ -937,18 +937,18 @@ do_wilc: do
                enddo find_smaller_negs
 
                if(i_neg == mn) then
-                 wilc = wilc + (ms-i_pos+1)*real(mn,kind=double) 
+                 wilc = wilc + (ms-i_pos+1)*real(mn,kind=double)
                 exit do_wilc
              else
                  wilc = wilc + real(i_neg,kind=double)
-                 ! increase the counter for the act-negative and update its value. 
+                 ! increase the counter for the act-negative and update its value.
                  i_neg = i_neg + 1  ! it can't be a tie from the previous stretch because tie-stretches are loaded completely.
                  index_i_neg = index_Y(i_neg) ! update the "current negative index"
              endif
              prev_pos = .true.
       ! Start of a tie-stretch, act-pos and act-neg cases have the same value
-      elseif( X(index_i_pos) == Y(index_i_neg)) then 
-             ! If they are equal we will keep incrementing until all the cases with values tied to these ones have been located. 
+      elseif( X(index_i_pos) == Y(index_i_neg)) then
+             ! If they are equal we will keep incrementing until all the cases with values tied to these ones have been located.
              ! First load the current values as starting the starting point of the tie-stretch.
              i_pos_old = i_pos
              i_pos = i_pos + 1
@@ -984,7 +984,7 @@ do_wilc: do
                  wilc = wilc + 0.5_double*real(i_pos + 1 - i_pos_old, kind=double)* &
                         real(i_neg - 1 + i_neg_old, kind=double) - i_neg_old + 1
              else
-                 wilc = wilc + 0.5_double*(i_pos + 1 - i_pos_old)*(i_neg - 1 + i_neg_old) 
+                 wilc = wilc + 0.5_double*(i_pos + 1 - i_pos_old)*(i_neg - 1 + i_neg_old)
              endif
 
              ! All the ties between act-neg and act-pos are exhausted, we move to a larger positive, if possible
@@ -1048,12 +1048,12 @@ wilc = wilc / ( real(mn, kind=double)*ms)
 !          The algorithm could be written as a single double loop over r and s, but I find it more straightforward in this
 !          form and I can't see many efficiency gains from making a single loop.
 ! SOURCE:  Brandon D. Gallas, David G. Brown Neural Networks 21 (2008) 387-397 and some pages of notes that I have
-!          already shredded and incinerated. 
+!          already shredded and incinerated.
 ! NOTE:    It works also for fully paired datasets. We kept the general notation
 !          of DeLong and DeLong to have all the partially-paired, non-parametric models based on the same notation. Moreover, while
 !          the notation used by Gallas et al. is more elegant, it is less numerically efficient. Therefore
 !          modalities are indexed using r and s and cases are indexed using k. We rewrote the equations so that we consider only cases
-!          that are in both the modalities or all the cases that are in each modalities. 
+!          that are in both the modalities or all the cases that are in each modalities.
 ! NOTE1:   Assumes that for the input data larger values have larger "positivity", i.e., they are more likely to be
 !          actually-positive according to the algorithm being tested. If your dataset has not this characterist, just find the
 !          elementary transformation necessary to do so. (if you can't find it, it is a good sign that you should not be meddling
@@ -1080,7 +1080,7 @@ integer, dimension(ms,num_mod), intent(IN):: des_pos ! actually-positive design 
 real(kind=double),dimension(num_mod), intent(out):: U_vec    ! Array of Wilcoxon statistics, one per treatment
 real(kind=double),dimension(num_mod,num_mod), intent(out):: U_vec_cov    ! Variance-covariance matrix of the U_vec
 
-! Internal variables. 
+! Internal variables.
 integer:: mn_rs, ms_rs ! number of actually-negative and actually-positive in both modalities (rs) and  in modality s
 integer, dimension(num_mod):: mn_mod! number of actually-negative cases in each modality
 integer, dimension(num_mod):: ms_mod ! number of actually-positive cases in each modality
@@ -1089,10 +1089,10 @@ real(kind=double), dimension(mn):: act_neg_r ! actually-negative input data for 
 real(kind=double), dimension(ms):: act_pos_r ! actually-positive input data for modality r (the current index)
 
 
-real(kind=double), dimension(mn,num_mod):: V01 ! Array with the act-negative cases placement values, by modality, it is a partially 
+real(kind=double), dimension(mn,num_mod):: V01 ! Array with the act-negative cases placement values, by modality, it is a partially
                  ! empty arrays, because not all modalities will have all cases, but unless the number of modalities and cases is very large
                  ! this should not be an issue. It is stored densely within each modality
-real(kind=double), dimension(ms,num_mod):: V10 ! Array with the act-positive cases placement values, by treatment. Look at V01 for 
+real(kind=double), dimension(ms,num_mod):: V10 ! Array with the act-positive cases placement values, by treatment. Look at V01 for
                  ! more information.
 
 real(kind=double), dimension(mn):: RP_V01 ! Array with the scalar products of the V01s, before ranking -- done to stabilize variance calcs
@@ -1100,16 +1100,16 @@ real(kind=double), dimension(ms):: RP_V10 ! Array with the scalar products of th
 real(kind=double):: SrSs_rs ! Scalar product of matrix Sr times Ss over the values they have in common
 integer, dimension(mn):: Ind_RP_V01 ! Ranking indices used in the stabilization loop
 integer, dimension(ms):: Ind_RP_V10 ! Ranking indices used in the stabilization loop
-real(kind=double):: V10r_V10s, V01r_V01s ! the act-negative and act-positive components of the variance. 
+real(kind=double):: V10r_V10s, V01r_V01s ! the act-negative and act-positive components of the variance.
 
 
-integer:: r_mod, s_mod, i_case, j_case ! Loop counters for modality r, s and case i positive case j negative 
+integer:: r_mod, s_mod, i_case, j_case ! Loop counters for modality r, s and case i positive case j negative
 integer:: i_neg_r, i_pos_r, i_neg_s, i_pos_s ! counters for cases in modalities
 real(kind=double):: mrs, mrs_rs, cmn, cms, c4m ! constants for computation of variances, from Gallas and Brown and some calculations
 
 ! Compute the placement values for all the modments/modalities
-! Note that for each modality, the placement values are stored in compact form, i.e., the 
-! all the cases in that modality follow each other in the array, independently from their 
+! Note that for each modality, the placement values are stored in compact form, i.e., the
+! all the cases in that modality follow each other in the array, independently from their
 ! ordering in the possibly sparse act_neg and act_pos arrays. These arrays could be made
 ! smaller either by constructing a type which is made of arrays of different sizes (for each
 ! modality) or find the largest one. Since this might affect portability, not to mention
@@ -1142,11 +1142,11 @@ do r_mod = 1, num_mod ! Loop over modalities
           call compute_V10_V01(mn_mod(r_mod), ms_mod(r_mod), act_neg_r(1:mn_mod(r_mod)), act_pos_r(1:ms_mod(r_mod)),&
                                V01(1:mn_mod(r_mod),r_mod), V10(1:ms_mod(r_mod),r_mod))
           ! Compute the U statistics.
-          U_vec(r_mod) =  sum( V10(1:ms_mod(r_mod),r_mod) )/ms_mod(r_mod) ! sum(V10)/ms_r should produce the same answer 
+          U_vec(r_mod) =  sum( V10(1:ms_mod(r_mod),r_mod) )/ms_mod(r_mod) ! sum(V10)/ms_r should produce the same answer
 enddo
 
 ! Compute the variance covariance matrix according to Zhou and Gatsonis.
-! We added a centering step for stability reasons. 
+! We added a centering step for stability reasons.
 ! This variance estimation can be shown to be equivalent to some sort of Jackknife.
 
 ! Notice that some summations over the cases in modality r could be moved to the external loop. Given that
@@ -1154,23 +1154,23 @@ enddo
 ! r and s, it does not seem worthy the additional complexity and might be easily counterproductive.
 r_loop: do r_mod = 1, num_mod
           s_loop: do s_mod = r_mod, num_mod
-                  SrSs_rs = 0.0_double ! set the scalar product of the success matrix 
+                  SrSs_rs = 0.0_double ! set the scalar product of the success matrix
                   ! build the cross products for the actually-negative, taking into account, only for the cases that
                   ! are in common between the two modalities
                   mn_rs = 0 ; i_neg_r = 0; i_neg_s = 0
                   loop_negatives: do j_case = 1, mn
-                         ! Check whether the case in in both modalities, which is the only instance in which the 
+                         ! Check whether the case in in both modalities, which is the only instance in which the
                          ! cases enter into the covariance calculation -- see reference
                          if(des_neg(j_case,r_mod) == 1 .and. des_neg(j_case,s_mod) == 1) then
-                                mn_rs = mn_rs + 1 
+                                mn_rs = mn_rs + 1
                                 ! The number of cases in each modality (independently from the other one) needs to be updated
                                 ! to locate the correct placement value in the V01 array.
-                                i_neg_r  = i_neg_r + 1  
+                                i_neg_r  = i_neg_r + 1
                                 i_neg_s  = i_neg_s + 1
                                 ! values are first stored in this array, which is later ranked for stability reasons, it has as
                                 ! many elements as the number of cases in common to both modalities.
                                 RP_V01(mn_rs)= V01(i_neg_r,r_mod) * V01(i_neg_s,s_mod)
- 
+
 
                                 ! compute the scalar product of the success matrices More care should be paid to the equal signs
                                 ! because conversion and I/O can play tricks. However, there is no simple
@@ -1206,12 +1206,12 @@ r_loop: do r_mod = 1, num_mod
                                                   ) then
 
                                                        SrSs_rs = SrSs_rs + 0.25_double
-                                           endif  
+                                           endif
                                     endif
                                 enddo loop_positives_SrSs
 
                          ! the value does not enter in the summation to compute the variance, however, we need to update the
-                         ! counter for the V01 array  
+                         ! counter for the V01 array
                          elseif(des_neg(j_case,r_mod) == 1 .and. des_neg(j_case,s_mod) == 0) then
                                 i_neg_r = i_neg_r + 1
                          elseif(des_neg(j_case,r_mod) == 0 .and. des_neg(j_case,s_mod) == 1) then
@@ -1222,7 +1222,7 @@ r_loop: do r_mod = 1, num_mod
                   ! are in common between the two modalities
                   i_pos_r  = 0 ; ms_rs = 0 ; i_pos_s  = 0
                   loop_positives: do i_case = 1, ms
-                         ! Check whether the case in in both modalities, which is the only instance in which the 
+                         ! Check whether the case in in both modalities, which is the only instance in which the
                          ! cases enter into the covariance calculation -- see reference
                          if(des_pos(i_case,r_mod) == 1 .and. des_pos(i_case,s_mod) == 1) then
                                 ms_rs = ms_rs + 1
@@ -1234,7 +1234,7 @@ r_loop: do r_mod = 1, num_mod
                                 ! many elements as the number of cases in common to both modalities.
                                 RP_V10(ms_rs)= V10(i_pos_r,r_mod) * V10(i_pos_s,s_mod)
                          ! the value does not enter in the summation to compute the variance, however, we need to update the
-                         ! counter for the V01 array  
+                         ! counter for the V01 array
                          elseif(des_pos(i_case,r_mod) == 1 .and. des_pos(i_case,s_mod) == 0) then
                                 i_pos_r = i_pos_r + 1
                          elseif(des_pos(i_case,r_mod) == 0 .and. des_pos(i_case,s_mod) == 1) then
@@ -1248,29 +1248,29 @@ r_loop: do r_mod = 1, num_mod
                   ! Sum variance components from the smallest to the largest, so we use a goto to keep ordering
                   V01r_V01s = 0.0_double
                   do j_case = 1, mn_rs
-                        V01r_V01s = V01r_V01s + RP_V01( Ind_RP_V01(j_case) ) 
+                        V01r_V01s = V01r_V01s + RP_V01( Ind_RP_V01(j_case) )
                   enddo
                   V10r_V10s = 0.0_double
                   do i_case = 1, ms_rs
-                        V10r_V10s = V10r_V10s + RP_V10( Ind_RP_V10(i_case)) 
+                        V10r_V10s = V10r_V10s + RP_V10( Ind_RP_V10(i_case))
                   enddo
-          
 
-                  ! Combine terms, first compute one of the 
+
+                  ! Combine terms, first compute one of the
                   mrs    = ( mn_mod(r_mod) * real(mn_mod(s_mod), kind=double) ) * &
                            ( ms_mod(r_mod) * real(ms_mod(s_mod), kind=double) )
-                  mrs_rs = mn_rs*real(ms_rs,kind=double) 
+                  mrs_rs = mn_rs*real(ms_rs,kind=double)
                   cmn    = mn_mod(r_mod) * real(mn_mod(s_mod),kind=double)
-                  cms    = ms_mod(r_mod) * real(ms_mod(s_mod),kind=double) 
+                  cms    = ms_mod(r_mod) * real(ms_mod(s_mod),kind=double)
                   c4m    = -(mn_rs*cms + ms_rs* cmn  - mrs_rs)/                   &
                             (mrs * (mrs - mn_rs*cms - ms_rs* cmn + mrs_rs) )
                   U_vec_cov(r_mod, s_mod) =                                                      &
                                             + V01r_V01s * ( 1.0_double / cmn - cms  * c4m )      &
-                                            + V10r_V10s * ( 1.0_double / cms - cmn  * c4m )      &   
+                                            + V10r_V10s * ( 1.0_double / cms - cmn  * c4m )      &
                                             + U_vec(r_mod)* U_vec(s_mod) * mrs *c4m              &
                                             + SrSs_rs * ( c4m - 1.0_double/mrs)
-                  ! load the value to the symmetrical location.  
-                  U_vec_cov(s_mod, r_mod) =  U_vec_cov(r_mod, s_mod) 
+                  ! load the value to the symmetrical location.
+                  U_vec_cov(s_mod, r_mod) =  U_vec_cov(r_mod, s_mod)
         enddo s_loop
 
  enddo r_loop
@@ -1303,7 +1303,7 @@ end subroutine m_mod_one_shot
 !          The algorithm could be written as a single double loop over r and s, but I find it more straightforward in this
 !          form and I can't see many efficiency gains from making a single loop.
 ! SOURCE:  Zhou and Gatsonis Statistics in Medicine, Vol 15, 1687-1693 (1996) and some pages of notes that I have
-!          already shredded and incinerated. 
+!          already shredded and incinerated.
 ! NOTE:    It works also for fully paired datasets, where it is identical to De Long and DeLong. We kept the general notation
 !          of DeLong and DeLong because the notation of Zhou and Gatsonis is both more confusing and less general. Therefore
 !          modalities are indexed using r and s and cases are indexed using k. We also consider either cases that are in both
@@ -1336,7 +1336,7 @@ integer, dimension(ms,num_mod), intent(IN):: des_pos ! actually-positive design 
 real(kind=double),dimension(num_mod), intent(out):: U_vec    ! Array of Wilcoxon statistics, one per treatment
 real(kind=double),dimension(num_mod,num_mod), intent(out):: U_vec_cov    ! Variance-covariance matrix of the U_vec
 
-! Internal variables. 
+! Internal variables.
 integer:: mn_r, mn_rs, mn_s ! number of actually-negative cases in modality r, in both modalities (rs) and  in modality s
 integer:: ms_r, ms_rs, ms_s ! number of actually-positive cases in modality r, in both modalities (rs) and  in modality s
 
@@ -1344,23 +1344,23 @@ real(kind=double), dimension(mn):: act_neg_r ! actually-negative input data for 
 real(kind=double), dimension(ms):: act_pos_r ! actually-positive input data for modality r (the current index)
 
 
-real(kind=double), dimension(mn,num_mod):: V01 ! Array with the act-negative cases placement values, by modality, it is a partially 
+real(kind=double), dimension(mn,num_mod):: V01 ! Array with the act-negative cases placement values, by modality, it is a partially
                  ! empty arrays, because not all modalities will have all cases, but unless the number of modalities and cases is very large
                  ! this should not be an issue. It is stored densely within each modality
-real(kind=double), dimension(ms,num_mod):: V10 ! Array with the act-positive cases placement values, by treatment. Look at V01 for 
+real(kind=double), dimension(ms,num_mod):: V10 ! Array with the act-positive cases placement values, by treatment. Look at V01 for
                  ! more information.
 
 real(kind=double), dimension(mn):: RP_V01 ! Array with the scalar products of the V01s, before ranking -- done to stabilize variance calcs
 real(kind=double), dimension(ms):: RP_V10 ! Array with the scalar products of the V01s, before ranking -- done to stabilize variance calcs
 integer, dimension(mn):: Ind_RP_V01 ! Ranking indices used in the stabilization loop
 integer, dimension(ms):: Ind_RP_V10 ! Ranking indices used in the stabilization loop
-real(kind=double):: eps_10, eps_01 ! the act-negative and act-positive components of the variance. 
+real(kind=double):: eps_10, eps_01 ! the act-negative and act-positive components of the variance.
 
-integer:: r_mod, s_mod, i_case, j_case ! Loop counters for modality r, s and case i positive case j negative 
+integer:: r_mod, s_mod, i_case, j_case ! Loop counters for modality r, s and case i positive case j negative
 
 ! Compute the placement values for all the modments/modalities
-! Note that for each modality, the placement values are stored in compact form, i.e., the 
-! all the cases in that modality follow each other in the array, independently from their 
+! Note that for each modality, the placement values are stored in compact form, i.e., the
+! all the cases in that modality follow each other in the array, independently from their
 ! ordering in the possibly sparse act_neg and act_pos arrays. These arrays could be made
 ! smaller either by constructing a type which is made of arrays of different sizes (for each
 ! modality) or find the largest one. Since this might affect portability, not to mention
@@ -1391,11 +1391,11 @@ do r_mod = 1, num_mod ! Loop over modalities
           ! Compute the placement values
           call compute_V10_V01(mn_r, ms_r, act_neg_r(1:mn_r), act_pos_r(1:ms_r), V01(1:mn_r,r_mod), V10(1:ms_r,r_mod))
           ! Compute the U statistics.
-          U_vec(r_mod) =  sum( V10(1:ms_r,r_mod) )/ms_r ! sum(V10)/ms_r should produce the same answer 
+          U_vec(r_mod) =  sum( V10(1:ms_r,r_mod) )/ms_r ! sum(V10)/ms_r should produce the same answer
 enddo
 
 ! Compute the variance covariance matrix according to Zhou and Gatsonis.
-! We added a centering step for stability reasons. 
+! We added a centering step for stability reasons.
 ! This variance estimation can be shown to be equivalent to some sort of Jackknife.
 
 ! Notice that some summations over the cases in modality r could be moved to the external loop. Given that
@@ -1407,19 +1407,19 @@ r_loop: do r_mod = 1, num_mod
                   ! are in common between the two modalities
                   mn_r  = 0 ; mn_rs = 0 ; mn_s  = 0
                   loop_negatives: do j_case = 1, mn
-                         ! Check whether the case in in both modalities, which is the only instance in which the 
+                         ! Check whether the case in in both modalities, which is the only instance in which the
                          ! cases enter into the covariance calculation -- see reference
                          if(des_neg(j_case,r_mod) == 1 .and. des_neg(j_case,s_mod) == 1) then
-                                mn_rs = mn_rs + 1 
+                                mn_rs = mn_rs + 1
                                 ! The number of cases in each modality (independently from the other one) needs to be updated
                                 ! to locate the correct placement value in the V01 array.
-                                mn_r  = mn_r + 1  
+                                mn_r  = mn_r + 1
                                 mn_s  = mn_s + 1
                                 ! values are first stored in this array, which is later ranked for stability reasons, it has as
                                 ! many elements as the number of cases in common to both modalities.
                                 RP_V01(mn_rs)= ( V01(mn_r,r_mod) - U_vec(r_mod) ) * ( V01(mn_s,s_mod) - U_vec(s_mod) )
                          ! the value does not enter in the summation to compute the variance, however, we need to update the
-                         ! counter for the V01 array  
+                         ! counter for the V01 array
                          elseif(des_neg(j_case,r_mod) == 1 .and. des_neg(j_case,s_mod) == 0) then
                                 mn_r = mn_r + 1
                          elseif(des_neg(j_case,r_mod) == 0 .and. des_neg(j_case,s_mod) == 1) then
@@ -1430,7 +1430,7 @@ r_loop: do r_mod = 1, num_mod
                   ! are in common between the two modalities
                   ms_r  = 0 ; ms_rs = 0 ; ms_s  = 0
                   loop_positives: do i_case = 1, ms
-                         ! Check whether the case in in both modalities, which is the only instance in which the 
+                         ! Check whether the case in in both modalities, which is the only instance in which the
                          ! cases enter into the covariance calculation -- see reference
                          if(des_pos(i_case,r_mod) == 1 .and. des_pos(i_case,s_mod) == 1) then
                                 ms_rs = ms_rs + 1
@@ -1442,7 +1442,7 @@ r_loop: do r_mod = 1, num_mod
                                 ! many elements as the number of cases in common to both modalities.
                                 RP_V10(ms_rs)= ( V10(ms_r,r_mod) - U_vec(r_mod) ) * ( V10(ms_s,s_mod) - U_vec(s_mod) )
                          ! the value does not enter in the summation to compute the variance, however, we need to update the
-                         ! counter for the V01 array  
+                         ! counter for the V01 array
                          elseif(des_pos(i_case,r_mod) == 1 .and. des_pos(i_case,s_mod) == 0) then
                                 ms_r = ms_r + 1
                          elseif(des_pos(i_case,r_mod) == 0 .and. des_pos(i_case,s_mod) == 1) then
@@ -1456,22 +1456,22 @@ r_loop: do r_mod = 1, num_mod
                   ! Sum variance components from the smallest to the largest
                   eps_01 = 0.0_double
                   do j_case = 1, mn_rs
-                        eps_01 = eps_01 + RP_V01( Ind_RP_V01(j_case) ) 
+                        eps_01 = eps_01 + RP_V01( Ind_RP_V01(j_case) )
                   enddo
                   eps_01 = eps_01 / (mn_rs - 1)
 
                   eps_10 = 0.0_double
                   do i_case = 1, ms_rs
-                        eps_10 = eps_10 + RP_V10( Ind_RP_V10(i_case)) 
+                        eps_10 = eps_10 + RP_V10( Ind_RP_V10(i_case))
                   enddo
                   eps_10 = eps_10 / (ms_rs - 1)
-          
+
                   ! Combine eps10 and eps01 according to eqn. (3) page 1689 of Zhou and Gatsonis (following my notation which has the
                   ! advantage of being understandable.
                   U_vec_cov(r_mod, s_mod) =   eps_01 *  mn_rs / (real(mn_r,kind=double) * mn_s)     &
                                            +  eps_10 *  ms_rs / (real(ms_r,kind=double) * ms_s)
-                  ! load the value to the symmetrical location.  
-                  U_vec_cov(s_mod, r_mod) =  U_vec_cov(r_mod, s_mod) 
+                  ! load the value to the symmetrical location.
+                  U_vec_cov(s_mod, r_mod) =  U_vec_cov(r_mod, s_mod)
         enddo s_loop
 
  enddo r_loop
@@ -1512,7 +1512,7 @@ end subroutine ZhouAndGatsonis
  real(kind=double),dimension(num_mod), intent(out):: U_vec    ! Array of Wilcoxon statistics, one per treatment
  real(kind=double),dimension(num_mod,num_mod), intent(out):: U_vec_cov    ! Variance-covariance matrix of the U_vec
 
- ! Internal variables. 
+ ! Internal variables.
  real(kind=double), dimension(mn,num_mod):: V01 ! Array with the act-negative cases placement values, by treatment
  real(kind=double), dimension(ms,num_mod):: V10 ! Array with the act-positive cases placement values, by treatment
 
@@ -1520,7 +1520,7 @@ end subroutine ZhouAndGatsonis
  real(kind=double), dimension(ms):: RP_V10 ! Array with the scalar products of the V01s, ranked -- to stabilize variance calcs
  integer, dimension(mn):: Ind_RP_V01 ! Ranking indices
  integer, dimension(ms):: Ind_RP_V10 ! Ranking indices
- real(kind=double):: VarS, VarN ! the act-negative and act-positive components of the variance. 
+ real(kind=double):: VarS, VarN ! the act-negative and act-positive components of the variance.
 
  integer:: i_mod, j_mod, k ! Loop counters
 
@@ -1528,22 +1528,22 @@ end subroutine ZhouAndGatsonis
 ! Compute the placement values for all the treatments/modalities
  do i_mod = 1, num_mod
           call compute_V10_V01(mn, ms, act_neg(:,i_mod), act_pos(:,i_mod), V01(:,i_mod), V10(:,i_mod))
-          U_vec(i_mod) =  sum( V01(:,i_mod) )/mn ! sum(V10)/ms should produce the same answer 
+          U_vec(i_mod) =  sum( V01(:,i_mod) )/mn ! sum(V10)/ms should produce the same answer
   enddo
 
 ! the variance covariance matrix according to DeLong and DeLong and Clarke-Pearson.
 ! The centering is better done before the calculations for stability reasons. This error can
 ! be shown to be equivalent to some sort of Jackknife.
 
- 
+
  do i_mod = 1, num_mod
     do j_mod = i_mod, num_mod
         ! build by negative and by positive cross products of V's
         forall(k= 1: mn)
-                RP_V01(k)= ( V01(k,i_mod) - U_vec(i_mod) ) * ( V01(k,j_mod) - U_vec(j_mod) )  
+                RP_V01(k)= ( V01(k,i_mod) - U_vec(i_mod) ) * ( V01(k,j_mod) - U_vec(j_mod) )
         end forall
         forall(k= 1: ms)
-                RP_V10(k)= ( V10(k,i_mod) - U_vec(i_mod) ) * ( V10(k,j_mod) - U_vec(j_mod) )  
+                RP_V10(k)= ( V10(k,i_mod) - U_vec(i_mod) ) * ( V10(k,j_mod) - U_vec(j_mod) )
         end forall
         ! Rank the cross products
         call qsortd(RP_V01, Ind_RP_V01, mn)
@@ -1551,22 +1551,22 @@ end subroutine ZhouAndGatsonis
         ! Sum variance components from the smallest to the largest
         VarN = 0.0_double
         do k = 1, mn
-          VarN = VarN + RP_V01( Ind_RP_V01(k)) 
+          VarN = VarN + RP_V01( Ind_RP_V01(k))
         enddo
         VarS = 0.0_double
         do k = 1, ms
-          VarS = VarS + RP_V10( Ind_RP_V10(k)) 
+          VarS = VarS + RP_V10( Ind_RP_V10(k))
         enddo
         ! LP Dec 2008, introduced the real(**) to deal with very large numbers that make the multiplication
         ! go out of range
-        U_vec_cov(i_mod,j_mod) = VarN/( real(mn-1,kind=double)*mn) +  VarS/( real(ms-1,kind=double)*ms)  
+        U_vec_cov(i_mod,j_mod) = VarN/( real(mn-1,kind=double)*mn) +  VarS/( real(ms-1,kind=double)*ms)
 
 
 !         U_vec_cov(i_mod, j_mod) = &
 !                    dot_product( (V01(:,i_mod) - U_vec(i_mod)) , (V01(:,j_mod) - U_vec(j_mod)) ) / ( (mn-1)*ms ) + &
-!                    dot_product( (V10(:,i_mod) - U_vec(i_mod)) , (V10(:,j_mod) - U_vec(j_mod)) ) / ( (ms-1)*mn )  
+!                    dot_product( (V10(:,i_mod) - U_vec(i_mod)) , (V10(:,j_mod) - U_vec(j_mod)) ) / ( (ms-1)*mn )
 
-         if(i_mod /= j_mod) U_vec_cov(j_mod, i_mod) =  U_vec_cov(i_mod, j_mod) 
+         if(i_mod /= j_mod) U_vec_cov(j_mod, i_mod) =  U_vec_cov(i_mod, j_mod)
 
     enddo
  enddo
@@ -1583,8 +1583,8 @@ end subroutine ZhouAndGatsonis
 ! PURPOSE  :Compute the functions V10 and V01, which are the placement value and the 1 - placement value
 !           of each positive and negative case in relation to the other distribution, respectively.
 ! ALGORITHM:Uses quick sort algorithm to create two ranked sequences, one for X (the positives) and one for
-!           Y (the negatives) -- Notation follows approximately the original article. Then the two sequences are 
-!           scanned (together) from the smallest value to the largest value. 
+!           Y (the negatives) -- Notation follows approximately the original article. Then the two sequences are
+!           scanned (together) from the smallest value to the largest value.
 ! NOTE:     Positivity is assumed to be for larger values, one can submit -X and -Y if this is not the case.
 ! NOTE1:    Here we follow the The Long and the Long notation and give 10 to the positives and 01 to the negatives.
 !           I usually prefer to do the opposite so be mindful when looking at other functions.
@@ -1608,9 +1608,9 @@ integer, dimension(ms):: index_X ! Array with the sorting indexes of the act-pos
 integer:: i ! loop counter
 integer:: i_neg, i_pos ! value of the current count for the act-negative and act-positive cases arrays
 integer:: index_i_neg, index_i_pos ! location of the current counter index for the negative and positive cases
-integer:: i_neg_old, i_pos_old ! counters for the negative and positive cases used to locate the beginning of a tie between act-pos and 
+integer:: i_neg_old, i_pos_old ! counters for the negative and positive cases used to locate the beginning of a tie between act-pos and
                                ! act-neg cases (see body of procedure to see why we do this).
-logical:: previous_was_tie ! Logical variable that defines whether the previous run was a tie, 
+logical:: previous_was_tie ! Logical variable that defines whether the previous run was a tie,
 real(kind=double):: incr_pos, incr_neg ! increments for positive and negatives after ties are not the same and the some other uses I don't
                                        ! real want to talk about right now.
 
@@ -1618,13 +1618,13 @@ real(kind=double):: incr_pos, incr_neg ! increments for positive and negatives a
 call qsortd(Y, index_Y, mn)
 call qsortd(X, index_X, ms)
 
-! Start from the smallest values. We will count how many act-neg are smaller or equal then the current act-pos and 
+! Start from the smallest values. We will count how many act-neg are smaller or equal then the current act-pos and
 ! by reciprocity how many act-pos are larger or equal than the current act-neg.
 ! We  work the cases from smallest to largest using the indexes i_neg and i_pos to know which rank are we at and the
 ! convert to the  indices index_i_neg and index_i_pos tell us where the corresponding values are and which V01 and V10
 ! functions to update. In this way the resulting functions will have the same ordering as the input arrays.
 
-! Initialize variables used in the loop to the first two cases. 
+! Initialize variables used in the loop to the first two cases.
 i_neg = 1
 i_pos = 1
 i_neg_old = 1
@@ -1647,29 +1647,29 @@ build_Vs: do
                  ! Subtract all the act-pos cases that were in the tie stretch to the next act-neg, which will be larger then the tie because the
                  ! tie sequence runs through all the elements of each tie stretch. i_pos was updated previously, so the current i_pos is outside
                  ! the tie-stretch
-                 incr_neg = (i_pos - i_pos_old)*0.5_double 
+                 incr_neg = (i_pos - i_pos_old)*0.5_double
                  previous_was_tie = .false. ! Current stretch is not a tie, reset the flag.
              else
                  incr_pos = 1.0_double
                  incr_neg = 0.0_double ! We are not testing the negative, but only updating if coming out of a tie-stretch
              endif
 
-             ! Check if it is the last act-negative, otherwise the remaining act-positives will all be larger than all the act-negatives      
+             ! Check if it is the last act-negative, otherwise the remaining act-positives will all be larger than all the act-negatives
              if(i_neg == mn) then
                  forall(i=i_pos:ms) V10(index_X(i)) = real(mn,kind=double)
                  exit build_Vs ! the loop is finished, both act-neg and act-pos sequences have been swept.
              else
                  ! Update the placement value for the act-pos
-                 V10(index_i_pos) =  V10(index_i_pos) + incr_pos 
-                 ! increase the counter for the act-negative and update its value. 
+                 V10(index_i_pos) =  V10(index_i_pos) + incr_pos
+                 ! increase the counter for the act-negative and update its value.
                  i_neg = i_neg + 1  ! it can't be a tie from the previous stretch because tie-stretches are loaded completely.
                  V01(index_Y(i_neg))= V01(index_i_neg) - incr_neg ! We need to subtract all the cases that were in the tie stretch
                                                                   ! --if it was a tie-stretch
                  index_i_neg = index_Y(i_neg) ! update the "current negative index"
              endif
 ! Start of a tie-stretch, act-pos and act-neg cases have the same value
-      elseif( X(index_i_pos) == Y(index_i_neg)) then 
-             ! If they are equal we will keep incrementing until all the cases with values tied to these ones have been located. 
+      elseif( X(index_i_pos) == Y(index_i_neg)) then
+             ! If they are equal we will keep incrementing until all the cases with values tied to these ones have been located.
              ! First load the current values as starting the starting point of the tie-stretch.
              i_pos_old = i_pos
              i_pos = i_pos + 1
@@ -1698,16 +1698,16 @@ build_Vs: do
                        i_neg = i_neg + 1
                   endif
              enddo find_equals_neg
-              
+
              ! Update the placement values, first set the stating value, then copy it to the rest of the act-pos tie-stretch
-             V10(index_X(i_pos_old)) =  V10(index_X(i_pos_old)) + 0.5_double*(i_neg + 1 - i_neg_old) ! For each act-neg add  1/2 case more 
-             do i = i_pos_old+1, i_pos 
+             V10(index_X(i_pos_old)) =  V10(index_X(i_pos_old)) + 0.5_double*(i_neg + 1 - i_neg_old) ! For each act-neg add  1/2 case more
+             do i = i_pos_old+1, i_pos
                   V10(index_X(i)) =  V10(index_X(i_pos_old)) ! They are ties, so they have the same value
              enddo
 
              ! Update the placement values, first set the stating value, then copy it to the rest of the act-neg tie-stretch
              V01(index_Y(i_neg_old)) =  V01(index_Y(i_neg_old)) - 0.5_double*(i_pos + 1 - i_pos_old) ! There is 1/2 case more per act-pos
-             do i = i_neg_old+1, i_neg 
+             do i = i_neg_old+1, i_neg
                   V01(index_Y(i)) =  V01(index_Y(i_neg_old))  ! They are ties, so they have the same value
              enddo
              ! All the ties between act-neg and act-pos are exhausted, we move to a larger positive, if possible
@@ -1720,8 +1720,8 @@ build_Vs: do
                   index_i_neg = index_Y(i_neg) !
              else ! We swept all the positives and all the negatives remaining negatives are larger thus inv-placement is zero
                   forall(i=i_neg+1:mn) V01(index_Y(i)) = 0.0_double
-                  ! All cases are swept                  
-                  exit build_Vs 
+                  ! All cases are swept
+                  exit build_Vs
              endif
              previous_was_tie = .true.! it is the end of this update, so for the next cycle the previous one was a tie.
 ! The current act-negative is larger then the current act-positive
@@ -1730,7 +1730,7 @@ build_Vs: do
              V01(index_i_neg) =  V01(index_i_neg) - 1.0_double  !take current act-pos case out of the placement value because <current act-neg
              if(i_pos == ms) then ! It was the last act-pos, all the following act-neg > all act-pos
                   forall(i=i_neg+1:mn) V01(index_Y(i)) = 0.0_double
-                  exit build_Vs ! the loop is finished                   
+                  exit build_Vs ! the loop is finished
              else ! increase the positives by one
                   i_pos = i_pos + 1
                   V10(index_X(i_pos)) =  V10(index_i_pos) ! set the next positive placement value to the current

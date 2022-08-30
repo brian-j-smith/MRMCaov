@@ -33,7 +33,7 @@ real(kind = double), parameter:: par_almost_zero = 1.0e-11_double
 ! value is chosen so that the most unstable likelihoods (the one with 2
 ! category data) have a smooth profile before the cutoff
 real(kind = double), parameter:: p_q_closeto_zero  = 1.0e-14_double
-! Ideally P_q_close to one would be relate to p_q_closeto_zero, but because of 
+! Ideally P_q_close to one would be relate to p_q_closeto_zero, but because of
 ! compiler issues we had to define them independently...
 real(kind = double), parameter:: p_q_closeto_one   = .99999999999999_double
 real(kind = double), parameter:: pi   = 3.14159265358979323846_double

@@ -1,4 +1,4 @@
-! Written by L Pesce - U Chicago, starting fall (autumn) 2005 
+! Written by L Pesce - U Chicago, starting fall (autumn) 2005
 ! Module that returns specific quantities for a proper ROC curve.
 ! This quantities are things like:
 ! 1) Sequence of points on the curve, for plotting purposes
@@ -13,7 +13,7 @@
  use proproc_computation_constants, only: c_almost_zero
  use proproc_functions, only: fpf_PBM, tpf_PBM
  use io
- use error_flags 
+ use error_flags
 
  implicit none
 
@@ -21,7 +21,7 @@
  public points_on_curve_PBM ! procedure returns a fpf, tpf sequence for
                                ! plotting purposes. Points are evenly spread
 
- public points_at_cutoffs_PBM ! procedure returns a sequence of fpf and tpf for a 
+ public points_at_cutoffs_PBM ! procedure returns a sequence of fpf and tpf for a
                           ! prespecified (input) sequence of cutoffs (category
                           ! boundaries, sometimes called betas)
 
@@ -57,15 +57,15 @@ end function bnd_val
             case_cat_neg, case_cat_pos,  d_a_par, c_par, vc_cutoffs, cov, ierror, err_msg)
 !------------------------------------------------------------------------------
 ! PURPOSE: produce a number of values that can help create a relationship between the test result
-!          values and the latent variable space. 
-! NOTE:    The subroutine prints directly because currently there seem to be no purpose in returning the 
+!          values and the latent variable space.
+! NOTE:    The subroutine prints directly because currently there seem to be no purpose in returning the
 !          data to the calling program.
 ! NOTE1:   The algorithm tests for large AUC values because when the AUC is too large the estimate of beta
 !          tends to become unstable.
 ! WARNING: This subroutine produces an output file and uses it. Handle with care
 
  use l_algebra, only: qsortd ! for sorting purposes
- use proproc_functions, only: auc_PBM ! to check whether the methods are likely to work 
+ use proproc_functions, only: auc_PBM ! to check whether the methods are likely to work
 
  integer, intent(IN):: num_cat !number of categories
  integer, intent(IN):: mn      !number of actually negative cases
@@ -80,12 +80,12 @@ end function bnd_val
  integer, intent(IN):: max_case_per_cat_neg ! the number of negative cases in the category with the most negative cases
  integer, intent(IN):: max_case_per_cat_pos ! the number of positive cases in the category with the most postive cases
 
- integer, dimension(mn), intent(IN)  :: case_cat_neg ! category by case data 
- integer, dimension(ms), intent(IN):: case_cat_pos ! category by case data 
+ integer, dimension(mn), intent(IN)  :: case_cat_neg ! category by case data
+ integer, dimension(ms), intent(IN):: case_cat_pos ! category by case data
 
- real(kind=double),  dimension(num_cat-1), intent(IN) :: vc_cutoffs 
+ real(kind=double),  dimension(num_cat-1), intent(IN) :: vc_cutoffs
  real(kind=double), intent(IN):: d_a_par, c_par ! curve parameters
- 
+
  real(kind=double),  dimension(num_cat+1,num_cat+1), intent(IN) :: cov ! Variance-covariance matrix as estimated by the MLE
 
  integer, intent(OUT):: ierror !number of categories
@@ -104,7 +104,7 @@ end function bnd_val
 
  real(kind=double):: ranking_coeff ! if positiviy is for more negative values, in each category data needs to be ranked from large to small.
 
- real(kind=double):: auc ! area under the curve, used to assess whether the estimate of the correlation is likely to be 
+ real(kind=double):: auc ! area under the curve, used to assess whether the estimate of the correlation is likely to be
                          ! reliable
 
  integer:: i, icat
@@ -121,12 +121,12 @@ end function bnd_val
 
   ! set the coefficient used to rank cases correctly, up if positivity if for more positive values, otherwise down.
   if(positiveislarge==1) then
-         ranking_coeff = 1.0_double 
+         ranking_coeff = 1.0_double
   else
-         ranking_coeff = -1.0_double 
+         ranking_coeff = -1.0_double
   endif
 
-  !If the area is large, the variable space usually becomes unstable, moreover there are very few points so the estimation 
+  !If the area is large, the variable space usually becomes unstable, moreover there are very few points so the estimation
   ! becomes unstable. in this situation we print a warning
   call auc_PBM(d_a_par, c_par, auc, ierror)
   if(auc > .99_double) then
@@ -137,14 +137,14 @@ end function bnd_val
 
  ! Arrange negative cases by  category and rank them inside the category
  do i = 1, mn
-       icat =  case_cat_neg(i) ! points to the category of current case 
+       icat =  case_cat_neg(i) ! points to the category of current case
        neg_cat_pointer(icat)  =  neg_cat_pointer(icat)  + 1 ! increase the number of cases in this cat by one
-       neg_scratch(icat, neg_cat_pointer(icat)) = neg_cases(i) 
+       neg_scratch(icat, neg_cat_pointer(icat)) = neg_cases(i)
  enddo
 
 ! Sort negative cases within the categories
  do icat = 1, num_cat
-    call qsortd(ranking_coeff * neg_scratch(icat,1:catn(icat)), rank_within_cat, catn(icat)) 
+    call qsortd(ranking_coeff * neg_scratch(icat,1:catn(icat)), rank_within_cat, catn(icat))
     do i = 1, catn(icat)
        neg_val_by_cat(icat, i) =  neg_scratch(icat, rank_within_cat(i))
     enddo
@@ -153,14 +153,14 @@ end function bnd_val
 
  ! Arrange positive cases by  category and rank them inside the category
  do i = 1, ms
-       icat =  case_cat_pos(i) ! points to the category of current case 
+       icat =  case_cat_pos(i) ! points to the category of current case
        pos_cat_pointer(icat)  =  pos_cat_pointer(icat)  + 1 ! increase the number of cases in this cat by one
-       pos_scratch(icat, pos_cat_pointer(icat)) = pos_cases(i)  
+       pos_scratch(icat, pos_cat_pointer(icat)) = pos_cases(i)
  enddo
 
  ! Sort positive cases within the categories
  do icat = 1, num_cat
-    call qsortd(ranking_coeff * pos_scratch(icat,1:cats(icat)), rank_within_cat, cats(icat)) 
+    call qsortd(ranking_coeff * pos_scratch(icat,1:cats(icat)), rank_within_cat, cats(icat))
     do i = 1, cats(icat)
        pos_val_by_cat(icat, i) =  pos_scratch(icat, rank_within_cat(i))
     enddo
@@ -170,25 +170,25 @@ end function bnd_val
  write(msg, *) "# TEST RESULT VALUES DIVIDED BY CATEGORY/TRUTH RUN "
  call print_score_to_latent_line(msg)
  ! Actually negative cases
- write(msg, *) "#  Actually negative cases " 
+ write(msg, *) "#  Actually negative cases "
  call print_score_to_latent_line(msg)
  do icat = 1, num_cat
          do i = 1, catn(icat)
-              write(msg, *) icat, neg_val_by_cat(icat, i) 
+              write(msg, *) icat, neg_val_by_cat(icat, i)
               call print_score_to_latent_line(msg)
          enddo
  enddo
- write(msg, *) " " 
+ write(msg, *) " "
  call print_score_to_latent_line(msg)
- write(msg, *) "#  Actually positive cases " 
+ write(msg, *) "#  Actually positive cases "
  call print_score_to_latent_line(msg)
  do icat = 1, num_cat
          do i = 1, cats(icat)
-              write(msg, *) icat, pos_val_by_cat(icat, i) 
+              write(msg, *) icat, pos_val_by_cat(icat, i)
               call print_score_to_latent_line(msg)
          enddo
  enddo
- write(msg, *) "# END OF CATEGORY BY TEST RESULT DATA" 
+ write(msg, *) "# END OF CATEGORY BY TEST RESULT DATA"
  call print_score_to_latent_line(msg)
 
 
@@ -209,7 +209,7 @@ end function bnd_val
 
  if(ierror /= 0) then
       err_msg = "print_beta...: could not set vc boundaries"
-      return 
+      return
  endif
 
  ! Load the cutoffs, only the part we want
@@ -232,7 +232,7 @@ end function bnd_val
  call print_score_to_FPF_TPF_line(msg)
 
  write(msg, *) "Trth  MEAN          MEDIAN       FPF LBOUND    FPF          FPF UBOUND    TPF LBOUND     TPF    &
-               &       TPF UBOUND "       
+               &       TPF UBOUND "
  call print_score_to_FPF_TPF_line(msg)
 
  ! contruct the test result value to latent variable relationship
@@ -261,7 +261,7 @@ end function bnd_val
  !            C) Compute, analytically, the means and medians for the estimated distributions, conditional
  !               to the values being within the category boundaries.
  ! WARNING: It assumes that test result values arrays are ranked
- ! NOTE: the algorithm can be rewritten more compactly by replacing the FPF and TPF functions with PF functions that make use of 
+ ! NOTE: the algorithm can be rewritten more compactly by replacing the FPF and TPF functions with PF functions that make use of
  !       truth. However, I did not really want to to this.Also it could be made faster by doing the calculations as an array instead of
  !       by interval. I see no reason to seek speed and I prefer the interval version because it seems more logical to me.
  use proproc_functions, only: fpf_find_vc, tpf_find_vc
@@ -272,8 +272,8 @@ end function bnd_val
  integer, intent(IN):: curr_cat ! the index of the current category
  integer, intent(IN):: num_cat !  total number of categories
  real(kind=double), intent(IN):: d_a_par, c_par ! curve parameters
- real(kind=double), intent(IN) :: cat_upper_cutoff, cat_lower_cutoff ! the cutoff estimate, right above and 
-                       ! below the current 
+ real(kind=double), intent(IN) :: cat_upper_cutoff, cat_lower_cutoff ! the cutoff estimate, right above and
+                       ! below the current
                          ! category
  integer,  intent(IN) :: neg_in_cat, pos_in_cat !  number of negative and positive cases in this category
  real(kind=double), dimension(neg_in_cat), intent(IN) ::  neg_val
@@ -285,15 +285,15 @@ end function bnd_val
  real(kind=double) :: cat_upper_tpf, cat_lower_tpf! TPF values at the boundaries of the categories, for the
   ! estimated population -- as opposed to the empirical data
 
- real(kind=double) :: lfpf, ltpf ! fpf and tpf at the lower bound of this category 
+ real(kind=double) :: lfpf, ltpf ! fpf and tpf at the lower bound of this category
  real(kind=double) :: ufpf, utpf ! fpf and tpf at the upper bound of this category
  real(kind=double) :: delta_p ! difference between fractions (positive or negative) at the boundary of a category
  real(kind=double) :: frac ! fraction of cases between the lower bound and the current value within the category
  real(kind=double) :: old_frac ! fraction of cases between the lower bound and the previous subcategory boundary
- real(kind=double) :: e_val_vc, e_val_vc2 ! expected value of vc and vc^2 
+ real(kind=double) :: e_val_vc, e_val_vc2 ! expected value of vc and vc^2
  real(kind=double) :: e_val_logbeta ! expected value of log beta
  real(kind=double) :: median_vc ! vc value for median
- real(kind=double) :: rho ! prevalence of positive cases in specific category 
+ real(kind=double) :: rho ! prevalence of positive cases in specific category
  real(kind=double), parameter :: tol = 1.0e-6_double ! tolerace of numerical calculations
  real(kind=double) :: current_lbound ! the current lower bound, for the subcategory
  real(kind=double) :: current_ubound! the current upper bound, for the subcategory
@@ -309,7 +309,7 @@ end function bnd_val
    ! guarantees that the value of the maximum likelihood estimate is independent from how many categories are
    ! set within a truth run (a sequence of values of the same truth). Thus they are all put into one, for numerical
    ! reasons. Once the MLE is done, the theorem also provides a way to compute where the boundaries between the
-   ! subcategories would have been, namely splitting the probability evenly over the cases. 
+   ! subcategories would have been, namely splitting the probability evenly over the cases.
    ! (i.e., P(case_i) = P_cat/Num_cases_in_cat
 
  character(len = line_length):: msg    ! buffer for printing out results
@@ -321,7 +321,7 @@ end function bnd_val
  call fpf_PBM(d_a_par, c_par, cat_upper_cutoff, ufpf)
  call tpf_PBM(d_a_par, c_par, cat_upper_cutoff, utpf)
 
-! if the cutoffs are the one related to (0,0) or (1,1) and they behave in unusual ways because they can be 
+! if the cutoffs are the one related to (0,0) or (1,1) and they behave in unusual ways because they can be
 ! functions of the other parameters of being points at infinity
  if(curr_cat == 1) then
      first_lbound = .true.
@@ -339,27 +339,27 @@ end function bnd_val
      rho = 0.0_double ! there are only negative cases in this category
      old_frac = 0.0_double ! the previous subcategory of this category was an empty category because this is the first case
      call fpf_PBM(d_a_par, c_par, cat_upper_cutoff, cat_upper_fpf)
-     call fpf_PBM(d_a_par, c_par, cat_lower_cutoff, cat_lower_fpf) 
+     call fpf_PBM(d_a_par, c_par, cat_lower_cutoff, cat_lower_fpf)
      delta_p = cat_lower_fpf - cat_upper_fpf ! The larger the cutoff the smaller the fraction
      sub_cat = 1 ! This is the first subcategory because this is the first "unique" value
      ! Cases have all the same value, so the mean and median are identical and equal to that value
      data_mean = neg_val(1)
      data_median = neg_val(1)
-     lfpf = cat_lower_fpf ! The next subgroup of cases will be in a category whose lower bound is the 
+     lfpf = cat_lower_fpf ! The next subgroup of cases will be in a category whose lower bound is the
      ! category bound because it is the first subbroup
-     do i = 2, neg_in_cat  ! loop over the negative cases in the category 
-     ! to determine the possible subcategories   
+     do i = 2, neg_in_cat  ! loop over the negative cases in the category
+     ! to determine the possible subcategories
            if ( neg_val(i) .spne. neg_val(i-1) ) then ! Check if a new subcategory was found
                ! when found, compute the values of the previous one (i-1)
                frac = real(i-1)/real(neg_in_cat) ! compute delta FPF from LB of category (max FPF in category)
-               ufpf = cat_lower_fpf - frac*delta_p ! fpf associated with that fraction 
+               ufpf = cat_lower_fpf - frac*delta_p ! fpf associated with that fraction
                ! Find the vc value correspondending to the point just found
-               call fpf_find_vc(d_a_par, c_par, max( 1.0e-6_double, ufpf), tol, current_ubound)   
+               call fpf_find_vc(d_a_par, c_par, max( 1.0e-6_double, ufpf), tol, current_ubound)
                ! prevent numerical approximations to render an inner category cutoff larger that the
-               ! category cutoff. Notice that this should happen only for extremely large datasets 
-               ! because the approximation of the inversion routine is 10^-6. Ideally one could set 
+               ! category cutoff. Notice that this should happen only for extremely large datasets
+               ! because the approximation of the inversion routine is 10^-6. Ideally one could set
                ! the tolerance based upon the number of cases in problem, but I did not want to do
-               ! that because it would have rendered the call of the function less focused. One could 
+               ! that because it would have rendered the call of the function less focused. One could
                ! have also define a tolerance for the whole program based on the number of cases.
                current_ubound = min(current_ubound, cat_upper_cutoff)
                call compute_values(" - ")
@@ -377,34 +377,34 @@ end function bnd_val
      enddo
      ! Take care of the last subcategory of this category, which has the upper bound of the whole category
      if(curr_cat == num_cat) last_ubound = .true. ! Upper cutoff is the largest possible value for the cutoff
-     current_ubound = cat_upper_cutoff    
-     call compute_values(" - ")        
+     current_ubound = cat_upper_cutoff
+     call compute_values(" - ")
      call fpf_PBM(d_a_par, c_par, current_ubound, ufpf) ! value of fpf for the upper
  elseif( neg_in_cat == 0) then! This is a labroc4 category with all actually positive cases
      old_frac = 0.0_double ! the previous subcategory of this category was an empty category because this is the first case
      rho = 1.0_double ! there are only positive cases in this category
      call tpf_PBM(d_a_par, c_par, cat_upper_cutoff, cat_upper_tpf)
-     call tpf_PBM(d_a_par, c_par, cat_lower_cutoff, cat_lower_tpf) 
+     call tpf_PBM(d_a_par, c_par, cat_lower_cutoff, cat_lower_tpf)
      delta_p = cat_lower_tpf - cat_upper_tpf ! The larger the cutoff the smaller the fraction
      sub_cat = 1 ! This is the first subcategory because this is the first "unique" value
      ! Cases have all the same value, so the mean and median are...
      data_mean = pos_val(1)
      data_median = pos_val(1)
-     ltpf = cat_lower_tpf ! The next subgroup of cases will be in a category whose lower bound is the 
+     ltpf = cat_lower_tpf ! The next subgroup of cases will be in a category whose lower bound is the
      ! category bound because it is the first subbroup
-     do i = 2, pos_in_cat  ! loop over the negative cases in the category 
-     ! to determine the possible subcategories   
+     do i = 2, pos_in_cat  ! loop over the negative cases in the category
+     ! to determine the possible subcategories
            if ( pos_val(i) .spne. pos_val(i-1) ) then ! Check if a new subcategory was found
                ! when found, compute the values of the previous one (i-1)
                frac = real(i-1)/real(pos_in_cat) ! compute delta FPF from LB of category (max FPF in category)
-               utpf = cat_lower_tpf - frac*delta_p ! fpf associated 
+               utpf = cat_lower_tpf - frac*delta_p ! fpf associated
                ! Find the vc value correspondending to the point just found
-               call tpf_find_vc(d_a_par, c_par, max( 1.0e-6_double, utpf), tol, current_ubound)   
+               call tpf_find_vc(d_a_par, c_par, max( 1.0e-6_double, utpf), tol, current_ubound)
                ! prevent numerical approximations to render an inner category cutoff larger that the
-               ! category cutoff. Notice that this should happen only for extremely large datasets 
-               ! because the approximation of the inversion routine is 10^-6. Ideally one could set 
+               ! category cutoff. Notice that this should happen only for extremely large datasets
+               ! because the approximation of the inversion routine is 10^-6. Ideally one could set
                ! the tolerance based upon the number of cases in problem, but I did not want to do
-               ! that because it would have rendered the call of the function less focused. One could 
+               ! that because it would have rendered the call of the function less focused. One could
                ! have also define a tolerance for the whole program based on the number of cases.
                current_ubound = min(current_ubound, cat_upper_cutoff)
                call compute_values(" + ")
@@ -422,7 +422,7 @@ end function bnd_val
      ! Take care of the last subcategory of this category
      if(curr_cat == num_cat) last_ubound = .true. ! Upper cutoff is maximum possible value for vc
      current_ubound = cat_upper_cutoff
-     call compute_values(" + ")   
+     call compute_values(" + ")
      call tpf_PBM(d_a_par, c_par, current_ubound, utpf) ! value of fpf for the upper
  else ! general case, the category is mixed truth. This category contains both
      ! actually positive and actually negative cases, then it can be either a labroc4
@@ -434,7 +434,7 @@ end function bnd_val
      if(curr_cat == num_cat) last_ubound = .true. ! Upper cutoff is maximum possible value
      old_frac = 0.0_double ! the previous subcategory of this category was an empty category because this is the first case
      frac = 1.0_double ! the current subcategory contains all cases in the category
-     data_mean =  real( sum(pos_val) + sum(neg_val) ) / real( neg_in_cat + pos_in_cat) 
+     data_mean =  real( sum(pos_val) + sum(neg_val) ) / real( neg_in_cat + pos_in_cat)
      ! Compute the data median
      if(allocated(median_array)) deallocate(median_array)
      allocate(median_array(neg_in_cat+pos_in_cat))
@@ -442,11 +442,11 @@ end function bnd_val
      median_array(neg_in_cat+1: neg_in_cat+pos_in_cat) = pos_val
      call median(median_array, neg_in_cat+pos_in_cat, data_median)
      rho =  real(pos_in_cat, kind=double)/(pos_in_cat + neg_in_cat)
-     current_ubound = cat_upper_cutoff    
-     call compute_values(" +-")                
+     current_ubound = cat_upper_cutoff
+     call compute_values(" +-")
  endif
 
- contains 
+ contains
 
  subroutine compute_values(cat_type)
     ! PURPOSE: this routine computes and displays values that link the test result space to the different representations in latent space.
@@ -470,11 +470,11 @@ end function bnd_val
    if(     (  .not.(rho .speq. 0.0_double) .and. .not.(rho .speq. 1.0_double) )  & ! if rho is neither 0 nor 1, it is a mixed category
        .or.  & ! in either case
            (  (cat_lower_cutoff .speq. current_lbound) .and. (cat_upper_cutoff .speq. current_ubound) ) & ! if the bounds are the same, it can't be split
-    )then  
+    )then
             d_vc_d_th1(:,1) = (/ 0.0_double, 0.0_double, 1.0_double, 0.0_double /)
             d_vc_d_th1(:,2) = (/ 0.0_double, 0.0_double, 0.0_double, 1.0_double /)
    else ! non-mixed category, with subcategories.
-             call compute_th0_th1_jacobian(d_a_par, c_par, cat_lower_cutoff, cat_upper_cutoff, current_lbound, &      
+             call compute_th0_th1_jacobian(d_a_par, c_par, cat_lower_cutoff, cat_upper_cutoff, current_lbound, &
                      current_ubound, old_frac, frac, rho, d_vc_d_th1)
    endif
 
@@ -489,7 +489,7 @@ end function bnd_val
    endif
 
    call compute_expected_val_logbeta(d_a_par, c_par, current_lbound, current_ubound, rho , e_val_vc, e_val_vc2, &
-                                      e_val_logbeta)  
+                                      e_val_logbeta)
    call compute_median_vc(d_a_par, c_par, current_lbound, current_ubound, rho, median_vc)
 
    call compute_se_logbeta_median(d_a_par, c_par, current_lbound, current_ubound, median_vc, curr_cat, num_cat,&
@@ -521,14 +521,14 @@ end function bnd_val
 end subroutine compute_values_by_cat
 ! ----------------------------------------------------------------------
 
-! -------------------------------------------------------------------------------------------- 
-! -------------------------------------------------------------------------------------------- 
+! --------------------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------
  subroutine compute_FPF_TPF_median(d_a_par, c_par, vc1, vc2, median_vc, &
                                  curr_cat, num_cat, cov, rho, d_vc_d_th1, PF, lbound_PF, ubound_PF)
 ! PURPOSE:  Compute the value of FPF and TPF correspondent to the median, that is the median FPF and TPF.
-!           The median is used because it was shown that the estimated done with the expected values and the median are 
+!           The median is used because it was shown that the estimated done with the expected values and the median are
 !           essentially identical and the expected values are lot more complicated to compute, especially for quantities like
-!           FPF and TPF. It returns both the estimates values and the lower and upper boundaries for a 95% CI. The 
+!           FPF and TPF. It returns both the estimates values and the lower and upper boundaries for a 95% CI. The
 !           CIs are computed using a logistic transformation from the FPF/TPF space to Logit(FPF) Logit (TPF). The SEs are
 !           computed for the logits, and so are the CIs. The CIs are then transformed back into the FPF and TPF space.
 !           This is a classical trick to compute reliable CIs when the variable of interested is bounded.
@@ -538,11 +538,11 @@ end subroutine compute_values_by_cat
 !           It should be notices that the logistic transformation is very non-linear in the tails (for FPF or TPF close to 1 or to 0) and
 !           accordingly the inverse is very flat for large values the net effect of this is that for very small or large values the variance
 !           estimation, being a linear approximation, fails, sometimes rather miserably. The CIs are within the bounds, but that is because
-!           it is a mathematical necessity of the transformations that were applied. The lack of quality of the CIs is compounded by the 
-!           tendency of the variances and derivatives of FPF and TPF to be also a little unstable in this region (because usually it is the 
-!           fixed boundary so they don't smoothly go to zero, but rather tend to become unstable and so do the estimated variances of the 
+!           it is a mathematical necessity of the transformations that were applied. The lack of quality of the CIs is compounded by the
+!           tendency of the variances and derivatives of FPF and TPF to be also a little unstable in this region (because usually it is the
+!           fixed boundary so they don't smoothly go to zero, but rather tend to become unstable and so do the estimated variances of the
 !           more extreme cutoffs).
-!           The CIs and values can be much better estimated extrapolating from the neighboring values because usually only the last values 
+!           The CIs and values can be much better estimated extrapolating from the neighboring values because usually only the last values
 !           is unstable. It is fairly easy to find the instability simply by plotting the values.
 ! WARNING:   Check the ALGORITHM section for instability issues with CIs and how to correct for them.
 ! PROGRAMMING NOTE: we use PF meaning both FPF and TPF depending from the contenxt (can be both is the class is mixed)
@@ -560,7 +560,7 @@ end subroutine compute_values_by_cat
  integer, intent(IN):: num_cat !  total number of categories
  real(kind=double),  dimension(num_cat+1,num_cat+1), intent(IN) :: cov ! Variance-covariance matrix as estimated by the MLE
  real(kind=double) :: rho ! fraction of actually positive cases
- real(kind=double), intent(IN), dimension(4,2) :: d_vc_d_th1 ! Derivative of the lower bound (current_lbound) and upper (current_ubound) 
+ real(kind=double), intent(IN), dimension(4,2) :: d_vc_d_th1 ! Derivative of the lower bound (current_lbound) and upper (current_ubound)
                                                               ! around the current
                             ! test result value as a function of the MLE parameters, da, c, and the two cutoffs around the current
                             ! truth run (cat_lower_cutoff, cat_upper_cutoff). Variable names are the ones used by LP in July 2007.
@@ -577,7 +577,7 @@ end subroutine compute_values_by_cat
 
  real(kind=double):: d_m_d_vc1, d_m_d_vc2, d_m_d_d_a, d_m_d_c ! derivatives of m in the parameters of the interval
 
- real(kind=double), dimension(2) :: d_PF_d_m ! Derivative of FPF and TPF in the median 
+ real(kind=double), dimension(2) :: d_PF_d_m ! Derivative of FPF and TPF in the median
  real(kind=double):: a, b ! CvBM parameters
 
  real(kind=double), dimension(2):: d_PF_d_d_a_m_fix, d_PF_d_c_m_fix ! Derivative of FPF and TPF in the median, keeping the median fixed
@@ -589,7 +589,7 @@ end subroutine compute_values_by_cat
  !real(kind=double), dimension(2) :: pf_corr ! When converting from FPF/TPF to their logit the net effect on the estimation of the error based on the delta method is
                                             ! dividing the SE by 1/[FPF*(1-FPF)]  (or equivalently for TPF). This term represents this correction.
 
- integer:: truth_pos ! Whether the current category is made of true positive or true negative cases. 
+ integer:: truth_pos ! Whether the current category is made of true positive or true negative cases.
 
  integer:: i ! Loop counter
  integer:: ierror ! error flag from subroutines
@@ -598,7 +598,7 @@ end subroutine compute_values_by_cat
  ierror = 0 ! NEED TO SET PROPER ERROR CODES AND CHECK INPUT.
 
  ! As a first step we check whether the category is made of only positives or only negatives or mixed.
- ! Mixed categories cannot be split, so the jacobian has to be the indentity matrix and the part we compute is 
+ ! Mixed categories cannot be split, so the jacobian has to be the indentity matrix and the part we compute is
  ! 1 between the cutoffs and zero otherwise.
  if ( rho .speq. 1.0_double) then
        truth_pos = 1
@@ -659,10 +659,10 @@ d_PF_d_c_m_fix(2)  = d_tpf_d_c_PBM(d_a_par, c_par, median_vc)
 ! Construct the derivatives of the logit  PF { FPF/TPF } in the MLE parameters
 ! First build the derivatives of PF, then transform them to the logit derivatives
 
- d_t_d_cut1(:) = d_PF_d_m(:) * (  d_m_d_vc1 * d_vc_d_th1(3,1)  + d_m_d_vc2 * d_vc_d_th1(3,2)) 
- d_t_d_cut2(:) = d_PF_d_m(:) * (  d_m_d_vc1 * d_vc_d_th1(4,1)  + d_m_d_vc2 * d_vc_d_th1(4,2)) 
- d_t_d_d_a(:) = d_PF_d_d_a_m_fix(:) + d_PF_d_m(:)*(d_m_d_vc1*d_vc_d_th1(1,1) + d_m_d_vc2*d_vc_d_th1(1,2) + d_m_d_d_a) 
- d_t_d_c(:) = d_PF_d_c_m_fix(:) + d_PF_d_m(:)*(d_m_d_vc1*d_vc_d_th1(2,1) + d_m_d_vc2*d_vc_d_th1(2,2) + d_m_d_c) 
+ d_t_d_cut1(:) = d_PF_d_m(:) * (  d_m_d_vc1 * d_vc_d_th1(3,1)  + d_m_d_vc2 * d_vc_d_th1(3,2))
+ d_t_d_cut2(:) = d_PF_d_m(:) * (  d_m_d_vc1 * d_vc_d_th1(4,1)  + d_m_d_vc2 * d_vc_d_th1(4,2))
+ d_t_d_d_a(:) = d_PF_d_d_a_m_fix(:) + d_PF_d_m(:)*(d_m_d_vc1*d_vc_d_th1(1,1) + d_m_d_vc2*d_vc_d_th1(1,2) + d_m_d_d_a)
+ d_t_d_c(:) = d_PF_d_c_m_fix(:) + d_PF_d_m(:)*(d_m_d_vc1*d_vc_d_th1(2,1) + d_m_d_vc2*d_vc_d_th1(2,2) + d_m_d_c)
 
 ! Apply the delta method to FPF and TPF, the conversion to t will be done when computing the CIs
 
@@ -701,7 +701,7 @@ do i=1, 2 ! Loop over FPF and TPF
            2.0_double * d_t_d_d_a(i) * d_t_d_cut2(i) *  cov(1, curr_cat  + 2)    + &
            2.0_double * d_t_d_c(i)   * d_t_d_cut1(i) *  cov(2, curr_cat - 1 + 2) + &
            2.0_double * d_t_d_c(i)   * d_t_d_cut2(i) *  cov(2, curr_cat  + 2)    + &
-           2.0_double * d_t_d_cut1(i) * d_t_d_cut2(i) *  cov(curr_cat - 1 + 2, curr_cat  + 2) & 
+           2.0_double * d_t_d_cut1(i) * d_t_d_cut2(i) *  cov(curr_cat - 1 + 2, curr_cat  + 2) &
          )
    endif
 
@@ -721,7 +721,7 @@ lbound_PF(:) = PF(:) - 1.96_double*se_t(:) !/pf_corr(:)
 ubound_PF(:) = PF(:) + 1.96_double*se_t(:) !/pf_corr(:)
 
 !write(*,*) curr_cat, num_cat
-!write(*,*) t(1), se_t(1), lbound_PF(1), ubound_PF(1) 
+!write(*,*) t(1), se_t(1), lbound_PF(1), ubound_PF(1)
 
 ! Apply the inverse transformation to obtain the 95% CI for the FPF and TPF
 do i=1,2
@@ -736,7 +736,7 @@ enddo
 
 ! INTERNAL FUNCTIONS
 contains
- real(kind=double) function inv_logit(x) 
+ real(kind=double) function inv_logit(x)
    real(kind=double), intent(IN):: x
 
   inv_logit = exp(x)/(1.0_double + exp(x))
@@ -744,7 +744,7 @@ contains
  end function inv_logit
 
  real(kind=double) function mix_density2(vc) result(mix_density)
- ! function tht computes the density as a function of vc, depending upon the truth of the category that is being 
+ ! function tht computes the density as a function of vc, depending upon the truth of the category that is being
  ! analyzed
    real(kind=double), intent(IN):: vc
 
@@ -759,7 +759,7 @@ contains
  end function mix_density2
 
  real(kind=double) function d_pf_d_d_a2(vc) result(d_pf_d_d_a)
- ! function tht computes the derivative in d_a  of FPF or TPF, depending upon the truth of the category that is being 
+ ! function tht computes the derivative in d_a  of FPF or TPF, depending upon the truth of the category that is being
  ! analyzed
    real(kind=double), intent(IN):: vc
 
@@ -774,7 +774,7 @@ contains
  end function d_pf_d_d_a2
 
  real(kind=double) function d_pf_d_c2(vc) result(d_pf_d_c)
- ! function tht computes the derivative in c  of FPF or TPF, depending upon the truth of the category that is being 
+ ! function tht computes the derivative in c  of FPF or TPF, depending upon the truth of the category that is being
  ! analyzed
    real(kind=double), intent(IN):: vc
 
@@ -789,10 +789,10 @@ contains
 
  end function d_pf_d_c2
 
-! -------------------------------------------------------------------------------------------- 
+! --------------------------------------------------------------------------------------------
  end subroutine compute_FPF_TPF_median
-! -------------------------------------------------------------------------------------------- 
-! -------------------------------------------------------------------------------------------- 
+! --------------------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------
 
 
 
@@ -801,7 +801,7 @@ contains
 ! ---------------------------------------------------------------------------------------------------------------------------------
  subroutine compute_se_EV_logbeta(d_a_par, c_par, vc1, vc2, vc1_min, max_vc2, e_val_vc, e_val_vc2, &
                                  curr_cat, num_cat, cov, rho, d_vc_d_th1, se_log_beta)
-! PURPOSE:  Compute the standard error of the expected value of log beta. 
+! PURPOSE:  Compute the standard error of the expected value of log beta.
 ! ALGORITHM:It is based on the delta method and makes use of the fact that
 !           the expected value of log(beta) can be written as E{log(beta)} = 2 a / (1 + b) E{v} - 2 c E{v^2} + log(b). Thus it is made of
 !           3 terms , here called A, B, and C. The derivatives are built backwards by building those terms and summing them up.
@@ -824,7 +824,7 @@ contains
  integer, intent(IN):: curr_cat !  current category
  real(kind=double),  dimension(num_cat+1,num_cat+1), intent(IN) :: cov ! Variance-covariance matrix as estimated by the MLE
  real(kind=double), intent(IN) :: rho ! fraction of actually positive cases
- real(kind=double), intent(IN), dimension(4,2) :: d_vc_d_th1 ! Derivative of the lower bound (current_lbound) and upper (current_ubound) 
+ real(kind=double), intent(IN), dimension(4,2) :: d_vc_d_th1 ! Derivative of the lower bound (current_lbound) and upper (current_ubound)
                                                               ! around the current
                             ! test result value as a function of the MLE parameters, da, c, and the two cutoffs around the current
                             ! truth run (cat_lower_cutoff, cat_upper_cutoff). Variable names are the ones used by LP in July 2007.
@@ -843,7 +843,7 @@ contains
  real(kind=double):: coeff_d_a, coeff_c ! whether one of the two cutoffs is the boundaries of the ROC space
  real(kind=double):: d_k2_d_d_a, d_k2_d_c, d_k3_d_d_a, d_k3_d_c ! derivatives of the FPF/TPF coefficients in the parameters of the subinterval, note that
                      ! the derivatives of k1 aren't performed because they are trivial, and the ones in vc aren't necessary because the integrals as
-                     ! I*(alpha1, alpha2, vc1, vc2) [ * = 1 or 2] are a function of the cutoffs and not of a function of them. 
+                     ! I*(alpha1, alpha2, vc1, vc2) [ * = 1 or 2] are a function of the cutoffs and not of a function of them.
  real(kind=double):: d_Ev_d_d_a, d_Ev_d_c, d_Ev_d_vc1, d_Ev_d_vc2 ! derivatives of E(v) in the parameters of the subinterval
  real(kind=double):: d_Ev2_d_d_a, d_Ev2_d_c, d_Ev2_d_vc1, d_Ev2_d_vc2 ! derivatives of E(v2) in the parameters of the subinterval
 
@@ -861,7 +861,7 @@ contains
  !character(len = line_length):: msg    ! buffer for printing out results
 
  ! As a first step we check whether the category is made of only positives or only negatives or mixed.
- ! Mixed categories cannot be split, so the jacobian has to be the indentity matrix and the part we compute is 
+ ! Mixed categories cannot be split, so the jacobian has to be the indentity matrix and the part we compute is
  ! 1 between the cutoffs and zero otherwise.
  if ( rho .speq. 1.0_double) then
        coeff = 1
@@ -877,7 +877,7 @@ contains
 
 ! Compute coefficients (which correspond to alpha1 and alpha2 in the integrals)
 k2 = d_a_par * sqrt( 1.0_double + c_par**2) / 2.0_double
-k3 = k2  / sign( max(abs(c_par), 1.0e-8_double), c_par) ! Max to avoid divisions by zero 
+k3 = k2  / sign( max(abs(c_par), 1.0e-8_double), c_par) ! Max to avoid divisions by zero
 
 
 ! Compute the derivatives of the coefficients (which correspond to alpha1 and alpha2 in the integrals)
@@ -885,16 +885,16 @@ d_k2_d_d_a = sqrt(1.0_double + c_par**2)/ 2.0_double
 
 d_k2_d_c = d_a_par * c_par/ (sqrt(1.0_double + c_par**2) * 2.0_double)
 
-d_k3_d_d_a = d_k2_d_d_a / sign(  max( abs(c_par), 1.0e-8_double ),c_par) ! Max to avoid divisions by zero 
+d_k3_d_d_a = d_k2_d_d_a / sign(  max( abs(c_par), 1.0e-8_double ),c_par) ! Max to avoid divisions by zero
 
 d_k3_d_c = d_a_par / (sqrt(1.0_double + c_par**2) * 2.0_double) - &
-           d_a_par * sqrt(1.0_double + c_par**2)/ ( 2.0_double * max( c_par**2, 1.0e-16_double ) ) ! Max to avoid divisions by zero 
+           d_a_par * sqrt(1.0_double + c_par**2)/ ( 2.0_double * max( c_par**2, 1.0e-16_double ) ) ! Max to avoid divisions by zero
 
 
 ! Construct the derivaties of E(v) in the subinterval parameters. First take the derivative of the numerator of
 ! E(v) = Integral{vc1,vc2} f(vc|t) vc dvc / Integral{vc1,vc2} f(vc|t) dvc  that is
 ! Integral{vc1,vc2} f(vc|t) vc dvc . Considering that it is a ratio of two functions, use the rule for the
-! derivatio of a ratio. 
+! derivatio of a ratio.
 
 ! We first compute the normalization constants, PF(vc1) - PF(vc2).
 if(coeff == -1) then
@@ -923,14 +923,14 @@ coeff_c =  d_a_par/ ( 4.0_double*sqrt(1.0_double + c_par**2)) - &
 ! Then compute the derivative of the normalization constants, dPF(vc1)/dtheta - dPF(vc2)/dtheta, that is the denominator
 ! of the conditional expeced value Exp{v| vc1<vc<vc2} / Delta probability
 if(coeff == -1 ) then ! Actually negative cases
-       d_norm_d_d_a =  d_fpf_d_d_a_PBM(d_a_par, c_par, vc1 ) - d_fpf_d_d_a_PBM(d_a_par, c_par, vc2) 
-       d_norm_d_c   =  d_fpf_d_c_PBM(d_a_par, c_par, vc1) - d_fpf_d_c_PBM(d_a_par, c_par, vc2) 
+       d_norm_d_d_a =  d_fpf_d_d_a_PBM(d_a_par, c_par, vc1 ) - d_fpf_d_d_a_PBM(d_a_par, c_par, vc2)
+       d_norm_d_c   =  d_fpf_d_c_PBM(d_a_par, c_par, vc1) - d_fpf_d_c_PBM(d_a_par, c_par, vc2)
        d_norm_d_vc1 = -density_vc_PBM(d_a_par, c_par, vc1,  0)
        d_norm_d_vc2 = +density_vc_PBM(d_a_par, c_par, vc2,  0)
 
   elseif(coeff == 1) then
-       d_norm_d_d_a =  d_tpf_d_d_a_PBM(d_a_par, c_par, vc1) - d_tpf_d_d_a_PBM(d_a_par, c_par, vc2)  
-       d_norm_d_c   =  d_tpf_d_c_PBM(d_a_par, c_par, vc1) - d_tpf_d_c_PBM(d_a_par, c_par, vc2)  
+       d_norm_d_d_a =  d_tpf_d_d_a_PBM(d_a_par, c_par, vc1) - d_tpf_d_d_a_PBM(d_a_par, c_par, vc2)
+       d_norm_d_c   =  d_tpf_d_c_PBM(d_a_par, c_par, vc1) - d_tpf_d_c_PBM(d_a_par, c_par, vc2)
        d_norm_d_vc1 = -density_vc_PBM(d_a_par, c_par, vc1,  1)
        d_norm_d_vc2 = +density_vc_PBM(d_a_par, c_par, vc2,  1)
 
@@ -941,7 +941,7 @@ else
        d_norm_d_c =  rho*(d_tpf_d_c_PBM(d_a_par,c_par,vc1) - d_tpf_d_c_PBM(d_a_par,c_par,vc2)  ) + &
           (1.0_double-rho)*(d_fpf_d_c_PBM(d_a_par,c_par,vc1) - d_fpf_d_c_PBM(d_a_par,c_par,vc2)  )
 
-       d_norm_d_vc1 = -rho*density_vc_PBM(d_a_par,c_par,vc1,1)-(1.0_double-rho)*density_vc_PBM(d_a_par,c_par,vc1,0)  
+       d_norm_d_vc1 = -rho*density_vc_PBM(d_a_par,c_par,vc1,1)-(1.0_double-rho)*density_vc_PBM(d_a_par,c_par,vc1,0)
        d_norm_d_vc2 = +rho * density_vc_PBM(d_a_par,c_par,vc2,1) +(1.0_double - rho) * density_vc_PBM(d_a_par,c_par,vc2,0)
 
 endif
@@ -952,12 +952,12 @@ if( coeff == 1 .or. coeff == -1 ) then
      k1 = - (1.0_double + coeff * c_par)
 
      d_Ev_d_d_a =   d_Integral1_d_alpha2( k1 , coeff*k2, vc1, vc2) * coeff*d_k2_d_d_a  &
-                  + d_Integral1_d_alpha2( k1 , k3      , vc1, vc2) * d_k3_d_d_a 
+                  + d_Integral1_d_alpha2( k1 , k3      , vc1, vc2) * d_k3_d_d_a
 
      d_Ev_d_c =   d_Integral1_d_alpha1( k1 , coeff*k2 , vc1, vc2) * (-coeff) &
                 + d_Integral1_d_alpha2( k1 , coeff*k2 , vc1, vc2) * coeff*d_k2_d_c &
                 + d_Integral1_d_alpha1( k1 , k3       , vc1, vc2) * (-coeff) &
-                + d_Integral1_d_alpha2( k1 , k3       , vc1, vc2) * d_k3_d_c 
+                + d_Integral1_d_alpha2( k1 , k3       , vc1, vc2) * d_k3_d_c
 
      d_Ev_d_vc1 = +(d_Integral1_d_vc( k1 , coeff*k2 , vc1) + d_Integral1_d_vc( k1 , k3 , vc1) )
      d_Ev_d_vc2 = -(d_Integral1_d_vc( k1 , coeff*k2 , vc2) + d_Integral1_d_vc( k1 , k3 , vc2) )
@@ -970,7 +970,7 @@ else
      d_Ev_d_d_a =   rho*(  d_Integral1_d_alpha2( k1p , k2 , vc1, vc2)*d_k2_d_d_a  &
                           +d_Integral1_d_alpha2( k1p , k3 , vc1, vc2)*d_k3_d_d_a ) + &
                   (1.0_double-rho)*( -d_Integral1_d_alpha2( k1m , -k2 , vc1, vc2)*d_k2_d_d_a  &
-                                     +d_Integral1_d_alpha2( k1m ,  k3 , vc1, vc2)*d_k3_d_d_a ) 
+                                     +d_Integral1_d_alpha2( k1m ,  k3 , vc1, vc2)*d_k3_d_d_a )
 
      d_Ev_d_c =  rho*    ( - d_Integral1_d_alpha1( k1p ,  k2 , vc1, vc2) &
                            + d_Integral1_d_alpha2( k1p ,  k2 , vc1, vc2)*d_k2_d_c &
@@ -979,7 +979,7 @@ else
         (1.0_double-rho)*( + d_Integral1_d_alpha1( k1m , -k2 , vc1, vc2) &
                            - d_Integral1_d_alpha2( k1m , -k2 , vc1, vc2)*d_k2_d_c &
                            + d_Integral1_d_alpha1( k1m ,  k3 , vc1, vc2) &
-                           + d_Integral1_d_alpha2( k1m ,  k3 , vc1, vc2)*d_k3_d_c ) 
+                           + d_Integral1_d_alpha2( k1m ,  k3 , vc1, vc2)*d_k3_d_c )
 
      d_Ev_d_vc1 = rho*( d_Integral1_d_vc( k1p , k2 , vc1) + d_Integral1_d_vc( k1p , k3 , vc1) ) + &
                  (1.0_double-rho) * (d_Integral1_d_vc( k1m , -k2 , vc1) + d_Integral1_d_vc( k1m , k3 , vc1)  )
@@ -987,11 +987,11 @@ else
      d_Ev_d_vc2 = - rho*(d_Integral1_d_vc( k1p , k2 , vc2) + d_Integral1_d_vc( k1p , k3 , vc2))  &
                   - (1.0_double-rho) * (d_Integral1_d_vc( k1m , -k2 , vc2) + d_Integral1_d_vc( k1m , k3 , vc2)  )
 
- 
+
 endif
 
 
-! Construct the full derivative of the ratio that produces the expected value. Notice that 
+! Construct the full derivative of the ratio that produces the expected value. Notice that
 ! e_val_vc is the numerator divided by the denominator and this is why it needs to be multiplied by norm
 ! in order to obtain the numerator only
 
@@ -1014,12 +1014,12 @@ if( coeff == 1 .or. coeff == -1 ) then
      k1 = - (1.0_double + coeff * c_par)
 
      d_Ev2_d_d_a =   d_Integral2_d_alpha2( k1 , coeff*k2 , vc1, vc2)*coeff*d_k2_d_d_a  &
-                   + d_Integral2_d_alpha2( k1 ,       k3 , vc1, vc2)*d_k3_d_d_a 
+                   + d_Integral2_d_alpha2( k1 ,       k3 , vc1, vc2)*d_k3_d_d_a
 
      d_Ev2_d_c =     d_Integral2_d_alpha1( k1 , coeff*k2 , vc1, vc2)*(-coeff) &
                    + d_Integral2_d_alpha2( k1 , coeff*k2 , vc1, vc2)*coeff*d_k2_d_c &
                    + d_Integral2_d_alpha1( k1 , k3       , vc1, vc2)*(-coeff) &
-                   + d_Integral2_d_alpha2( k1 , k3       , vc1, vc2)*d_k3_d_c 
+                   + d_Integral2_d_alpha2( k1 , k3       , vc1, vc2)*d_k3_d_c
 
      d_Ev2_d_vc1 =  d_Integral2_d_vc( k1 , coeff*k2 , vc1) + d_Integral2_d_vc( k1 , k3 , vc1)
      d_Ev2_d_vc2 = -(d_Integral2_d_vc( k1 , coeff*k2 , vc2) + d_Integral2_d_vc( k1 , k3 , vc2))
@@ -1030,7 +1030,7 @@ else
      d_Ev2_d_d_a =     rho  *(   d_Integral2_d_alpha2( k1p ,  k2 , vc1, vc2)*d_k2_d_d_a  &
                                 +d_Integral2_d_alpha2( k1p ,  k3 , vc1, vc2)*d_k3_d_d_a ) + &
             (1.0_double-rho)*( - d_Integral2_d_alpha2( k1m , -k2 , vc1, vc2)*d_k2_d_d_a  &
-                               + d_Integral2_d_alpha2( k1m ,  k3 , vc1, vc2)*d_k3_d_d_a ) 
+                               + d_Integral2_d_alpha2( k1m ,  k3 , vc1, vc2)*d_k3_d_d_a )
 
      d_Ev2_d_c =         rho*( - d_Integral2_d_alpha1( k1p , k2 , vc1, vc2) &
                                + d_Integral2_d_alpha2( k1p , k2 , vc1, vc2)*d_k2_d_c &
@@ -1039,7 +1039,7 @@ else
             (1.0_double-rho)*( + d_Integral2_d_alpha1( k1m , -k2 , vc1, vc2) &
                                - d_Integral2_d_alpha2( k1m , -k2 , vc1, vc2)*d_k2_d_c &
                                + d_Integral2_d_alpha1( k1m ,  k3 , vc1, vc2) &
-                               + d_Integral2_d_alpha2( k1m ,  k3 , vc1, vc2)*d_k3_d_c ) 
+                               + d_Integral2_d_alpha2( k1m ,  k3 , vc1, vc2)*d_k3_d_c )
 
      d_Ev2_d_vc1 =   rho        *(d_Integral2_d_vc( k1p , k2  , vc1) + d_Integral2_d_vc( k1p , k3 , vc1)) + &
                 (1.0_double-rho)*(d_Integral2_d_vc( k1m , -k2 , vc1) + d_Integral2_d_vc( k1m , k3 , vc1)  )
@@ -1049,8 +1049,8 @@ else
 
 endif
 
-                
-! Construct the full derivative of the ratio that produces the expected value of v^2. Notice that 
+
+! Construct the full derivative of the ratio that produces the expected value of v^2. Notice that
 ! e_val_vc is the numerator divided by the denominator and this is why it needs to be multiplied by norm
 ! in order to obtain the numerator only
 
@@ -1068,9 +1068,9 @@ d_A_d_c = ( Sqrt(8.0_double)*d_a_par/(1.0_double-c_par)**2  ) * &
           (  b/( (1.0_double + b)*sqrt(1.0_double + b**2)) - sqrt(1.0_double + b**2)/(1.0_double + b)**2 )*e_val_vc + &
           (2.0_double * a / (1.0_double + b) ) * d_Ev_d_c
 
-d_A_d_vc1 = ( 2.0_double * a / (1.0_double + b) ) * d_Ev_d_vc1 
+d_A_d_vc1 = ( 2.0_double * a / (1.0_double + b) ) * d_Ev_d_vc1
 
-d_A_d_vc2 = ( 2.0_double * a / (1.0_double + b) ) * d_Ev_d_vc2 
+d_A_d_vc2 = ( 2.0_double * a / (1.0_double + b) ) * d_Ev_d_vc2
 
 ! write(*,"('EvA', 4(1x,d12.6))") d_A_d_d_a, d_A_d_c, d_A_d_vc1, d_A_d_vc2
 
@@ -1092,8 +1092,8 @@ d_C_d_vc2 = 0.0_double
 
  d_lb_d_vc1 = d_A_d_vc1 + d_B_d_vc1 + d_C_d_vc1
  d_lb_d_vc2 = d_A_d_vc2 + d_B_d_vc2 + d_C_d_vc2
- d_lb_d_d_a = d_A_d_d_a + d_B_d_d_a + d_C_d_d_a 
- d_lb_d_c   = d_A_d_c   + d_B_d_c   + d_C_d_c   
+ d_lb_d_d_a = d_A_d_d_a + d_B_d_d_a + d_C_d_d_a
+ d_lb_d_c   = d_A_d_c   + d_B_d_c   + d_C_d_c
 
 
 ! NOTE THAT IT IS IMPOSSIBLE THAT THEY ARE BOTH THE FIRST AND LAST UNLESS
@@ -1102,18 +1102,18 @@ d_C_d_vc2 = 0.0_double
 if(vc1_min .and. (c_par < 0.0_double) ) then
      d_lb_d_d_a = d_lb_d_d_a + d_lb_d_vc1*coeff_d_a
      d_lb_d_c   = d_lb_d_c + d_lb_d_vc1*coeff_c
-     d_lb_d_vc1 = 0.0_double 
+     d_lb_d_vc1 = 0.0_double
 elseif(vc1_min .and. (c_par > -1.0e-8_double) ) then
-     d_lb_d_vc1 = 0.0_double 
+     d_lb_d_vc1 = 0.0_double
 endif
 
 ! Take care of when the last cutoff is the smallest possible value
 if(max_vc2 .and. (c_par > 0.0_double) ) then
      d_lb_d_d_a = d_lb_d_d_a + d_lb_d_vc2*coeff_d_a
      d_lb_d_c   = d_lb_d_c + d_lb_d_vc2*coeff_c
-     d_lb_d_vc2 = 0.0_double 
+     d_lb_d_vc2 = 0.0_double
 elseif(max_vc2 .and. (c_par < +1.0e-8_double) ) then
-     d_lb_d_vc2 = 0.0_double 
+     d_lb_d_vc2 = 0.0_double
 endif
 
 ! write(*,"('Ev', 4(1x,d12.6))") d_lb_d_d_a, d_lb_d_c, d_lb_d_vc1, d_lb_d_vc2
@@ -1128,7 +1128,7 @@ endif
  d_logbeta_d_d_a  = d_lb_d_vc1 *  d_vc_d_th1(1,1)  +   d_lb_d_vc2*d_vc_d_th1(1,2) + d_lb_d_d_a
  d_logbeta_d_c    = d_lb_d_vc1 *  d_vc_d_th1(2,1)  +   d_lb_d_vc2*d_vc_d_th1(2,2) + d_lb_d_c
 
-! Apply the delta method 
+! Apply the delta method
 
 ! If it is the first category, then the cutoff before the current is a fixed point
 ! so it does not contribute to the derivation
@@ -1163,17 +1163,17 @@ else ! Any category in the middle has all the cutoffs
          2.0_double * d_logbeta_d_d_a * d_logbeta_d_cut2 *  cov(1, curr_cat  + 2)    + &
          2.0_double * d_logbeta_d_c   * d_logbeta_d_cut1 *  cov(2, curr_cat - 1 + 2) + &
          2.0_double * d_logbeta_d_c   * d_logbeta_d_cut2 *  cov(2, curr_cat  + 2)    + &
-         2.0_double * d_logbeta_d_cut1 * d_logbeta_d_cut2 *  cov(curr_cat - 1 + 2, curr_cat  + 2) & 
+         2.0_double * d_logbeta_d_cut1 * d_logbeta_d_cut2 *  cov(curr_cat - 1 + 2, curr_cat  + 2) &
        )
  endif
 
 
 
 
-! -------------------------------------------------------------------------------------------- 
+! --------------------------------------------------------------------------------------------
  end subroutine compute_se_EV_logbeta
-! -------------------------------------------------------------------------------------------- 
-! -------------------------------------------------------------------------------------------- 
+! --------------------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------
 
 ! --------------------------------------------------------------------------------------------
 ! --------------------------------------------------------------------------------------------
@@ -1198,7 +1198,7 @@ real(kind=double) function  d_Integral1_d_alpha1(alpha1, alpha2, vc1, vc2)
  d_integral1_d_alpha1 = +g(gamma1)*vc1*(alpha2 - gamma1) - g(gamma2)*vc2*(alpha2 - gamma2) &
                        + Integral1(alpha1, alpha2, vc1, vc2)
 
- d_integral1_d_alpha1 = - d_integral1_d_alpha1 / min( alpha1, -1.0e-10_double ) ! Min to avoid divisions by zero, alpha1 is 
+ d_integral1_d_alpha1 = - d_integral1_d_alpha1 / min( alpha1, -1.0e-10_double ) ! Min to avoid divisions by zero, alpha1 is
                          ! always negative
 
 
@@ -1255,7 +1255,7 @@ real(kind=double) function  d_Integral1_d_vc(alpha1, alpha2, vc)
 
  gamma = alpha1*vc  + alpha2
 
- d_integral1_d_vc = g(gamma)*(gamma - alpha2) 
+ d_integral1_d_vc = g(gamma)*(gamma - alpha2)
 
 
 ! --------------------------------------------------------------------------------------------
@@ -1315,7 +1315,7 @@ real(kind=double) function  d_Integral2_d_alpha2(alpha1, alpha2, vc1, vc2)
  gamma2 = alpha1*vc2  + alpha2
 
  d_integral2_d_alpha2 =  2.0_double*alpha2 * (  phi(gamma1)  -  phi(gamma2) ) &
-                        + (1.0_double + alpha2**2) * ( g(gamma1)  -  g(gamma2) ) & 
+                        + (1.0_double + alpha2**2) * ( g(gamma1)  -  g(gamma2) ) &
                         + g(gamma1)*(  1.0_double - gamma1*(alpha2 - alpha1* vc1)  ) &
                         - g(gamma2)*(  1.0_double - gamma2*(alpha2 - alpha1* vc2)  )
 
@@ -1348,7 +1348,7 @@ real(kind=double) function  d_Integral2_d_vc(alpha1, alpha2, vc)
 
  gamma = alpha1*vc  + alpha2
 
- d_integral2_d_vc =  (1.0_double + alpha2**2) *  g(gamma)*alpha1 & 
+ d_integral2_d_vc =  (1.0_double + alpha2**2) *  g(gamma)*alpha1 &
                       - g(gamma)* alpha1*(  1.0_double + gamma*(alpha2 - alpha1* vc)  )
 
  d_integral2_d_vc = d_integral2_d_vc / max( alpha1**2, 1.0e-20_double ) ! Max to avoid divisions by zero
@@ -1358,19 +1358,19 @@ real(kind=double) function  d_Integral2_d_vc(alpha1, alpha2, vc)
    end function d_Integral2_d_vc
 ! --------------------------------------------------------------------------------------------
 
-! -------------------------------------------------------------------------------------------- 
-! -------------------------------------------------------------------------------------------- 
+! --------------------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------
  subroutine compute_se_logbeta_median(d_a_par, c_par, vc1, vc2, median_vc, &
                                  curr_cat, num_cat, cov, rho, d_vc_d_th1, se_log_beta)
 ! PURPOSE: This routine computes the Jacobian of the transformation from the variables used in the MLE, the truth runs cutoffs,
-!          d_a and c, to the variables used in the computation of the latent variables quantities, which are the bounds around a 
-!          test value result, d_a and c. The second is a subset of the first. 
+!          d_a and c, to the variables used in the computation of the latent variables quantities, which are the bounds around a
+!          test value result, d_a and c. The second is a subset of the first.
 !ALGORITHM: first one notices that only the derivatives of the bounds around the test result values are needed because d_a and c
 !           appear in both representations and they don't depend upon the truth runs cutoffs. That part of the jacobian would be
 !           the identity matrix and there is no need to compute it or store it.
 !           Here we call G the function that implicitly defines the cutoffs around the truth run. G(vc*, cut1, cut2, d_a, c) =0
 !           PF(vc*) - PF(cut1 = cat_ubound)*[1 - kij] - PF(cut2 = cat_lbound)*kij  ==0     ; where kij = the sum of all cases in this
-!           truth run that relate to latent values smaller than vc*. We need this function to compute the derivatives implicitely because 
+!           truth run that relate to latent values smaller than vc*. We need this function to compute the derivatives implicitely because
 !           we cannot invert the function analytically (or at least I did not find a way to do it).
 ! NOTE:     The jacobian is 2*4 because we only need the derivatives of the sub-category cutoffs (vc1,vc2) in d_a, c, cat_ubound, cat_lbound.
 !           the dependence upon d_a and c is voided because they are not computed as a function of d_a and c. However, the correlation that
@@ -1390,7 +1390,7 @@ real(kind=double) function  d_Integral2_d_vc(alpha1, alpha2, vc)
  integer, intent(IN):: curr_cat !  current category
  real(kind=double),  dimension(num_cat+1,num_cat+1), intent(IN) :: cov ! Variance-covariance matrix as estimated by the MLE
  real(kind=double) :: rho ! fraction of actually positive cases
- real(kind=double), intent(IN), dimension(4,2) :: d_vc_d_th1 ! Derivative of the lower bound (current_lbound) and upper (current_ubound) 
+ real(kind=double), intent(IN), dimension(4,2) :: d_vc_d_th1 ! Derivative of the lower bound (current_lbound) and upper (current_ubound)
                                                               ! around the current
                             ! test result value as a function of the MLE parameters, da, c, and the two cutoffs around the current
                             ! truth run (cat_lower_cutoff, cat_upper_cutoff). Variable names are the ones used by LP in July 2007.
@@ -1402,7 +1402,7 @@ real(kind=double) function  d_Integral2_d_vc(alpha1, alpha2, vc)
 
  real(kind=double):: d_m_d_vc1, d_m_d_vc2, d_m_d_d_a, d_m_d_c ! derivatives of m in the parameters of the interval
 
- real(kind=double):: d_lb_dm ! Derivative of logbeta in the median 
+ real(kind=double):: d_lb_dm ! Derivative of logbeta in the median
  real(kind=double):: a, b ! CvBM parameters
 
  real(kind=double):: d_lb_d_d_a_m_fix, d_lb_d_c_m_fix ! Derivative of logbeta in the median, keeping the median fixed
@@ -1411,10 +1411,10 @@ real(kind=double) function  d_Integral2_d_vc(alpha1, alpha2, vc)
  real(kind=double):: d_logbeta_d_cut1, d_logbeta_d_cut2, d_logbeta_d_d_a, d_logbeta_d_c ! derivatives of log(beta(median)) in the parameters of the MLE estimation
                                            ! that affect this specific estimation.
 
- integer:: truth_pos ! Whether the current category is made of true positive or true negative cases. 
+ integer:: truth_pos ! Whether the current category is made of true positive or true negative cases.
 
  ! As a first step we check whether the category is made of only positives or only negatives or mixed.
- ! Mixed categories cannot be split, so the jacobian has to be the indentity matrix and the part we compute is 
+ ! Mixed categories cannot be split, so the jacobian has to be the indentity matrix and the part we compute is
  ! 1 between the cutoffs and zero otherwise.
  if ( rho .speq. 1.0_double) then
        truth_pos = 1
@@ -1445,14 +1445,14 @@ d_m_d_c   = - d_G_d_c / d_G_d_m
 
 d_lb_dm = 2.0_double * a / (1.0_double + b) - 4.0_double*c_par*median_vc
 
-! Compute the derivative of the the log(beta) function ( 2 a m / (1+b) * median_vc - 2 c median_vc^2 ) id d_a and c, keeping 
+! Compute the derivative of the the log(beta) function ( 2 a m / (1+b) * median_vc - 2 c median_vc^2 ) id d_a and c, keeping
 ! the median constant
 
 d_lb_d_d_a_m_fix = ( sqrt( 2.0_double * (1.0_double + b**2)) / ( 1.0_double + b)  ) * median_vc
 
 d_lb_d_c_m_fix  = ( 2.0_double * sqrt(2.0_double)* d_a_par * median_vc / (1.0_double - c_par)**2   ) *    &
-                    (     b / ( (1.0_double + b) * sqrt(1.0_double + b**2) )                              & 
-                         -sqrt(1.0_double + b**2) / (1.0_double + b)**2  )                                & 
+                    (     b / ( (1.0_double + b) * sqrt(1.0_double + b**2) )                              &
+                         -sqrt(1.0_double + b**2) / (1.0_double + b)**2  )                                &
                   - 2.0_double * median_vc**2 + 2.0_double / (b*(1.0_double - c_par)**2 )
 
  ! construct the derivatives of Log(beta(median)) in the interval parameters
@@ -1474,7 +1474,7 @@ d_lb_d_c_m_fix  = ( 2.0_double * sqrt(2.0_double)* d_a_par * median_vc / (1.0_do
 
 
 
-! Apply the delta method 
+! Apply the delta method
 
 ! If it is the first category, then the cutoff before the current is a fixed point
 ! so it does not contribute to the derivation
@@ -1509,7 +1509,7 @@ else ! Any category in the middle has all the cutoffs
          2.0_double * d_logbeta_d_d_a * d_logbeta_d_cut2 *  cov(1, curr_cat  + 2)    + &
          2.0_double * d_logbeta_d_c   * d_logbeta_d_cut1 *  cov(2, curr_cat - 1 + 2) + &
          2.0_double * d_logbeta_d_c   * d_logbeta_d_cut2 *  cov(2, curr_cat  + 2)    + &
-         2.0_double * d_logbeta_d_cut1 * d_logbeta_d_cut2 *  cov(curr_cat - 1 + 2, curr_cat  + 2) & 
+         2.0_double * d_logbeta_d_cut1 * d_logbeta_d_cut2 *  cov(curr_cat - 1 + 2, curr_cat  + 2) &
        )
  endif
 
@@ -1518,7 +1518,7 @@ else ! Any category in the middle has all the cutoffs
  contains
 
  real(kind=double) function mix_density(vc)
- ! function tht computes the density as a function of vc, depending upon the truth of the category that is being 
+ ! function tht computes the density as a function of vc, depending upon the truth of the category that is being
  ! analyzed
    real(kind=double), intent(IN):: vc
 
@@ -1533,7 +1533,7 @@ else ! Any category in the middle has all the cutoffs
  end function mix_density
 
  real(kind=double) function d_pf_d_d_a(vc)
- ! function tht computes the derivative in d_a  of FPF or TPF, depending upon the truth of the category that is being 
+ ! function tht computes the derivative in d_a  of FPF or TPF, depending upon the truth of the category that is being
  ! analyzed
    real(kind=double), intent(IN):: vc
 
@@ -1548,7 +1548,7 @@ else ! Any category in the middle has all the cutoffs
  end function d_pf_d_d_a
 
  real(kind=double) function d_pf_d_c(vc)
- ! function tht computes the derivative in c  of FPF or TPF, depending upon the truth of the category that is being 
+ ! function tht computes the derivative in c  of FPF or TPF, depending upon the truth of the category that is being
  ! analyzed
    real(kind=double), intent(IN):: vc
 
@@ -1566,24 +1566,24 @@ else ! Any category in the middle has all the cutoffs
 
 
 
-! -------------------------------------------------------------------------------------------- 
+! --------------------------------------------------------------------------------------------
  end subroutine compute_se_logbeta_median
-! -------------------------------------------------------------------------------------------- 
-! -------------------------------------------------------------------------------------------- 
+! --------------------------------------------------------------------------------------------
+! --------------------------------------------------------------------------------------------
 
 
 ! ----------------------------------------------------------------------------------------------------------------------------------------
 ! ----------------------------------------------------------------------------------------------------------------------------------------
  subroutine compute_th0_th1_jacobian(d_a_par, c_par, cat_lbound, cat_ubound, vc1, vc2, kijm1, kij, rho, d_vc_d_th1)
 ! PURPOSE: This routine computes the Jacobian of the transformation from the variables used in the MLE, the truth runs cutoffs,
-!          d_a and c, to the variables used in the computation of the latent variables quantities, which are the bounds around a 
-!          test value result, d_a and c. The second is a subset of the first. 
+!          d_a and c, to the variables used in the computation of the latent variables quantities, which are the bounds around a
+!          test value result, d_a and c. The second is a subset of the first.
 !ALGORITHM: first one notices that only the derivatives of the bounds around the test result values are needed because d_a and c
 !           appear in both representations and they don't depend upon the truth runs cutoffs. That part of the jacobian would be
 !           the identity matrix and there is no need to compute it or store it.
 !           Here we call G the function that implicitly defines the cutoffs around the truth run. G(vc*, cut1, cut2, d_a, c) =0
 !           PF(vc*) - PF(cut1 = cat_ubound)*[1 - kij] - PF(cut2 = cat_lbound)*kij  ==0     ; where kij = the sum of all cases in this
-!           truth run that relate to latent values smaller than vc*. We need this function to compute the derivatives implicitely because 
+!           truth run that relate to latent values smaller than vc*. We need this function to compute the derivatives implicitely because
 !           we cannot invert the function analytically (or at least I did not find a way to do it).
 ! NOTE:     The jacobian is 2*4 because we only need the derivatives of the sub-category cutoffs (vc1,vc2) in d_a, c, cat_ubound, cat_lbound.
 !           the dependence upon d_a and c is voided because they are not computed as a function of d_a and c. However, the correlation that
@@ -1609,10 +1609,10 @@ else ! Any category in the middle has all the cutoffs
  real(kind=double):: d_G_d_cut1, d_G_d_cut2 ! deriviative of the implicit function, see under "ALGORITHM"
  real(kind=double):: d_G_d_d_a, d_G_d_c! deriviative of the implicit function, see under "ALGORITHM"
 
- integer:: truth_pos ! Whether the current category is made of true positive or true negative cases. 
+ integer:: truth_pos ! Whether the current category is made of true positive or true negative cases.
 
  ! As a first step we check whether the category is made of only positives or only negatives or mixed.
- ! Mixed categories cannot be split, so the jacobian has to be the indentity matrix and the part we compute is 
+ ! Mixed categories cannot be split, so the jacobian has to be the indentity matrix and the part we compute is
  ! 1 between the cutoffs and zero otherwise.
  if ( rho .speq. 1.0_double) then
        truth_pos = 1
@@ -1652,7 +1652,7 @@ d_vc_d_th1(4,2) = - d_G_d_cut2 / d_G_d_vc2
 
  contains
  real(kind=double) function d_pf_d_d_a(vc)
- ! function tht computes the derivative in d_a  of FPF or TPF, depending upon the truth of the category that is being 
+ ! function tht computes the derivative in d_a  of FPF or TPF, depending upon the truth of the category that is being
  ! analyzed
    real(kind=double), intent(IN):: vc
 
@@ -1665,7 +1665,7 @@ d_vc_d_th1(4,2) = - d_G_d_cut2 / d_G_d_vc2
  end function d_pf_d_d_a
 
  real(kind=double) function d_pf_d_c(vc)
- ! function tht computes the derivative in c  of FPF or TPF, depending upon the truth of the category that is being 
+ ! function tht computes the derivative in c  of FPF or TPF, depending upon the truth of the category that is being
  ! analyzed
    real(kind=double), intent(IN):: vc
 
@@ -1677,7 +1677,7 @@ d_vc_d_th1(4,2) = - d_G_d_cut2 / d_G_d_vc2
    endif
 
  end function d_pf_d_c
- 
+
 
  end subroutine compute_th0_th1_jacobian
 
@@ -1687,7 +1687,7 @@ d_vc_d_th1(4,2) = - d_G_d_cut2 / d_G_d_vc2
  ! --------------------------------------------------------------------------------------------
  ! PURPOSE: estimate the standard error of log beta of the median value within the interval chosen
  ! ALGORITHM: uses the delta method computing the derivatives of d(log[beta])/d(th) (th = d_a, c, vc1, vc2)
- !            using the fact that log(beta)(m) = f(m(ths), ths) = 2 a m / (1 + b) - 2 c m^2 , 
+ !            using the fact that log(beta)(m) = f(m(ths), ths) = 2 a m / (1 + b) - 2 c m^2 ,
  !            where m is the median and thetas is the vector of the estimated parameters. then
  !            d f(m(ths),ths) / d(th_i) =  d f  |            * d m(ths)    + d f    |
  !                                         d m  | m = m(ths)   d th_i        d th_i | m = m(ths)
@@ -1710,7 +1710,7 @@ d_vc_d_th1(4,2) = - d_G_d_cut2 / d_G_d_vc2
                           ! subcategories are closer to one cutoff some closer to the other one so the value is not always
                           ! .5, but it always splits the cases that are in this category
 
- real(kind=double):: a, b ! the original parameters a and b for the binomal distribution 
+ real(kind=double):: a, b ! the original parameters a and b for the binomal distribution
 
  real(kind=double):: d_g_d_m_j ! derivative of the median function ( PF1 + PF2 - 2PF_Median = 0)
 
@@ -1730,8 +1730,8 @@ d_vc_d_th1(4,2) = - d_G_d_cut2 / d_G_d_vc2
  b = (1.0_double + c_par) / (1.0_double - c_par)
  a = d_a_par * sqrt(1.0_double + b**2) / sqrt(2.0_double)
 
- ! compute the derivative of log(beta) in terms of the median 
- d_f_d_m_j = 2.0_double*a / (1.0_double + b) - 4 * c_par * median_vc_j 
+ ! compute the derivative of log(beta) in terms of the median
+ d_f_d_m_j = 2.0_double*a / (1.0_double + b) - 4 * c_par * median_vc_j
 
  ! Compute the derivatives of log(beta) as a function of the parameters, assuming median constant
  ! in this case d[log(beta)]/d(vc) = 0 for every vc
@@ -1746,7 +1746,7 @@ d_vc_d_th1(4,2) = - d_G_d_cut2 / d_G_d_vc2
 
 
  ! Now compute the derivative of the implicit function g = PF(vc_i-1) + PF(vc_i) - 2 PF(Median) = 0
- ! to compute the derivatives of d(median)/d(theta) using the implicit derivation rules. 
+ ! to compute the derivatives of d(median)/d(theta) using the implicit derivation rules.
 
  d_g_d_m_j =  - (  rho              * density_vc_PBM(d_a_par, c_par, median_vc_j,  1) + &
                    (1.0_double-rho) * density_vc_PBM(d_a_par, c_par, median_vc_j, 0) &
@@ -1757,8 +1757,8 @@ d_vc_d_th1(4,2) = - d_G_d_cut2 / d_G_d_vc2
  d_m_j_d_vc1 = - (1.0_double - kij) * ( &
                          rho                * density_vc_PBM(d_a_par, c_par, vc1, 1) + &
                          (1.0_double - rho) * density_vc_PBM(d_a_par, c_par, vc1, 0) &
-                      ) / d_g_d_m_j   
-                          
+                      ) / d_g_d_m_j
+
 
  d_m_j_d_vc2 = - kij * ( &
                          rho              * density_vc_PBM(d_a_par, c_par, vc2, 1) + &
@@ -1776,7 +1776,7 @@ d_vc_d_th1(4,2) = - d_G_d_cut2 / d_G_d_vc2
                                       +                      d_fpf_d_d_a_PBM(d_a_par, c_par, median_vc_j)            &
                     )  &
                    ) /  d_g_d_m_j
- 
+
  d_m_j_d_c =  - ( &
               rho * (  - (1.0_double - kij) * d_tpf_d_c_PBM(d_a_par, c_par, vc1)                                &
                        - kij                * d_tpf_d_c_PBM(d_a_par, c_par, vc2)                                &
@@ -1787,8 +1787,8 @@ d_vc_d_th1(4,2) = - d_G_d_cut2 / d_G_d_vc2
                                      +                      d_fpf_d_c_PBM(d_a_par, c_par, median_vc_j)            &
                     )  &
                    ) /  d_g_d_m_j
- 
-! Apply the formula reported on the algorithm section to obtain the derivates of log(beta) in the 
+
+! Apply the formula reported on the algorithm section to obtain the derivates of log(beta) in the
 ! parameters. Remember that d_f_d_vc = 0 for any vc because it does not appear explicitely in the
 ! formula to compute log(beta).
 
@@ -1833,7 +1833,7 @@ else ! Any category in the middle has all the cutoffs
          2.0_double * d_logbeta_d_d_a * d_logbeta_d_vc2 *  cov(1, curr_cat  + 2)    + &
          2.0_double * d_logbeta_d_c   * d_logbeta_d_vc1 *  cov(2, curr_cat - 1 + 2) + &
          2.0_double * d_logbeta_d_c   * d_logbeta_d_vc2 *  cov(2, curr_cat  + 2)    + &
-         2.0_double * d_logbeta_d_vc1 * d_logbeta_d_vc2 *  cov(curr_cat - 1 + 2, curr_cat  + 2) & 
+         2.0_double * d_logbeta_d_vc1 * d_logbeta_d_vc2 *  cov(curr_cat - 1 + 2, curr_cat  + 2) &
        )
  endif
 
@@ -1853,7 +1853,7 @@ else ! Any category in the middle has all the cutoffs
  real(kind=double), intent(IN):: v ! cutoffs in the parametrization used for PROPROC2
 
  real(kind=double):: y ! variable y (see Metz and Pan)
- real(kind=double):: a, b ! the original parameters a and b for the binomal distribution 
+ real(kind=double):: a, b ! the original parameters a and b for the binomal distribution
 
 
  ! Compute a and b
@@ -1870,31 +1870,31 @@ else ! Any category in the middle has all the cutoffs
 
 
  ! --------------------------------------------------------------------------------------------
- subroutine compute_median_vc(d_a_par, c_par, vc_lower, vc_upper, rho, median_vc)  
- ! -------------------------------------------------------------------------------------------- 
+ subroutine compute_median_vc(d_a_par, c_par, vc_lower, vc_upper, rho, median_vc)
+ ! --------------------------------------------------------------------------------------------
  !PURPOSE: compute the median of vc between an interval vc_lower and vc_upper
- 
+
  use gen_numerics, only: zbren !  root finder
  use proproc_median_calc ! data that will be passed to the function that computes the medians
- implicit none 
+ implicit none
 
  real(kind=double), intent(IN):: d_a_par, c_par ! curve parameters
  real(kind=double), intent(IN):: vc_lower, vc_upper ! cutoff values between which the integration has to be
                                   ! performed to compute the expected value
  real(kind=double), intent(IN):: rho ! prevalence (fraction of positive cases)
- real(kind=double), intent(OUT):: median_vc ! your guess 
+ real(kind=double), intent(OUT):: median_vc ! your guess
 
  real(kind=double):: fpf1,fpf2, tpf1, tpf2 ! TPF and FPF at boundary
  real(kind=double):: target_val ! TPF and FPF at boundary
 
- real(kind=double), parameter :: tol = 1.0e-6_double ! tolerace of numerical calculation 
+ real(kind=double), parameter :: tol = 1.0e-6_double ! tolerace of numerical calculation
  integer:: ierror ! computation error
 
 
  ! Load the parameters for the calculation of the median into the module proproc_median_calc
  d_a = d_a_par
  c   = c_par
- r   = rho 
+ r   = rho
 
 ! Computethe target values, the errors created when rho = 0 or 1 should be negligible
  call fpf_PBM(d_a_par, c_par, vc_lower, fpf1)
@@ -1927,7 +1927,7 @@ else ! Any category in the middle has all the cutoffs
 
  if(r .speq. 0.0_double) then
         call fpf_PBM(d_a, c, vc, fpf)
-        median_func =  fpf 
+        median_func =  fpf
 
  elseif(r .speq. 1.0_double) then
         call tpf_PBM(d_a, c, vc, tpf)
@@ -1946,27 +1946,27 @@ else ! Any category in the middle has all the cutoffs
 
  ! --------------------------------------------------------------------------------------------
  subroutine compute_expected_val_logbeta(d_a_par, c_par, vc_lower, vc_upper, rho, e_val_vc, e_val_vc2,&
-                                         expected_value_logbeta)  
- ! -------------------------------------------------------------------------------------------- 
+                                         expected_value_logbeta)
+ ! --------------------------------------------------------------------------------------------
  !PURPOSE: compute the expected value of vc between an interval vc_lower and vc_upper
  ! NOTE1:   k11 is prevented from becoming 0 to avoid divisions by zero
  ! NOTE2:   c_par is prevented from being 0 to avoid divisions by zero
  ! The approximations made should have negligible effects on the calculations. unless an infinite range for vc is used
- ! while the curve is a perfectly separated degenerate curve. 
+ ! while the curve is a perfectly separated degenerate curve.
 
- implicit none 
+ implicit none
 
  real(kind=double), intent(IN):: d_a_par, c_par ! curve parameters
  real(kind=double), intent(IN):: vc_lower, vc_upper ! cutoff values between which the integration has to be
                                   ! performed to compute the expected value
  real(kind=double), intent(IN):: rho ! prevalence (fraction of positive cases)
  real(kind=double), intent(OUT):: e_val_vc, e_val_vc2 ! Expected value of vc and vc squared
- real(kind=double), intent(OUT):: expected_value_logbeta ! your guess 
+ real(kind=double), intent(OUT):: expected_value_logbeta ! your guess
 
- real(kind=double):: k11, k21, k22, k13, ky ! These are the constants used in the proper binormal model inside of 
+ real(kind=double):: k11, k21, k22, k13, ky ! These are the constants used in the proper binormal model inside of
                ! the two phi functions that define FPF and TPF.
-               ! i.e., FPF(vc) = Phi(k11*vc - k22) + Phi(k11*vc + k13) - H(c) 
-               !       TPF(vc) = Phi(k21*vc + k22) + Phi(k21*vc + k13) - H(c) 
+               ! i.e., FPF(vc) = Phi(k11*vc - k22) + Phi(k11*vc + k13) - H(c)
+               !       TPF(vc) = Phi(k21*vc + k22) + Phi(k21*vc + k13) - H(c)
  real(kind=double) :: a, b !  parameters of the conventional binormal model
  real(kind=double):: fpf1,fpf2, tpf1, tpf2 ! nomralization for expected values
 
@@ -1979,8 +1979,8 @@ else ! Any category in the middle has all the cutoffs
  k11 = - max( ( 1.0_double - c_par ), 1.0e-8_double ) ! Prevent k11 from becoming 0, which would
                ! create problems with division by zero.
  k21 = - max( ( 1.0_double + c_par ), 1.0e-8_double ) ! Prevent k21 from becoming 0, which would
-               ! create problems with division by zero. 
- k22 = + ( d_a_par / 2.0_double ) * sqrt( 1.0_double + c_par**2 ) 
+               ! create problems with division by zero.
+ k22 = + ( d_a_par / 2.0_double ) * sqrt( 1.0_double + c_par**2 )
 
  b = (c_par + 1.0_double) / (1.0_double - c_par)
 
@@ -1991,7 +1991,7 @@ else ! Any category in the middle has all the cutoffs
 
 if(rho .speq. 0.0_double) then
 ! The expected value is computed only using the negative cases
-! Compute the expected value using the LLPesce's formula. The second part vanishes with c ->0, but the numerical approximation 
+! Compute the expected value using the LLPesce's formula. The second part vanishes with c ->0, but the numerical approximation
 ! can become problematic, so we eliminate it (divisions by zero)
 
          ! determine normalization for expected value (probability over integration interval)
@@ -2000,49 +2000,49 @@ if(rho .speq. 0.0_double) then
 
 
 
-         if ( abs(c_par) > 1.0e-8_double)  then 
+         if ( abs(c_par) > 1.0e-8_double)  then
              k13 = k22 / c_par
-             e_val_vc  =  Integral1(k11, -k22, vc_lower, vc_upper) + Integral1(k11,  k13, vc_lower, vc_upper)   
+             e_val_vc  =  Integral1(k11, -k22, vc_lower, vc_upper) + Integral1(k11,  k13, vc_lower, vc_upper)
              e_val_vc2 =  Integral2(k11, -k22, vc_lower, vc_upper) + Integral2(k11,  k13, vc_lower, vc_upper)
          else ! if c == 0 the second order term in the relationship between vc and log beta vanishes with its coefficient
-             e_val_vc  =  Integral1(k11, -k22, vc_lower, vc_upper)   
+             e_val_vc  =  Integral1(k11, -k22, vc_lower, vc_upper)
              e_val_vc2 =  Integral2(k11, -k22, vc_lower, vc_upper)
          endif
         ! normalize to take the expected value over the range vc1 vc2
-         e_val_vc  = e_val_vc / (fpf1 - fpf2) 
-         e_val_vc2  = e_val_vc2 / (fpf1 - fpf2) 
+         e_val_vc  = e_val_vc / (fpf1 - fpf2)
+         e_val_vc2  = e_val_vc2 / (fpf1 - fpf2)
 
 elseif(rho .speq. 1.0_double) then
  ! The expected value is computed only using the positive cases
- ! Compute the expected value using the LLPesce's formula. The second part vanishes with c ->0, but the numerical approximation 
+ ! Compute the expected value using the LLPesce's formula. The second part vanishes with c ->0, but the numerical approximation
  ! does not work.
          ! determine normalization for expected value (probability over integration interval)
          call tpf_PBM(d_a_par, c_par, vc_lower, tpf1)
          call tpf_PBM(d_a_par, c_par, vc_upper, tpf2)
 
-         if ( abs(c_par) > 1.0e-8_double )  then 
+         if ( abs(c_par) > 1.0e-8_double )  then
              k13 = k22 / c_par
-             e_val_vc  = Integral1(k21, k22, vc_lower, vc_upper) + Integral1(k21,  k13, vc_lower, vc_upper)  
-             e_val_vc2 = Integral2(k21, k22, vc_lower, vc_upper) + Integral2(k21,  k13, vc_lower, vc_upper) 
+             e_val_vc  = Integral1(k21, k22, vc_lower, vc_upper) + Integral1(k21,  k13, vc_lower, vc_upper)
+             e_val_vc2 = Integral2(k21, k22, vc_lower, vc_upper) + Integral2(k21,  k13, vc_lower, vc_upper)
          else
-             e_val_vc  = Integral1(k21, k22, vc_lower, vc_upper)  
-             e_val_vc2 = Integral2(k21, k22, vc_lower, vc_upper) 
+             e_val_vc  = Integral1(k21, k22, vc_lower, vc_upper)
+             e_val_vc2 = Integral2(k21, k22, vc_lower, vc_upper)
          endif
          ! normalize to take the expected value over the range vc1 vc2
-         e_val_vc  = e_val_vc / (tpf1 - tpf2) 
-         e_val_vc2  = e_val_vc2 / (tpf1 - tpf2) 
+         e_val_vc  = e_val_vc / (tpf1 - tpf2)
+         e_val_vc2  = e_val_vc2 / (tpf1 - tpf2)
 else
  ! The expected value is computed using a mix of positive and negative cases
- ! Compute the expected value using the LLPesce's formula. The second part vanishes with c ->0, but the numerical approximation 
+ ! Compute the expected value using the LLPesce's formula. The second part vanishes with c ->0, but the numerical approximation
  ! does not work.
         ! determine normalization for expected value (probability over integration interval)
-        ! positive and negative normalize independently because the expected values are taken independently) 
+        ! positive and negative normalize independently because the expected values are taken independently)
         call fpf_PBM(d_a_par, c_par, vc_lower, fpf1)
         call fpf_PBM(d_a_par, c_par, vc_upper, fpf2)
         call tpf_PBM(d_a_par, c_par, vc_lower, tpf1)
         call tpf_PBM(d_a_par, c_par, vc_upper, tpf2)
 
-        if ( abs(c_par) > 1.0e-8_double ) then 
+        if ( abs(c_par) > 1.0e-8_double ) then
              k13 = k22 / c_par
                      e_val_vc2 = (1.0_double-rho) * ( &
                                    Integral2(k11,-k22,vc_lower,vc_upper) + Integral2(k11,k13,vc_lower,vc_upper) &
@@ -2060,7 +2060,7 @@ else
                      e_val_vc2 = (1.0_double-rho) * ( Integral2(k11,-k22,vc_lower,vc_upper) )+ &
                                  rho              * ( Integral2(k21, k22, vc_lower, vc_upper) )
                      e_val_vc = (1.0_double-rho) * Integral1(k11,-k22, vc_lower, vc_upper) + &
-                                 rho             * Integral1(k21, k22, vc_lower, vc_upper) 
+                                 rho             * Integral1(k21, k22, vc_lower, vc_upper)
         endif
          ! normalize to take the expected value over the range vc1 vc2
         e_val_vc2 = e_val_vc2 / ( rho*(tpf1-tpf2) + (1.0_double - rho)*(fpf1-fpf2))
@@ -2114,26 +2114,26 @@ endif
 
 
  ! --------------------------------------------------------------------------------------------
- subroutine compute_expected_val_vc(d_a_par, c_par, vc_lower, vc_upper, rho, expected_value_vc)  
- ! -------------------------------------------------------------------------------------------- 
+ subroutine compute_expected_val_vc(d_a_par, c_par, vc_lower, vc_upper, rho, expected_value_vc)
+ ! --------------------------------------------------------------------------------------------
  !PURPOSE: compute the expected value of vc between an interval vc_lower and vc_upper
  ! NOTE1:   k11 is prevented from becoming 0 to avoid divisions by zero
  ! NOTE1:   c_par is prevented from being 0 to avoid divisions by zero
  ! The approximations made should have negligible effects on the calculations. unless an infinite range for vc is used
- ! while the curve is a perfectly separated degenerate curve. 
+ ! while the curve is a perfectly separated degenerate curve.
 
- implicit none 
+ implicit none
 
  real(kind=double), intent(IN):: d_a_par, c_par ! curve parameters
  real(kind=double), intent(IN):: vc_lower, vc_upper ! cutoff values between which the integration has to be
                                   ! performed to compute the expected value
  real(kind=double), intent(IN):: rho ! prevalence (fraction of positive cases)
- real(kind=double), intent(OUT):: expected_value_vc ! your guess 
+ real(kind=double), intent(OUT):: expected_value_vc ! your guess
 
- real(kind=double):: k11, k21, k22, k13 ! These are the constants used in the proper binormal model inside of 
+ real(kind=double):: k11, k21, k22, k13 ! These are the constants used in the proper binormal model inside of
                ! the two phi functions that define FPF and TPF.
-               ! i.e., FPF(vc) = Phi(k11*vc - k22) + Phi(k11*vc + k13) - H(c) 
-               !       TPF(vc) = Phi(k21*vc + k22) + Phi(k21*vc + k13) - H(c) 
+               ! i.e., FPF(vc) = Phi(k11*vc - k22) + Phi(k11*vc + k13) - H(c)
+               !       TPF(vc) = Phi(k21*vc + k22) + Phi(k21*vc + k13) - H(c)
  real(kind=double):: fpf1,fpf2, tpf1, tpf2 ! nomralization for expected values
 
 ! k11 and k21 can be prevented from becoming zero because the function tends asymptotically to zero when they become very
@@ -2143,60 +2143,60 @@ endif
  k11 = - max( ( 1.0_double - c_par ), 1.0e-8_double ) ! Prevent k11 from becoming 0, which would
                ! create problems with division by zero.
  k21 = - max( ( 1.0_double + c_par ), 1.0e-8_double ) ! Prevent k21 from becoming 0, which would
-               ! create problems with division by zero. 
- k22 = + ( d_a_par / 2.0_double ) * sqrt( 1.0_double + c_par**2 ) 
+               ! create problems with division by zero.
+ k22 = + ( d_a_par / 2.0_double ) * sqrt( 1.0_double + c_par**2 )
 
 
  if(rho .speq. 0.0_double) then
   ! The expected value is computed only using the negative cases
- ! Compute the expected value using the LLPesce's formula. The second part vanishes with c ->0, but the numerical approximation 
+ ! Compute the expected value using the LLPesce's formula. The second part vanishes with c ->0, but the numerical approximation
  ! does not work.
          ! determine normalization for expected value (probability over integration interval)
          call fpf_PBM(d_a_par, c_par, vc_lower, fpf1)
          call fpf_PBM(d_a_par, c_par, vc_upper, fpf2)
 
-         if ( abs(c_par) > 1.0e-8_double)  then 
+         if ( abs(c_par) > 1.0e-8_double)  then
              k13 = k22 / c_par
-             expected_value_vc = (Integral1(k11, -k22, vc_lower, vc_upper)+Integral1(k11,  k13, vc_lower, vc_upper))/(fpf1-fpf2) 
+             expected_value_vc = (Integral1(k11, -k22, vc_lower, vc_upper)+Integral1(k11,  k13, vc_lower, vc_upper))/(fpf1-fpf2)
          else
-             expected_value_vc = (Integral1(k11, -k22, vc_lower, vc_upper)  ) /(fpf1 - fpf2) 
+             expected_value_vc = (Integral1(k11, -k22, vc_lower, vc_upper)  ) /(fpf1 - fpf2)
          endif
- 
+
  elseif(rho .speq. 1.0_double) then
  ! The expected value is computed only using the positive cases
- ! Compute the expected value using the LLPesce's formula. The second part vanishes with c ->0, but the numerical approximation 
+ ! Compute the expected value using the LLPesce's formula. The second part vanishes with c ->0, but the numerical approximation
  ! does not work.
          ! determine normalization for expected value (probability over integration interval)
          call tpf_PBM(d_a_par, c_par, vc_lower, tpf1)
          call tpf_PBM(d_a_par, c_par, vc_upper, tpf2)
 
-         if ( abs(c_par) > 1.0e-8_double )  then 
+         if ( abs(c_par) > 1.0e-8_double )  then
              k13 = k22 / c_par
-             expected_value_vc = (Integral1(k21, +k22,vc_lower,vc_upper)+Integral1(k21, k13,vc_lower,vc_upper))/(tpf1-tpf2)  
+             expected_value_vc = (Integral1(k21, +k22,vc_lower,vc_upper)+Integral1(k21, k13,vc_lower,vc_upper))/(tpf1-tpf2)
          else
-             expected_value_vc = (Integral1(k21, +k22, vc_lower, vc_upper)) / (tpf1 - tpf2) 
+             expected_value_vc = (Integral1(k21, +k22, vc_lower, vc_upper)) / (tpf1 - tpf2)
          endif
 
  else
  ! The expected value is computed using a mix of positive and negative cases
- ! Compute the expected value using the LLPesce's formula. The second part vanishes with c ->0, but the numerical approximation 
+ ! Compute the expected value using the LLPesce's formula. The second part vanishes with c ->0, but the numerical approximation
  ! does not work.
         ! determine normalization for expected value (probability over integration interval)
-        ! positive and negative normalize independently because the expected values are taken independently) 
+        ! positive and negative normalize independently because the expected values are taken independently)
         call fpf_PBM(d_a_par, c_par, vc_lower, fpf1)
         call fpf_PBM(d_a_par, c_par, vc_upper, fpf2)
         call tpf_PBM(d_a_par, c_par, vc_lower, tpf1)
         call tpf_PBM(d_a_par, c_par, vc_upper, tpf2)
 
-         if ( abs(c_par) > 1.0e-8_double ) then 
+         if ( abs(c_par) > 1.0e-8_double ) then
              k13 = k22 / c_par
              expected_value_vc = &
                 (1.0_double - rho)*(Integral1(k11,-k22,vc_lower,vc_upper)+Integral1(k11,k13,vc_lower,vc_upper) )/(fpf1-fpf2)  + &
-                rho               *(Integral1(k21,+k22,vc_lower,vc_upper)+Integral1(k21,k13,vc_lower,vc_upper) )/(tpf1-tpf2) 
+                rho               *(Integral1(k21,+k22,vc_lower,vc_upper)+Integral1(k21,k13,vc_lower,vc_upper) )/(tpf1-tpf2)
          else
              expected_value_vc = &
                 (1.0_double - rho) * Integral1(k11, -k22, vc_lower, vc_upper)/(fpf1-fpf2)  + &
-                rho                * Integral1(k21, +k22, vc_lower, vc_upper)/(tpf1-tpf2) 
+                rho                * Integral1(k21, +k22, vc_lower, vc_upper)/(tpf1-tpf2)
          endif
  endif
 
@@ -2239,22 +2239,22 @@ endif
  ! --------------------------------------------------------------------------------------------
   subroutine points_at_cutoffs_PBM(d_a_par_in, c_par_in, cutoffs, num_cutoffs, CurvePoints, ierror)
  ! ----------------------------------------------------------------------
- ! PURPOSE:  procedure returns a sequence of fpf and tpf for a 
+ ! PURPOSE:  procedure returns a sequence of fpf and tpf for a
  !           prespecified (input) sequence of cutoffs (category
  !           boundaries, sometimes called betas)
- !ALGORITHM: Verify whether the cutoffs and parameters have acceptable values, 
+ !ALGORITHM: Verify whether the cutoffs and parameters have acceptable values,
  !           then simply compute the FPF, TPF values
- !           
- 
+ !
+
  implicit none
- 
+
  real(kind=double), intent(IN):: d_a_par_in, c_par_in ! curve parameters
  integer, intent(IN) :: num_cutoffs ! number of cutoffs at which (FPF, TPF)  values are  desired
  real(kind=double), dimension(num_cutoffs), intent(in) :: cutoffs ! the actual cutoffs values
  real(kind=double), dimension(2, num_cutoffs + 1), intent(OUT) :: CurvePoints ! the actual
                   !  array with the fpf, tpf values
  integer, intent(OUT):: ierror  ! fit_OK -> OK; fit_failed -> Failed; bad_input -> wrong input
- 
+
  real(kind=double):: fpf, tpf, junk
  real(kind=double):: d_a_par, c_par ! curve parameters
  real(kind=double):: v_c, v_c_max, v_c_min ! Maximum and minimum values possible for the cutoffs. Some models
@@ -2265,7 +2265,7 @@ endif
  ! Take care of values which produce numerically unstable data points. In this case
  ! we are producing points for the purpose of plotting them, so we certainly don't
  ! need an accuracy of more than six digits (which is numerically unattainable anyway
- ! because of the double precision arithmetic and the numerical precision of the 
+ ! because of the double precision arithmetic and the numerical precision of the
  ! various functions used)
 
  ierror = fit_OK ! initialize to OK
@@ -2281,7 +2281,7 @@ endif
    c_par = c_par_in
  endif
 
- ! Take care of d_a_par. d_a == 0 
+ ! Take care of d_a_par. d_a == 0
  if( d_a_par_in <  0.0_double) then
    ierror = bad_input
    return
@@ -2310,7 +2310,7 @@ endif
    ierror = bad_input
    return
  endif
-     
+
 
 ! Compute the fpf, tpf values for the cutoffs
 ! Note that the first point is the 1.0 1.0 point
@@ -2340,11 +2340,11 @@ endif
  !         parameters  d_a_par, c_par.
  !ALGORITHM: the points will be put at the intersection of a sequence of equally
  !          spaced radii with origin in the point (1,0) of the ROC plot. This choice
- !          has been made to make plotting of skewed curve smooth.  
+ !          has been made to make plotting of skewed curve smooth.
  !NOTES     : modified by LP on September 2008 to include 0,0 and 1,1 exactly.
 
  implicit none
- 
+
  real(kind=double), intent(IN):: d_a_par_in, c_par_in ! curve parameters
  integer, intent(IN) :: num_pts ! number of curve points whose value is desired
  real(kind=double), dimension(2, num_pts), intent(OUT) :: CurvePoints ! the actual
@@ -2356,18 +2356,18 @@ endif
  real(kind=double):: v_c_min, v_c_max  ! grid values where to sample the cutoff
                          ! parameter to compute the (FPF, TPF) array
  real(kind=double):: upper_v_c, lower_v_c, v_c ! current value of v_c
- real(kind=double):: target_angle, current_angle ! used to determine the radii 
+ real(kind=double):: target_angle, current_angle ! used to determine the radii
  real(kind=double):: fpf, tpf, junk, temp
  real(kind=double):: d_a_par, c_par ! curve parameters
 
  integer, parameter :: max_iter = 1000
  integer :: i, j_iter ! index for the points to be plotted, and iteration counter
 
- 
+
  ! Take care of values which produce numerically unstable data points. In this case
  ! we are producing points for the purpose of plotting them, so we certainly don't
  ! need an accuracy of more than six digits (which is numerically unattainable anyway
- ! because of the double precision arithmetic and the numerical precision of the 
+ ! because of the double precision arithmetic and the numerical precision of the
  ! various functions used)
 
  ierror = fit_OK ! initialize error message to OK.
@@ -2383,7 +2383,7 @@ endif
    c_par = c_par_in
  endif
 
- ! Take care of d_a_par. d_a == 0 
+ ! Take care of d_a_par. d_a == 0
  if( d_a_par_in <  0.0_double) then
    ierror = bad_input
    return
@@ -2412,7 +2412,7 @@ endif
      ierror = fit_failed
      return ! failed to bracket solutions, return error message
  endif
- 
+
 ! Verify that the lower boundary for v_c is not too negative, so that the value of
 ! tpf and fpf doesn't change while the cutoff is halved
  temp = v_c_min / 2.0_double
@@ -2427,7 +2427,7 @@ endif
           endif
  enddo
 
-! If we could not make the value of fpf(min) change, it means that there was a 
+! If we could not make the value of fpf(min) change, it means that there was a
 ! problem
 if (i > max_iter) then
     ierror  = fit_failed
@@ -2448,7 +2448,7 @@ endif
  enddo
 
 
-! If we could not make the value of fpf(max) change, it means that there was a 
+! If we could not make the value of fpf(max) change, it means that there was a
 ! problem
 if (i > max_iter) then
    ierror  = fit_failed
@@ -2457,7 +2457,7 @@ endif
 
 
  ! Compute the points on the curve
- 
+
  v_c = v_c_max
 
  target_angle = 0.0_double  ! start sampling angles in ROC space starting from 0,
@@ -2484,8 +2484,8 @@ endif
           else ! if fpf == 1, then it is the upper right corner
                 current_angle = pi2
           endif
-          
-          ! Determine if the current angle is too large or too small and 
+
+          ! Determine if the current angle is too large or too small and
           ! seek another bisection if needed
           if(   (current_angle > target_angle - pi2 / ( (num_pts - 1) * 10) ) &
               .and.  &
@@ -2537,10 +2537,10 @@ endif
   integer, intent(out):: ierror ! error flag
 
   real(kind=double):: tpf, one_minus_tpf
-  real(kind=double):: step 
+  real(kind=double):: step
   integer, parameter:: num_iter = 10000 ! it never takes too long, but just in case
   integer:: i ! loop counter
- 
+
  ! size of change in the fpf function as a function of v_c
  step =  1.0_double / ( max(1.0_double + c_par, 1.0e-4_double) )
 
@@ -2553,9 +2553,9 @@ endif
        else
            v_c_max = v_c_max + i * step ! make change more than linear
        endif
-  enddo 
+  enddo
 
-  if ( i > num_iter) then 
+  if ( i > num_iter) then
      ierror = 1
   else
     ierror = 0
@@ -2579,10 +2579,10 @@ endif
   integer, intent(out):: ierror ! error flag
 
   real(kind=double):: fpf, one_minus_fpf
-  real(kind=double):: step 
+  real(kind=double):: step
   integer, parameter:: num_iter = 10000 ! it never takes too long, but just in case
   integer:: i ! loop counter
- 
+
  ! size of change in the fpf function as a function of v_c
  step =  1.0_double / ( max(1.0_double - c_par, 1.0e-4_double) )
 
@@ -2595,9 +2595,9 @@ endif
        else
            v_c_min = v_c_min - i * step ! make change more than linear
        endif
-  enddo 
+  enddo
 
-  if ( i > num_iter) then 
+  if ( i > num_iter) then
      ierror = 1
   else
     ierror = 0

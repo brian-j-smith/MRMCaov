@@ -16,7 +16,7 @@
 
 MODULE AIF_Format
 
-  CHARACTER(4) AFMT(0:255) 
+  CHARACTER(4) AFMT(0:255)
   CHARACTER(2) IFMT(0:9)
   CHARACTER(5) FFMT0(0:9),FFMT1(0:9),FFMT2(0:9),FFMT3(0:9),FFMT4(0:9),FFMT5(0:9)
 
@@ -80,7 +80,7 @@ CONTAINS
     ICode = IFMT(length)
 
   END FUNCTION ICode
-  
+
 !***********************************************************************
 !=======================================================================
   CHARACTER*5 FUNCTION FCode (rl8Val,numDecimal)
@@ -129,14 +129,14 @@ CONTAINS
   CHARACTER*(*) :: tempText
   CHARACTER*80 :: text
   INTEGER :: length
-  
+
     text = TRIM(tempText)
-    
+
     ! Get the length of the text argument:
     length = LEN_TRIM(text)
-    
+
     ACode = AFMT(length)
-    
+
   END FUNCTION ACode
 
 !********************************************************************************************

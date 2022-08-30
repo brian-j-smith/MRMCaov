@@ -1,27 +1,27 @@
-! DESCRIPTION: subroutines which perform linear algebra operations 
+! DESCRIPTION: subroutines which perform linear algebra operations
 ! For the ROC library (performs the functions that are not performed by
 ! lapack or at least that are still used by some programs and we did
 ! not move to lapack just yet.
 
  module l_algebra
- 
+
  use data_types
  implicit none
 
  private
- 
+
  public:: pseudoinverse ! compute the Moore-Penrose pseudoinverse, for numerically singular hessian matrices
  public::  M2TOM1 !create a vector (upper triangular) of lenght N*(N+1)/2 from a symmetric matrix N*N
- public::  M1TOM2 !create a symmetric matrix N*N from a vector of lenght N*(N+1)/2. i.e. it is 
+ public::  M1TOM2 !create a symmetric matrix N*N from a vector of lenght N*(N+1)/2. i.e. it is
                  !   the opposite operation of M2TOM1
  public::  SINV   !(Invert a given symmetric positive definite matrix), uses MFSD
  public:: qsortd ! subroutine that applies the quick sorting algorithm, which scales as n*log(n) -- APRIL 2007, LP Uchicago
  public:: median ! subroutine that computes the median -- MAY 2007, LP Uchicago -- taken from Alan Miller's
 
- contains 
+ contains
 
 ! NOTE1:Pretty much all of these routines are either stolen from Lapack or BLAS
-! at some point we should just link Lapack and BLAS and get rid of all 
+! at some point we should just link Lapack and BLAS and get rid of all
 ! this garbage
 
 !---------------------------------------------------------------
@@ -258,7 +258,7 @@ END IF
 
 ! SELECT A CENTRAL ELEMENT OF X AND SAVE IT IN T
 
-ij = i + int(r*(j-i)) 
+ij = i + int(r*(j-i))
 it = ind(ij)
 t = x(it)
 
@@ -379,7 +379,7 @@ END SUBROUTINE qsortd
 SUBRoutINE M2TOM1(N,XX,VXX)
 !---------------------------------------------
 !
-!THIS SUBRoutINE STORES THE UPPER TRIANGULAR PART OF 
+!THIS SUBRoutINE STORES THE UPPER TRIANGULAR PART OF
 !A SYMMETRIC (N BY N) MATRIX XX COLUMNWISE AS A VECTOR
 !VXX WITH LENGTH N*(N+1)/2.
 !
@@ -409,8 +409,8 @@ END subroutine M2TOM1
 SUBRoutINE M1TOM2(N,VXX,XX)
 !---------------------------------------
 !
-!THIS SUBRoutINE CREATES A SYMETRIC (N BY N) MATRIX FROM 
-!THE VECTOR VXX WITH LENGTH N*(N+1)/2, WHICH REPRESENTS 
+!THIS SUBRoutINE CREATES A SYMETRIC (N BY N) MATRIX FROM
+!THE VECTOR VXX WITH LENGTH N*(N+1)/2, WHICH REPRESENTS
 !THE UPPER TRIANGULAR PART OF XX BY COLUMNS.
 !
 implicit none
@@ -428,7 +428,7 @@ DO J=1,N
     XX(I,J)=VXX(K)
     IF(I /= J)XX(J,I)=XX(I,J)
   ENDDO
-enddo      
+enddo
 !---------------------------------------------------------------
 END SUBRoutINE M1TOM2
 !---------------------------------------------------------------
@@ -440,7 +440,7 @@ subroutine pseudoinverse(hessian, num_par, idebug, cov, ierror, err_msg)
 !          (more properly  the Fisher information since it is the expected one) is
 !          singular or numerically singular. The matrix becomes singular for small values
 !          of d_a. When a small change in d_a is made, d(d_a), it is enough to change
-!          all the cutoffs by another quantity f( d(d)a) ), identical for all the cutoffs, 
+!          all the cutoffs by another quantity f( d(d)a) ), identical for all the cutoffs,
 !          to leave the likelihood functions unchanged. This means that this direction has no
 !          effect on the likelihood function or the curve shape, and as such can't affect its
 !          variance either, since the curve won't vary at all when these quantities are varied.
@@ -449,7 +449,7 @@ subroutine pseudoinverse(hessian, num_par, idebug, cov, ierror, err_msg)
 ! ALGORITHM: It uses the DSYEV subroutine from LAPACK to diagonalize the negative Hessian. It then eliminates
 !            the smallest eigenvalue, after checking that the diagonalization was successful and that all the
 !            eigenvalues that were kept were positive
-! NOTE:     Currently it just eliminates the smallest eigenvalue. More than one eigenvalue might be eliminated 
+! NOTE:     Currently it just eliminates the smallest eigenvalue. More than one eigenvalue might be eliminated
 
 use debugging, only: DisplayState
 use io, only: line_length
@@ -465,34 +465,34 @@ real(kind=double),dimension(num_par,num_par),intent(out):: cov
 integer, intent(out):: ierror ! Error flag
                                     ! 0 => computation successful
                                     ! -1 => wrong input for diagonalization, either someone changed the code, or
-                                    !       something went wrong so that the value of some input parameter for the 
+                                    !       something went wrong so that the value of some input parameter for the
                                     !       diagonalization routine assumed an illegal value, checking the value
                                     !       of the offending parameter is likely to lead to the originating problem
                                     ! + 1 => non converged, the matrix could not be diagonalized. Not likely to happen
                                     !        (it never did for us). Write out the hessian matrix and try to figure out
-                                    !        why it can't be diagonalized, for example using other algorithms or 
-                                    !        programs to diagonalize it, they might be able to tell you more about 
+                                    !        why it can't be diagonalized, for example using other algorithms or
+                                    !        programs to diagonalize it, they might be able to tell you more about
                                     !        the source of the problem. Note that we are using an algorithm for a
                                     !        symmetrical square matrix. If the matrix isn't symmetrical square,
                                     !        someone tampered with the algorithm.
-                                    ! +2  => We don't care for the smallest eigenvalue, its value is "noise", but if 
+                                    ! +2  => We don't care for the smallest eigenvalue, its value is "noise", but if
                                     !        any other one is negative (- hessian), then the solution we have is not
                                     !        the maximum of the likelihood function and relevant variances might be
                                     !        negative and likely to be a poor estimates of the variance too, since
-                                    !        we aren't at the maximum. 
+                                    !        we aren't at the maximum.
 character(len = line_length), intent(out):: err_msg    ! description of the error occurred, if any
 
 ! internal variables
 real(kind=double),dimension(num_par,num_par):: upper_diag
 ! eigenvalues of hessian matrix, used to build the pseudoinverse
-real(kind=DOUBLE), dimension(num_par):: eigv 
+real(kind=DOUBLE), dimension(num_par):: eigv
 ! transformation matrix
 real(kind=double),dimension(num_par,num_par):: T
 real(kind=double),dimension(num_par,num_par):: TEMP
- 
+
 ! diagonalization routine variables
-! workspace array, 
-real(kind=DOUBLE), dimension(3*num_par-1):: work 
+! workspace array,
+real(kind=DOUBLE), dimension(3*num_par-1):: work
 integer:: lwork ! size of workspace array
 
 integer:: i ! loop counter
@@ -505,7 +505,7 @@ upper_diag = hessian
 call dsyev('V','U', num_par, upper_diag, num_par,eigv, work, lwork, ierror)
 
 ! Prepare to return a warning flag with the error of the diagonalization routine
-if(ierror < 0) then ! Diagonalization could not be performed, because the call was made 
+if(ierror < 0) then ! Diagonalization could not be performed, because the call was made
     ! incorrectly, this shuld never happen, unless someone changed the code
     write(err_msg,*) "ERROR: pseudoinverse: DSYEV call has wrong value in ",-ierror,"-th parameter"
     ierror = -1
@@ -531,16 +531,16 @@ else !ierror == 0 successful diagonalization
           write(msg,*) i, eigv(i)
           call DisplayState(msg)
        enddo
-    endif   
+    endif
     ! build the matrix that transformes from diagonal form into
     ! our original basis (and transposed goes backward)
     T = upper_diag
     ! Eliminate the smallest eigenvalue. Theoretically one could set a cutoff in size and decide
-    ! to eliminated one or more if they are too small. Given that we know that for the proper binorm 
+    ! to eliminated one or more if they are too small. Given that we know that for the proper binorm
     ! algorithm the singularity is caused by the flat coordinate (d_a, cutoff....), we know that
     ! we need to eliminate only one, and we know which one, the smallest (obviously, since the other
     ! ones are positive, since it is the negative of a the hessian at a maximum, and this one is zero or
-    ! too close to it. Sometimes it is negative and very small, but it is never larger than numerical 
+    ! too close to it. Sometimes it is negative and very small, but it is never larger than numerical
     ! noise). Since occasionally (for very flat likelihoods) the inverse seems to be unstable, but it isn't
     ! really (it is more due to a conservative check in the inversion algorithm), here we check whether the
     ! last eigenvalue is too small or not.
@@ -548,7 +548,7 @@ else !ierror == 0 successful diagonalization
     ! kind
     TEMP = 0.0_double
     ! Construct the Moore-Penrose inverse diagonal note that we leave the first diagonal element as zero
-    ! Note that we don't need abs, because if it is negative, we are sure that we don't want it (when it is 
+    ! Note that we don't need abs, because if it is negative, we are sure that we don't want it (when it is
     ! negative it is always very small (10^-13 or so).
     if( eigv(1) > eigv(2) / 100000.0_double) then
           TEMP(1,1) = 1.0_double/eigv(1)
@@ -562,7 +562,7 @@ else !ierror == 0 successful diagonalization
                   call DisplayState(msg)
                   write(msg,*) "Next to smallest Eigv. ", eigv(2)
                   call DisplayState(msg)
-           endif   
+           endif
     endif
 
     do i = 2, num_par
@@ -571,190 +571,190 @@ else !ierror == 0 successful diagonalization
     TEMP = matmul(T,TEMP)
     cov =  matmul(TEMP,  transpose(T))
   endif
-  
+
 !---------------------------------------------------
 
 end subroutine pseudoinverse
 !---------------------------------------------------
-!------------------------------------------------------ 
+!------------------------------------------------------
 
- 
+
 !---------------------------------------------------
 !------------------------------------------------------
-SUBRoutINE SINV(A,N,EPS,IER)   
+SUBRoutINE SINV(A,N,EPS,IER)
 !---------------------------------------------------
-! INVERT A GIVEN SYMMETRIC POSITIVE DEFINITE MATRIX     
-! 
-!     USAGE   
-! CALL SINV(A,N,EPS,IER)  
-! 
-!     DESCRIPTION OF PARAMETERS 
+! INVERT A GIVEN SYMMETRIC POSITIVE DEFINITE MATRIX
+!
+!     USAGE
+! CALL SINV(A,N,EPS,IER)
+!
+!     DESCRIPTION OF PARAMETERS
 implicit none
 
-real(kind=double),intent(INout),dimension(*):: A   
-!  UPPER TRIANGULAR PART OF THE GIVEN SYMMETRIC POSITIVE     
-!   DEFINITE N BY N COEFFICIENT MATRIX.  ON RETURN A    
-!   CONTAINS THE RESULTANT UPPER TRIANGULAR MATRIX.     
-integer, intent(IN):: N !THE NUMBER OF ROW (COLUMNS) IN MATRIX A   
-real(kind=double),intent(IN):: EPS   
-!   AN INPUT CONSTANT WHICH IS USED AS RELATIVE TOLERANCE     
-!   FOR TEST ON LOSS OF SIGNIFICANCE. 
-integer,intent(out):: IER 
-!   RESULTING ERROR PARAMETER CODED AS FOLLOWS:   
-!   IER=0  - NO ERROR     
-!   IER=-1 - NO RESULT BECAUSE OF WRONG INPUT PARAMETER N OR  
-!BECAUSE SOME RADICAND IS NONPOSITIVE (MATRIX A   
-!IS NOT POSITIVE DEFINITE, POSSIBLY DUE TO LOSS   
-!OF SIGNIFICANCE)   
-!   IER=K  - WARNING WHICH INDICATES LOSS OF SIGNIFICANCE.    
-!THE RADICAND FORMED AT FACTORIZATION STEP K+1    
-!WAS STILL POSITIVE BUT NO LONGER GREATER THAN    
-!ABS(EPS*A(K+1,K+1)).     
-! 
-!     REMARKS 
-! THE UPPER TRIANGULAR PART OF GIVEN MATRIX IS ASSUMED TO BE  
-! STORED COLUMNWISE IN N*(N+1)/2 SUCCESSIVE STORAGE LOCATIONS.  IN  
-! THE SAME STORAGE LOCATIONS THE RESULTING UPPER TRIANGULAR MATRIX  
-! IS STORED COLUMNWISE TOO.     
-! THE PROCEDURE GIVES RESULTS IF N IS GREATER THAN 0 AND ALL  
-! CALCULATED RADICANDS ARE POSITIVE.  
-! 
-!     SUBRoutINES AND FUNCTION SUBPROGRAMS REQUIRED.    
-! MFSD  
-! 
-!     METHOD  
+real(kind=double),intent(INout),dimension(*):: A
+!  UPPER TRIANGULAR PART OF THE GIVEN SYMMETRIC POSITIVE
+!   DEFINITE N BY N COEFFICIENT MATRIX.  ON RETURN A
+!   CONTAINS THE RESULTANT UPPER TRIANGULAR MATRIX.
+integer, intent(IN):: N !THE NUMBER OF ROW (COLUMNS) IN MATRIX A
+real(kind=double),intent(IN):: EPS
+!   AN INPUT CONSTANT WHICH IS USED AS RELATIVE TOLERANCE
+!   FOR TEST ON LOSS OF SIGNIFICANCE.
+integer,intent(out):: IER
+!   RESULTING ERROR PARAMETER CODED AS FOLLOWS:
+!   IER=0  - NO ERROR
+!   IER=-1 - NO RESULT BECAUSE OF WRONG INPUT PARAMETER N OR
+!BECAUSE SOME RADICAND IS NONPOSITIVE (MATRIX A
+!IS NOT POSITIVE DEFINITE, POSSIBLY DUE TO LOSS
+!OF SIGNIFICANCE)
+!   IER=K  - WARNING WHICH INDICATES LOSS OF SIGNIFICANCE.
+!THE RADICAND FORMED AT FACTORIZATION STEP K+1
+!WAS STILL POSITIVE BUT NO LONGER GREATER THAN
+!ABS(EPS*A(K+1,K+1)).
+!
+!     REMARKS
+! THE UPPER TRIANGULAR PART OF GIVEN MATRIX IS ASSUMED TO BE
+! STORED COLUMNWISE IN N*(N+1)/2 SUCCESSIVE STORAGE LOCATIONS.  IN
+! THE SAME STORAGE LOCATIONS THE RESULTING UPPER TRIANGULAR MATRIX
+! IS STORED COLUMNWISE TOO.
+! THE PROCEDURE GIVES RESULTS IF N IS GREATER THAN 0 AND ALL
+! CALCULATED RADICANDS ARE POSITIVE.
+!
+!     SUBRoutINES AND FUNCTION SUBPROGRAMS REQUIRED.
+! MFSD
+!
+!     METHOD
 ! SOLUTION IS DONE USING THE FACTORIZATION BY SUBRoutINE MFSD.
 !
 
 !     FACTORIZE GIVEN MATRIX BY MEANS OF SUBRoutINE MFSD
-! 
-!     A=TRANSPOSE(T)*T    
-! 
+!
+!     A=TRANSPOSE(T)*T
+!
 
  integer:: ipiv, ind, i, kend, lanf, j,k, min, lhor,lver,l
  real(kind=double):: din, work
-  
-CALL MFSD(A,N,EPS,IER)   
+
+CALL MFSD(A,N,EPS,IER)
 
 IF(IER < 0) RETURN
- 
-! 
-!     INVERT UPPER TRIANGULAR MATRIX T
-!     PREPARE INVERSION-LOOP    
-! 
-IPIV=N*(N+1)/2 ! This is a division with intergers, handle with care
-IND=IPIV  
 
-INVERSION1: DO I=1,N   
-  DIN=1.0_double/A(IPIV) 
-  A(IPIV)=DIN  
-  MIN=N   
+!
+!     INVERT UPPER TRIANGULAR MATRIX T
+!     PREPARE INVERSION-LOOP
+!
+IPIV=N*(N+1)/2 ! This is a division with intergers, handle with care
+IND=IPIV
+
+INVERSION1: DO I=1,N
+  DIN=1.0_double/A(IPIV)
+  A(IPIV)=DIN
+  MIN=N
   KEND=I-1
-  LANF=N-KEND    
-  IF( KEND > 0) then  
-     J=IND 
-     ROW_LOOP1: DO  K=1,KEND  
-  WORK=0.0_double 
-  MIN=MIN-1    
+  LANF=N-KEND
+  IF( KEND > 0) then
+     J=IND
+     ROW_LOOP1: DO  K=1,KEND
+  WORK=0.0_double
+  MIN=MIN-1
   LHOR=IPIV
-  LVER=J 
-  DO  L=LANF,MIN 
+  LVER=J
+  DO  L=LANF,MIN
      LVER=LVER+1
-     LHOR=LHOR+L    
-     WORK=WORK+ A(LVER)*A(LHOR) 
+     LHOR=LHOR+L
+     WORK=WORK+ A(LVER)*A(LHOR)
   ENDDO
-  A(J)=-WORK*DIN 
-  J=J-MIN 
+  A(J)=-WORK*DIN
+  J=J-MIN
      ENDDO ROW_LOOP1
   ENDIF
-  IPIV=IPIV-MIN 
-  IND=IND-1  
+  IPIV=IPIV-MIN
+  IND=IND-1
 ENDDO INVERSION1
 
-!     CALCULATE INVERSE(A) BY MEANS OF INVERSE(T) 
-!     INVERSE(A)=INVERSE(T)*TRANSPOSE(INVERSE(T)) 
-!     INITIALIZE MULTIPLICATION LOOP  
-! 
-INVERSION2:  DO I=1,N  
-    IPIV=IPIV+I   
-    J=IPIV    
+!     CALCULATE INVERSE(A) BY MEANS OF INVERSE(T)
+!     INVERSE(A)=INVERSE(T)*TRANSPOSE(INVERSE(T))
+!     INITIALIZE MULTIPLICATION LOOP
+!
+INVERSION2:  DO I=1,N
+    IPIV=IPIV+I
+    J=IPIV
 !  INITIALIZE ROW-LOOP
-    ROW_LOOP2:DO K=I,N   
+    ROW_LOOP2:DO K=I,N
 WORK=0.0_double
-LHOR=J     
+LHOR=J
 DO L=K,N
-  LVER=LHOR+K-I 
-  WORK=WORK+A(LHOR)*A(LVER) 
+  LVER=LHOR+K-I
+  WORK=WORK+A(LHOR)*A(LVER)
   LHOR=LHOR+L
 ENDDO
 A(J)=WORK
 J=J+K
     ENDDO ROW_LOOP2
- ENDDO INVERSION2  
+ ENDDO INVERSION2
 
 !---------------------------------------------------------------
-END  SUBRoutINE SINV   
+END  SUBRoutINE SINV
 !---------------------------------------------------------------
 !---------------------------------------------------------------
 
 
 !---------------------------------------------------------------
 !---------------------------------------------------------------
-SUBRoutINE MFSD(A,N,EPS,IER)  
+SUBRoutINE MFSD(A,N,EPS,IER)
 !---------------------------------------------------------------
-!  FACTOR A GIVEN SYMMETRIC POSITIVE DEFINITE MATRIX     
+!  FACTOR A GIVEN SYMMETRIC POSITIVE DEFINITE MATRIX
 ! ORIGIN: UKNOWN SO FAR
 
 ! NOTE1/WARNING: LP -> The description of this subroutine is not accurate
-!  it has been hacked without reporting the hacking 
-! 
+!  it has been hacked without reporting the hacking
+!
 implicit none
 !     DESCRIPTION & DEWFINITION OF DUMMY ARGUMENTS
-  integer,Intent(IN):: N !THE NUMBER OF ROW (COLUMNS) IN MATRIX A 
+  integer,Intent(IN):: N !THE NUMBER OF ROW (COLUMNS) IN MATRIX A
   real(kind=double),INTENT(IN):: EPS ! INPUT CONSTANT USED AS
 !    RELATIVE TOLERANCE TEST ON LOSS OF SIGNIFICANCE.
-  real(kind=double),intent(INout),dimension(*):: A 
+  real(kind=double),intent(INout),dimension(*):: A
 !   AS INPUT AN UPPER TRIANGULAR MATRIX
-!   DEFINITE N BY N COEFFICIENT MATRIX.  
-!   ON RETURN A CONTAINS THE RESULTANT UPPER TRIANGULAR MATRIX.   
-   integer,intent(out)::IER  ! ERROR PARAMETER CODED AS FOLLOWS:  
-!   IER=0  - NO ERROR     
-!   IER=-1 - NO RESULT BECAUSE OF WRONG INPUT PARAMETER N OR  
-!BECAUSE SOME RADICAND IS NONPOSITIVE (MATRIX A   
-!IS NOT POSITIVE DEFINITE, POSSIBLY DUE TO LOSS   
-!OF SIGNIFICANCE)   
-!   IER=K  - WARNING WHICH INDICATES LOSS OF SIGNIFICANCE.    
-!THE RADICAND FORMED AT FACTORIZATION STEP K+1    
-!WAS STILL POSITIVE BUT NO LONGER GREATER THAN    
-!ABS(EPS*A(K+1,K+1)).     
-! 
-!     REMARKS 
-! THE UPPER TRIANGULAR PART OF GIVEN MATRIX IS ASSUMED TO BE  
-! STORED COLUMNWISE IN N*(N+1)/2 SUCCESSIVE STORAGE LOCATIONS.  IN  
-! THE SAME STORAGE LOCATIONS THE RESULTING UPPER TRIANGULAR MATRIX  
-! IS STORED COLUMNWISE TOO.     
-! THE PROCEDURE GIVES RESULTS IF N IS GREATER THAN 0 AND ALL  
-! CALCULATED RADICANDS ARE POSITIVE.  
-! THE PRODUCT OF RETURNED DIAGONAL TERMS IS EQUAL TO THE SQUARE     
-! ROOT OF THE DETERMINANT OF THE GIVEN MATRIX.    
-! 
-!     SUBRoutINES AND FUNCTION SUBPROGRAMS REQUIRED     
-! NONE  
-! 
-!     METHOD  
-! SOLUTION IS DONE USING THE SQUARE-ROOT METHOD OF CHOLESKY.  
-! THE GIVEN MATRIX IS REPRESENTED AS THE PRODUCT OF 2 TRIANGULAR    
+!   DEFINITE N BY N COEFFICIENT MATRIX.
+!   ON RETURN A CONTAINS THE RESULTANT UPPER TRIANGULAR MATRIX.
+   integer,intent(out)::IER  ! ERROR PARAMETER CODED AS FOLLOWS:
+!   IER=0  - NO ERROR
+!   IER=-1 - NO RESULT BECAUSE OF WRONG INPUT PARAMETER N OR
+!BECAUSE SOME RADICAND IS NONPOSITIVE (MATRIX A
+!IS NOT POSITIVE DEFINITE, POSSIBLY DUE TO LOSS
+!OF SIGNIFICANCE)
+!   IER=K  - WARNING WHICH INDICATES LOSS OF SIGNIFICANCE.
+!THE RADICAND FORMED AT FACTORIZATION STEP K+1
+!WAS STILL POSITIVE BUT NO LONGER GREATER THAN
+!ABS(EPS*A(K+1,K+1)).
+!
+!     REMARKS
+! THE UPPER TRIANGULAR PART OF GIVEN MATRIX IS ASSUMED TO BE
+! STORED COLUMNWISE IN N*(N+1)/2 SUCCESSIVE STORAGE LOCATIONS.  IN
+! THE SAME STORAGE LOCATIONS THE RESULTING UPPER TRIANGULAR MATRIX
+! IS STORED COLUMNWISE TOO.
+! THE PROCEDURE GIVES RESULTS IF N IS GREATER THAN 0 AND ALL
+! CALCULATED RADICANDS ARE POSITIVE.
+! THE PRODUCT OF RETURNED DIAGONAL TERMS IS EQUAL TO THE SQUARE
+! ROOT OF THE DETERMINANT OF THE GIVEN MATRIX.
+!
+!     SUBRoutINES AND FUNCTION SUBPROGRAMS REQUIRED
+! NONE
+!
+!     METHOD
+! SOLUTION IS DONE USING THE SQUARE-ROOT METHOD OF CHOLESKY.
+! THE GIVEN MATRIX IS REPRESENTED AS THE PRODUCT OF 2 TRIANGULAR
 ! MATRICES, WHERE THE LEFT HAND FACTOR IS THE TRANSPOSE OF THE
-! RETURNED RIGHT HAND FACTOR.   
-! 
+! RETURNED RIGHT HAND FACTOR.
+!
 real (kind=double):: dpiv ! = 1.0e0_double
 integer:: kpiv,k,ind,i,l,lanf,lind
 real(kind=double):: tol,dsum
 
 
-! 
-!     TEST IF INPUT PARAMETER N IS meaningful 
-!     
+!
+!     TEST IF INPUT PARAMETER N IS meaningful
+!
 IF(N-1 < 0) THEN
   IER = -1
   RETURN
@@ -762,54 +762,55 @@ ENDIF
 
 !  initialize the error message
 IER=0
-!     INITIALIZE DIAGONAL-LOOP  
-KPIV=0    
-DIAGONAL_LOOP: DO K=1,N 
-    KPIV=KPIV+K   
-    IND=KPIV     
-!   CALCULATE TOLERANCE   
-    TOL=ABS(EPS*A(KPIV)) 
-!   START FACTORIZATION-LOOP OVER K-TH ROW  
-    KROW_FACTORIZATION_LOOP: DO I=K,N    
+!     INITIALIZE DIAGONAL-LOOP
+KPIV=0
+DIAGONAL_LOOP: DO K=1,N
+    KPIV=KPIV+K
+    IND=KPIV
+!   CALCULATE TOLERANCE
+    TOL=ABS(EPS*A(KPIV))
+!   START FACTORIZATION-LOOP OVER K-TH ROW
+    KROW_FACTORIZATION_LOOP: DO I=K,N
 DSUM=0.0_double
-IF(k /= 1) then   
+IF(k /= 1) then
    DO  L=1,k-1
-LANF = KPIV - L 
-LIND = IND - L  
-DSUM = DSUM + A(LANF) * A(LIND) 
+LANF = KPIV - L
+LIND = IND - L
+DSUM = DSUM + A(LANF) * A(LIND)
    ENDDO
 ENDIF
-!     TRANSFORM ELEMENT A(IND)   
+!     TRANSFORM ELEMENT A(IND)
 DSUM = A(IND) - DSUM
-I_equal_K: IF(I == K) THEN  
-!     TEST FOR NEGATIVE PIVOT ELEMENT AND FOR LOSS OF SIGNIFICANCE. 
+I_equal_K: IF(I == K) THEN
+!     TEST FOR NEGATIVE PIVOT ELEMENT AND FOR LOSS OF SIGNIFICANCE.
    IF(  DSUM   <= TOL ) then
 IF(DSUM <= 0.0_double ) THEN
    IER=-1; RETURN
-ENDIF     
+ENDIF
 IF (IER <= 0) THEN
   IER = k-1
 ENDIF
-    ENDIF   
-!  COMPUTE PIVOT ELEMENT   
+    ENDIF
+!  COMPUTE PIVOT ELEMENT
    DPIV=SQRT(DSUM)
    A(KPIV)=DPIV
    DPIV=1.0_double/DPIV
-!   CYCLE KROW_FACTORIZATION_LOOP   
+!   CYCLE KROW_FACTORIZATION_LOOP
 ELSE I_equal_k ! Condition of not diagonal
 !     CALCULATE TERMS IN ROW
    A(IND) = DSUM * DPIV
 ENDIF I_equal_k
-IND=IND+I 
+IND=IND+I
   ENDDO KROW_FACTORIZATION_LOOP
-ENDDO DIAGONAL_LOOP   
-    
+ENDDO DIAGONAL_LOOP
+
 !---------------------------------------------------------------
-END SUBRoutINE MFSD   
+END SUBRoutINE MFSD
 !---------------------------------------------------------------
 !---------------------------------------------------------------
 
 
 
 end module l_algebra
-
+
+
