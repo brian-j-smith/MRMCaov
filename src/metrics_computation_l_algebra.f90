@@ -507,20 +507,20 @@ call dsyev('V','U', num_par, upper_diag, num_par,eigv, work, lwork, ierror)
 ! Prepare to return a warning flag with the error of the diagonalization routine
 if(ierror < 0) then ! Diagonalization could not be performed, because the call was made
     ! incorrectly, this shuld never happen, unless someone changed the code
-    write(err_msg,*) "ERROR: pseudoinverse: DSYEV call has wrong value in ",-ierror,"-th parameter"
+    continue! write(err_msg,*) "ERROR: pseudoinverse: DSYEV call has wrong value in ",-ierror,"-th parameter"
     ierror = -1
 elseif(ierror > 0) then ! diagonalization did not converge
-    write(err_msg,*) "ERROR: pseudoinverse: diagonalization not converge, DSYEV err code: ",ierror
+    continue! write(err_msg,*) "ERROR: pseudoinverse: diagonalization not converge, DSYEV err code: ",ierror
     ierror = 1
 elseif(  any( eigv(2:num_par) < 0.0_double )  ) then ! The larger iegenvalues have to be positive, otherwise
     ! it isn't a maximum of the log likelihood function and some of the estimated variances could be negative
     ! which don't make any sense.
-    write(err_msg,*) "ERROR:: pseudoinverse: One or more large eigenvalues of Hessian are negative"
+    continue! write(err_msg,*) "ERROR:: pseudoinverse: One or more large eigenvalues of Hessian are negative"
     ierror = 2
     if(idebug == 1) then ! Write some log information if asked to do so
         call DisplayState(" EIGENVALUES of hessian matrix")
         do i=1,num_par
-           write(msg,*) i, eigv(i)
+           continue! write(msg,*) i, eigv(i)
            call DisplayState(msg)
         enddo
     endif
@@ -528,7 +528,7 @@ else !ierror == 0 successful diagonalization
     if(idebug == 1) then ! Write some log information if asked to do so
        call DisplayState(" EIGENVALUES of hessian matrix")
        do i=1,num_par
-          write(msg,*) i, eigv(i)
+          continue! write(msg,*) i, eigv(i)
           call DisplayState(msg)
        enddo
     endif
@@ -553,14 +553,14 @@ else !ierror == 0 successful diagonalization
     if( eigv(1) > eigv(2) / 100000.0_double) then
           TEMP(1,1) = 1.0_double/eigv(1)
           if(idebug == 1) then ! Write some log information if asked to do so
-                  write(msg,*) "Smallest  Eigv. ", eigv(1), "NOT REMOVED "
+                  continue! write(msg,*) "Smallest  Eigv. ", eigv(1), "NOT REMOVED "
                   call DisplayState(msg)
           endif
     else
           if(idebug == 1) then ! Write some log information if asked to do so
-                  write(msg,*) "Smallest (Removed) Eigv. ", eigv(1)
+                  continue! write(msg,*) "Smallest (Removed) Eigv. ", eigv(1)
                   call DisplayState(msg)
-                  write(msg,*) "Next to smallest Eigv. ", eigv(2)
+                  continue! write(msg,*) "Next to smallest Eigv. ", eigv(2)
                   call DisplayState(msg)
            endif
     endif

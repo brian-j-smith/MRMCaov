@@ -84,9 +84,9 @@ SUBROUTINE DisplayStateMsg ( tempText )
 
     ! Modified March 9, 2006 to accommodate zero-length strings.
     IF (length > 0 ) THEN
-        WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
+        continue! WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
     ELSE
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
     ENDIF
 
 
@@ -114,7 +114,7 @@ SUBROUTINE DisplayStateInt ( tempText, intVal )
     length = LEN_TRIM(text)
 
     ! Write the text & value to the debugging window:
-    WRITE(debugUnit, '('//AFMT(length)//'," ",I10)') TRIM(text), intVal
+    continue! WRITE(debugUnit, '('//AFMT(length)//'," ",I10)') TRIM(text), intVal
 
 END SUBROUTINE DisplayStateInt
 
@@ -138,7 +138,7 @@ SUBROUTINE DisplayStateRL8 ( tempText, rl8Val )
     length = LEN_TRIM(text)
 
     ! Write the text & value to the debugging window:
-    WRITE(debugUnit, '('//AFMT(length)//'," ",F15.8)') TRIM(text), rl8Val
+    continue! WRITE(debugUnit, '('//AFMT(length)//'," ",F15.8)') TRIM(text), rl8Val
 
 
 END SUBROUTINE DisplayStateRL8
@@ -167,9 +167,9 @@ SUBROUTINE DisplayStateLog ( tempText, logVal )
     !WRITE(debugUnit, '('//AFMT(length)//'," ",L1)') text, logVal
 
     IF (logVal) THEN
-      WRITE(debugUnit, '('//AFMT(length)//',A6)') TRIM(text), ": TRUE"
+      continue! WRITE(debugUnit, '('//AFMT(length)//',A6)') TRIM(text), ": TRUE"
     ELSE
-      WRITE(debugUnit, '('//AFMT(length)//',A7)') TRIM(text), ": FALSE"
+      continue! WRITE(debugUnit, '('//AFMT(length)//',A7)') TRIM(text), ": FALSE"
     ENDIF
 
 
@@ -198,8 +198,8 @@ SUBROUTINE DisplayStateText ( tempText, tempTextVal )
     length2 = LEN_TRIM(textVal)
 
     ! Write the text & value to the debugging window:
-    WRITE(debugUnit, '('//AFMT(length1)//'," ",'//AFMT(length2)//')') &
-    &  TRIM(text), TRIM(textVal)
+    continue! WRITE(debugUnit, '('//AFMT(length1)//'," ",'//AFMT(length2)//')') &
+    continue! &  TRIM(text), TRIM(textVal)
 
 
 END SUBROUTINE DisplayStateText
@@ -229,29 +229,29 @@ SUBROUTINE DisplayStateIntArray1 ( tempText, IntVal, Index1 )
 !    WRITE(debugUnit, '('//AFMT(length)//'," ",F15.8)') TRIM(text), IntVal
     IF (Index1 <= MaxColumns) THEN
 
-        WRITE(debugUnit,*)
-        WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
+        continue! WRITE(debugUnit,*)
+        continue! WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
 
         DO I = 1, Index1
-            WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") I
+            continue! WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") I
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
         DO I = 1, Index1
-            WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") IntVal(I)
+            continue! WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") IntVal(I)
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
     ELSE ! write as rows rather than columns
 
-        WRITE(debugUnit,*)
-        WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
+        continue! WRITE(debugUnit,*)
+        continue! WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
 
         DO I = 1, Index1
-            WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") I
-            WRITE(debugUnit,'(I10, " ")') IntVal(I)
+            continue! WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") I
+            continue! WRITE(debugUnit,'(I10, " ")') IntVal(I)
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
     ENDIF
 
@@ -283,29 +283,29 @@ SUBROUTINE DisplayStateIntArray01 ( tempText, IntVal, LowerIndex, UpperIndex )
 !    WRITE(debugUnit, '('//AFMT(length)//'," ",F15.8)') TRIM(text), IntVal
     IF (UpperIndex <= MaxColumns) THEN
 
-        WRITE(debugUnit,*)
-        WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
+        continue! WRITE(debugUnit,*)
+        continue! WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
 
         DO I = LowerIndex, UpperIndex
-            WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") I
+            continue! WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") I
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
         DO I = LowerIndex, UpperIndex
-            WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") IntVal(I)
+            continue! WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") IntVal(I)
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
     ELSE ! write as rows rather than columns
 
-        WRITE(debugUnit,*)
-        WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
+        continue! WRITE(debugUnit,*)
+        continue! WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
 
         DO I = LowerIndex, UpperIndex
-            WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") I
-            WRITE(debugUnit,'(I10, " ")') IntVal(I)
+            continue! WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") I
+            continue! WRITE(debugUnit,'(I10, " ")') IntVal(I)
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
     ENDIF
 
@@ -337,29 +337,29 @@ SUBROUTINE DisplayStateRL8Array1 ( tempText, rl8Val, UpperIndex )
 !    WRITE(debugUnit, '('//AFMT(length)//'," ",F15.8)') TRIM(text), rl8Val
     IF (UpperIndex <= MaxColumns) THEN
 
-        WRITE(debugUnit,*)
-        WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
+        continue! WRITE(debugUnit,*)
+        continue! WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
 
         DO I = 1, UpperIndex
-            WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") I
+            continue! WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") I
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
         DO I = 1, UpperIndex
-            WRITE(debugUnit,'(F12.5, " ")', ADVANCE = "NO") rl8Val(I)
+            continue! WRITE(debugUnit,'(F12.5, " ")', ADVANCE = "NO") rl8Val(I)
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
     ELSE ! write as rows rather than columns
 
-        WRITE(debugUnit,*)
-        WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
+        continue! WRITE(debugUnit,*)
+        continue! WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
 
         DO I = 1, UpperIndex
-            WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") I
-            WRITE(debugUnit,'(F12.5, " ")') rl8Val(I)
+            continue! WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") I
+            continue! WRITE(debugUnit,'(F12.5, " ")') rl8Val(I)
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
     ENDIF
 
@@ -390,29 +390,29 @@ SUBROUTINE DisplayStateRL8Array01 ( tempText, rl8Val, LowerIndex, UpperIndex )
 !    WRITE(debugUnit, '('//AFMT(length)//'," ",F15.8)') TRIM(text), rl8Val
     IF (UpperIndex <= MaxColumns) THEN
 
-        WRITE(debugUnit,*)
-        WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
+        continue! WRITE(debugUnit,*)
+        continue! WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
 
         DO I = LowerIndex, UpperIndex
-            WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") I
+            continue! WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") I
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
         DO I = LowerIndex, UpperIndex
-            WRITE(debugUnit,'(F12.5, " ")', ADVANCE = "NO") rl8Val(I)
+            continue! WRITE(debugUnit,'(F12.5, " ")', ADVANCE = "NO") rl8Val(I)
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
     ELSE ! write as rows rather than columns
 
-        WRITE(debugUnit,*)
-        WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
+        continue! WRITE(debugUnit,*)
+        continue! WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
 
         DO I = LowerIndex, UpperIndex
-            WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") I
-            WRITE(debugUnit,'(F12.5, " ")') rl8Val(I)
+            continue! WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") I
+            continue! WRITE(debugUnit,'(F12.5, " ")') rl8Val(I)
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
     ENDIF
 
@@ -441,23 +441,23 @@ SUBROUTINE DisplayStateRL8Array2 ( tempText, rl8Val, UpperRowIndex, UpperColumnI
 
     ! Write the text & value to the debugging window:
 !    WRITE(debugUnit, '('//AFMT(length)//'," ",F15.8)') TRIM(text), rl8Val
-    WRITE(debugUnit,*)
-    WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
+    continue! WRITE(debugUnit,*)
+    continue! WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
 
-    WRITE(debugUnit,'("      ")', ADVANCE = "NO")
+    continue! WRITE(debugUnit,'("      ")', ADVANCE = "NO")
     DO J = 1, UpperColumnIndex
-        WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") J
+        continue! WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") J
     END DO
-    WRITE(debugUnit,*)
+    continue! WRITE(debugUnit,*)
 
     DO I = 1, UpperRowIndex
-        WRITE(debugUnit,'(I4,"  ")', ADVANCE = "NO") I
+        continue! WRITE(debugUnit,'(I4,"  ")', ADVANCE = "NO") I
         DO J = 1, UpperColumnIndex
-            WRITE(debugUnit,'(F12.5, " ")', ADVANCE = "NO") rl8Val(I,J)
+            continue! WRITE(debugUnit,'(F12.5, " ")', ADVANCE = "NO") rl8Val(I,J)
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
     END DO
-    WRITE(debugUnit,*)
+    continue! WRITE(debugUnit,*)
 
 END SUBROUTINE DisplayStateRL8Array2
 
@@ -488,23 +488,23 @@ SUBROUTINE DisplayStateRL8Array2R ( tempText, rl8Val, UpperRowIndex, UpperColumn
 
     IF (Reverse) THEN
 
-        WRITE(debugUnit,*)
-        WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
+        continue! WRITE(debugUnit,*)
+        continue! WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
 
-        WRITE(debugUnit,'("      ")', ADVANCE = "NO")
+        continue! WRITE(debugUnit,'("      ")', ADVANCE = "NO")
         DO I = 1, UpperRowIndex
-            WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") I
+            continue! WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") I
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
         DO J = 1, UpperColumnIndex
-            WRITE(debugUnit,'(I4,"  ")', ADVANCE = "NO") J
+            continue! WRITE(debugUnit,'(I4,"  ")', ADVANCE = "NO") J
             DO I = 1, UpperRowIndex
-            WRITE(debugUnit,'(F12.5, " ")', ADVANCE = "NO") rl8Val(I,J)
+            continue! WRITE(debugUnit,'(F12.5, " ")', ADVANCE = "NO") rl8Val(I,J)
             END DO
-            WRITE(debugUnit,*)
+            continue! WRITE(debugUnit,*)
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
     ELSE
 
@@ -524,14 +524,14 @@ SUBROUTINE DumpUnitInfo ( fileUnit )
     LOGICAL :: lopened,lnamed
     CHARACTER(64):: fname
 
-    WRITE(*,*) ' --------------------------------------------------'
+    continue! WRITE(*,*) ' --------------------------------------------------'
    ! WRITE(*,*) ' Displaying unit connection status for unit: ', fileUnit
     INQUIRE(UNIT=fileUnit,OPENED=lopened,NAMED=lnamed,NAME=fname)
-    WRITE(debugUnit,*) ' UNIT = ',fileUnit
-    WRITE(debugUnit,*) ' OPENED = ',lopened
-    WRITE(debugUnit,*) ' NAMED = ',lnamed
-    WRITE(debugUnit,*) ' NAME = ',fname
-    WRITE(debugUnit,*) ' --------------------------------------------------'
+    continue! WRITE(debugUnit,*) ' UNIT = ',fileUnit
+    continue! WRITE(debugUnit,*) ' OPENED = ',lopened
+    continue! WRITE(debugUnit,*) ' NAMED = ',lnamed
+    continue! WRITE(debugUnit,*) ' NAME = ',fname
+    continue! WRITE(debugUnit,*) ' --------------------------------------------------'
 
 END SUBROUTINE DumpUnitInfo
 
@@ -558,23 +558,23 @@ SUBROUTINE DisplayStateIntArray2 ( tempText, intVal, UpperRowIndex, UpperColumnI
 
     ! Write the text & value to the debugging window:
 !    WRITE(debugUnit, '('//AFMT(length)//'," ",F15.8)') TRIM(text), intVal
-    WRITE(debugUnit,*)
-    WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
+    continue! WRITE(debugUnit,*)
+    continue! WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
 
-    WRITE(debugUnit,'("      ")', ADVANCE = "NO")
+    continue! WRITE(debugUnit,'("      ")', ADVANCE = "NO")
     DO J = 1, UpperColumnIndex
-        WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") J
+        continue! WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") J
     END DO
-    WRITE(debugUnit,*)
+    continue! WRITE(debugUnit,*)
 
     DO I = 1, UpperRowIndex
-        WRITE(debugUnit,'(I4,"  ")', ADVANCE = "NO") I
+        continue! WRITE(debugUnit,'(I4,"  ")', ADVANCE = "NO") I
         DO J = 1, UpperColumnIndex
-            WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") intVal(I,J)
+            continue! WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") intVal(I,J)
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
     END DO
-    WRITE(debugUnit,*)
+    continue! WRITE(debugUnit,*)
 
 END SUBROUTINE DisplayStateIntArray2
 
@@ -604,23 +604,23 @@ SUBROUTINE DisplayStateIntArray2R ( tempText, intVal, UpperRowIndex, UpperColumn
 
     IF (Reverse) THEN
 
-        WRITE(debugUnit,*)
-        WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
+        continue! WRITE(debugUnit,*)
+        continue! WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
 
-        WRITE(debugUnit,'("      ")', ADVANCE = "NO")
+        continue! WRITE(debugUnit,'("      ")', ADVANCE = "NO")
         DO I = 1, UpperRowIndex
-            WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") I
+            continue! WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") I
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
         DO J = 1, UpperColumnIndex
-            WRITE(debugUnit,'(I4,"  ")', ADVANCE = "NO") J
+            continue! WRITE(debugUnit,'(I4,"  ")', ADVANCE = "NO") J
             DO I = 1, UpperRowIndex
-            WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") intVal(I,J)
+            continue! WRITE(debugUnit,'(I10, " ")', ADVANCE = "NO") intVal(I,J)
             END DO
-            WRITE(debugUnit,*)
+            continue! WRITE(debugUnit,*)
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
 
     ELSE
 
@@ -653,23 +653,23 @@ SUBROUTINE DisplayStateRL8Array02 ( tempText, rl8Val, UpperRowIndex, LowerColumn
 
     ! Write the text & value to the debugging window:
 !    WRITE(debugUnit, '('//AFMT(length)//'," ",F15.8)') TRIM(text), rl8Val
-    WRITE(debugUnit,*)
-    WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
+    continue! WRITE(debugUnit,*)
+    continue! WRITE(debugUnit, '('//AFMT(length)//')') TRIM(text)
 
-    WRITE(debugUnit,'("      ")', ADVANCE = "NO")
+    continue! WRITE(debugUnit,'("      ")', ADVANCE = "NO")
     DO J = LowerColumnIndex, UpperColumnIndex
-        WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") J
+        continue! WRITE(debugUnit,'(I12, " ")', ADVANCE = "NO") J
     END DO
-    WRITE(debugUnit,*)
+    continue! WRITE(debugUnit,*)
 
     DO I = 1, UpperRowIndex
-        WRITE(debugUnit,'(I4,"  ")', ADVANCE = "NO") I
+        continue! WRITE(debugUnit,'(I4,"  ")', ADVANCE = "NO") I
         DO J = LowerColumnIndex, UpperColumnIndex
-            WRITE(debugUnit,'(F12.5, " ")', ADVANCE = "NO") rl8Val(I,J)
+            continue! WRITE(debugUnit,'(F12.5, " ")', ADVANCE = "NO") rl8Val(I,J)
         END DO
-        WRITE(debugUnit,*)
+        continue! WRITE(debugUnit,*)
     END DO
-    WRITE(debugUnit,*)
+    continue! WRITE(debugUnit,*)
 
 END SUBROUTINE DisplayStateRL8Array02
 

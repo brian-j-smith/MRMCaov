@@ -2150,26 +2150,26 @@ implicit none
 !
 !         print short summary line
 !
-     if (iv(needhd) == 1 .and. alg == 1) write(pu,30)
+     if (iv(needhd) == 1 .and. alg == 1) continue! write(pu,30)
  30   format(/"   it   nf",6x,"f",7x,"reldf",3x,"preldf",3x,"reldx",2x,"model  stppar")
-     if (iv(needhd) == 1 .and. alg == 2) write(pu,40)
+     if (iv(needhd) == 1 .and. alg == 2) continue! write(pu,40)
  40   format(/"    it   nf",7x,"f",8x,"hreldf",4x,"preldf",4x,"reldx",3x,"stppar")
      iv(needhd) = 0
      if (alg == 2) go to 50
      m = iv(sused)
-     write(pu,100) iv(niter), nf, v(f), reldf, preldf, v(reldx), &
-       model1(m), model2(m), v(stppar)
+     continue! write(pu,100) iv(niter), nf, v(f), reldf, preldf, v(reldx), &
+     continue!   model1(m), model2(m), v(stppar)
      go to 120
 
- 50  write(pu,110) iv(niter), nf, v(f), reldf, preldf, v(reldx), v(stppar)
+ 50  continue! write(pu,110) iv(niter), nf, v(f), reldf, preldf, v(reldx), v(stppar)
      go to 120
 !
 !      print long summary line
 !
- 60   if (iv(needhd) == 1 .and. alg == 1) write(pu,70)
+ 60   if (iv(needhd) == 1 .and. alg == 1) continue! write(pu,70)
  70   format(/"    it   nf",6x,"f",7x,"reldf",3x,"preldf",3x,"reldx", &
         2x,"model  stppar",2x,"d*step",2x,"npreldf")
-  if (iv(needhd) == 1 .and. alg == 2) write(pu,80)
+  if (iv(needhd) == 1 .and. alg == 2) continue! write(pu,80)
  80   format(/"    it   nf",7x,"f",8x,"reldf",4x,"preldf",4x,"reldx", &
         3x,"stppar",3x,"d*step",3x,"npreldf")
   iv(needhd) = 0
@@ -2177,12 +2177,12 @@ implicit none
   if (oldf > 0.0_double) nreldf = v(nreduc) / oldf
   if (alg == 2) go to 90
   m = iv(sused)
-  write(pu,100) iv(niter), nf, v(f), reldf, preldf, v(reldx), &
-              model1(m), model2(m), v(stppar), v(dstnrm), nreldf
+  continue! write(pu,100) iv(niter), nf, v(f), reldf, preldf, v(reldx), &
+  continue!             model1(m), model2(m), v(stppar), v(dstnrm), nreldf
   go to 120
 
- 90     write(pu,110) iv(niter), nf, v(f), reldf, preldf, &
-                      v(reldx), v(stppar), v(dstnrm), nreldf
+ 90     continue! write(pu,110) iv(niter), nf, v(f), reldf, preldf, &
+        continue!               v(reldx), v(stppar), v(dstnrm), nreldf
  100  format(i6,i5,d10.3,2d9.2,d8.1,a3,a4,2d8.1,d9.2)
  110  format(i6,i5,d11.3,2(d10.2),3(d9.1),d10.2)
 
@@ -2218,62 +2218,62 @@ implicit none
        goto 520
   end select
 
- 130  write(pu,140)
+ 130  continue! write(pu,140)
  140  format(/' x-convergence')
   go to 430
 
- 150  write(pu,160)
+ 150  continue! write(pu,160)
  160  format(/'relative function convergence')
   go to 430
 
- 170  write(pu,180)
+ 170  continue! write(pu,180)
  180  format(/'x- and relative function convergence')
   go to 430
 
- 190  write(pu,200)
+ 190  continue! write(pu,200)
  200  format(/'Absolute function convergence.')
   go to 430
 
- 210  write(pu,220)
+ 210  continue! write(pu,220)
  220  format(/'Singular convergence.')
   go to 430
 
- 230  write(pu,240)
+ 230  continue! write(pu,240)
  240  format(/'False convergence.')
   go to 430
 
- 250  write(pu,260)
+ 250  continue! write(pu,260)
  260  format(/'Function evaluation limit.')
   go to 430
 
- 270  write(pu,280)
+ 270  continue! write(pu,280)
  280  format(/'Iteration limit.')
   go to 430
 
- 290  write(pu,300)
+ 290  continue! write(pu,300)
  300  format(/'STOPX')
   go to 430
 
- 310  write(pu,320)
+ 310  continue! write(pu,320)
  320  format(/'Initial f(x) cannot be computed.')
   go to 390
 
- 330  write(pu,340)
+ 330  continue! write(pu,340)
  340  format(/'Bad parameters to assess.')
   go to 999
 
- 350  write(pu,360)
+ 350  continue! write(pu,360)
  360  format(/'Gradient could not be computed.')
   if (iv(niter) > 0) go to 480
   go to 390
 
- 370  write(pu,380) iv(1)
+ 370  continue! write(pu,380) iv(1)
  380  format(/'iv(1) =',i5)
   go to 999
 !
 !   initial call on itsum
 !
- 390  if (iv(x0prt) /= 0) write(pu,400) (i, x(i), d(i), i = 1, p)
+ 390  continue! if (iv(x0prt) /= 0) write(pu,400) (i, x(i), d(i), i = 1, p)
  400  format(/"     i     initial x(i)",8x,"d(i)"//(1x,i5,d17.6,d14.3))
 !     the following are to avoid undefined variables when the
 !     function evaluation limit is 1...
@@ -2287,12 +2287,12 @@ implicit none
   iv(needhd) = 0
   iv(prntit) = 0
   if (ol == 0) go to 999
-  if (ol < 0 .and. alg == 1) write(pu,30)
-  if (ol < 0 .and. alg == 2) write(pu,40)
-  if (ol > 0 .and. alg == 1) write(pu,70)
-  if (ol > 0 .and. alg == 2) write(pu,80)
-  if (alg == 1) write(pu,410) v(f)
-  if (alg == 2) write(pu,420) v(f)
+  if (ol < 0 .and. alg == 1) continue! write(pu,30)
+  if (ol < 0 .and. alg == 2) continue! write(pu,40)
+  if (ol > 0 .and. alg == 1) continue! write(pu,70)
+  if (ol > 0 .and. alg == 2) continue! write(pu,80)
+  if (alg == 1) continue! write(pu,410) v(f)
+  if (alg == 2) continue! write(pu,420) v(f)
  410  format(/"     0    1",d10.3)
 !365  format(/11h     0    1,e11.3)
  420  format(/"     0    1",d11.3)
@@ -2310,26 +2310,26 @@ implicit none
           nreldf = v(nreduc) / oldf
  440     nf = iv(nfcall) - iv(nfcov)
      ng = iv(ngcall) - iv(ngcov)
-     write(pu,450) v(f), v(reldx), nf, ng, preldf, nreldf
+     continue! write(pu,450) v(f), v(reldx), nf, ng, preldf, nreldf
  450  format(/" function",d17.6,"   reldx",d17.3/" func. evals", &
     i8,9x,"grad. evals",i8/" preldf",d16.3,6x,"npreldf",d15.3)
 
-     if (iv(nfcov) > 0) write(pu,460) iv(nfcov)
+     if (iv(nfcov) > 0) continue! write(pu,460) iv(nfcov)
  460     format(/1x,i4," extra func. evals for covariance and diagnostics.")
-     if (iv(ngcov) > 0) write(pu,470) iv(ngcov)
+     if (iv(ngcov) > 0) continue! write(pu,470) iv(ngcov)
  470     format(1x,i4," extra grad. evals for covariance and diagnostics.")
 
  480  if (iv(solprt) == 0) go to 999
      iv(needhd) = 1
-     write(pu,490)
+     continue! write(pu,490)
  490  format(/"     i      final x(i)",8x,"d(i)",10x,"g(i)"/)
      do 500 i = 1, p
-          write(pu,510) i, x(i), d(i), g(i)
+          continue! write(pu,510) i, x(i), d(i), g(i)
  500          continue
  510     format(1x,i5,d16.6,2d14.3)
   go to 999
 
- 520  write(pu,530)
+ 520  continue! write(pu,530)
  530  format(/'Inconsistent dimensions.')
  999  continue
 
@@ -2898,7 +2898,7 @@ implicit none
   if (liv < miv2) go to 300
   if (lv < iv(lastv)) go to 320
  10   if (alg == iv(algsav)) go to 30
-  if (pu /= 0) write(pu,20) alg, iv(algsav)
+  if (pu /= 0) continue! write(pu,20) alg, iv(algsav)
  20 format(/" the first parameter to deflt should be",i3," rather than",i3)
      iv(1) = 82
      return
@@ -2908,7 +2908,7 @@ implicit none
           if (pu == 0) then
             return
           end if
-          write(pu,40) varnm(alg), n
+          continue! write(pu,40) varnm(alg), n
  40           format(/" /// bad",a1," =",i5)
           return
  50      if (iv1 /= 14) iv(nextiv) = iv(perm)
@@ -2929,13 +2929,13 @@ implicit none
      if (pu == 0) then
        return
      end if
-     write(pu,70) varnm(alg), iv(oldn), n
+     continue! write(pu,70) varnm(alg), iv(oldn), n
  70      format(/" /// ",1a1," changed from",i5," to" ,i5)
      return
 
  80   if (iv1 <= 11 .and. iv1 >= 1) go to 100
      iv(1) = 80
-     if (pu /= 0) write(pu,90) iv1
+     if (pu /= 0) continue! write(pu,90) iv1
  90      format(/" ///  iv(1) =",i5," should be between 0 and 14.")
      return
 
@@ -2975,7 +2975,7 @@ implicit none
     vk = v(k)
     if (vk >= vm(i) .and. vk <= vx(i)) go to 140
       m = k
-      if (pu /= 0) write(pu,130) vn(1,i), vn(2,i), k, vk,vm(i), vx(i)
+      if (pu /= 0) continue! write(pu,130) vn(1,i), vn(2,i), k, vk,vm(i), vx(i)
  130  format(/" ///  ",2a4,".. v(",i2,") =",d11.3," should", &
       " be between",d11.3," and",d11.3)
  140  k = k + 1
@@ -2988,7 +2988,7 @@ implicit none
      if (pu == 0) then
        return
      end if
-     write(pu,160) iv(nvdflt), ndfalt
+     continue! write(pu,160) iv(nvdflt), ndfalt
  160     format(" iv(nvdflt) =",i5," rather than ",i5)
      return
  170  if ((iv(dtype) > 0 .or. v(dinit) > 0.0_double) .and. iv1 == 12) then
@@ -2997,7 +2997,7 @@ implicit none
   do 190 i = 1, n
      if (d(i) > 0.0_double) go to 190
           m = 18
-          if (pu /= 0) write(pu,180) i, d(i)
+          if (pu /= 0) continue! write(pu,180) i, d(i)
  180     format(/" ///  d(",i3,") =",d11.3," should be positive")
  190     continue
  200  if (m == 0) go to 210
@@ -3009,12 +3009,12 @@ implicit none
       end if
   if (iv1 /= 12 .or. iv(inits) == alg-1) go to 230
      m = 1
-     write(pu,220) sh(alg), iv(inits)
+     continue! write(pu,220) sh(alg), iv(inits)
  220 format(/" nondefault values...."/" init",a1,"      iv(25) =",i3)
  230  if (iv(dtype) == iv(dtype0)) go to 250
-     if (m == 0) write(pu,260) which
+     if (m == 0) continue! write(pu,260) which
      m = 1
-     write(pu,240) iv(dtype)
+     continue! write(pu,240) iv(dtype)
  240     format(" dtype      iv(16) =",i3)
  250  i = 1
   j = jlim(alg)
@@ -3023,10 +3023,10 @@ implicit none
   ndfalt = ndflt(alg)
   do 290 ii = 1, ndfalt
      if (v(k) .speq. v(l)) go to 280
-          if (m == 0) write(pu,260) which
+          if (m == 0) continue! write(pu,260) which
  260          format(/1x,3a4,"alues...."/)
           m = 1
-          write(pu,270) vn(1,i), vn(2,i), k, v(k)
+          continue! write(pu,270) vn(1,i), vn(2,i), k, v(k)
  270          format(1x,2a4,".. v(",i2,") =",d15.7)
  280     k = k + 1
      l = l + 1
@@ -3043,7 +3043,7 @@ implicit none
   if (pu == 0) then
     return
   end if
-  write(pu,310) liv, miv2
+  continue! write(pu,310) liv, miv2
  310  format(/" /// liv =",i5," must be at least",i5)
   if (liv < miv1) then
     return
@@ -3055,7 +3055,7 @@ implicit none
   if (pu == 0) then
     return
   end if
-  write(pu,330) lv, iv(lastv)
+  continue! write(pu,330) lv, iv(lastv)
  330  format(/" /// lv =",i5," must be at least",i5)
   return
 
@@ -3063,7 +3063,7 @@ implicit none
   if (pu == 0) then
     return
   end if
-  write(pu,350) alg
+  continue! write(pu,350) alg
  350  format(/" /// alg =",i5," must be 1 or 2")
 
 end subroutine parck

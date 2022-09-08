@@ -130,7 +130,7 @@ end function bnd_val
   ! becomes unstable. in this situation we print a warning
   call auc_PBM(d_a_par, c_par, auc, ierror)
   if(auc > .99_double) then
-     write(err_msg, *) "# Estimate of beta values is unreliable. AUC is too large"
+     continue! write(err_msg, *) "# Estimate of beta values is unreliable. AUC is too large"
      call print_score_to_latent_line(err_msg)
   endif
 
@@ -167,28 +167,28 @@ end function bnd_val
  enddo
 
  ! PRINT OUT THE DATA POINTS, with test result value and categories, sorted
- write(msg, *) "# TEST RESULT VALUES DIVIDED BY CATEGORY/TRUTH RUN "
+ continue! write(msg, *) "# TEST RESULT VALUES DIVIDED BY CATEGORY/TRUTH RUN "
  call print_score_to_latent_line(msg)
  ! Actually negative cases
- write(msg, *) "#  Actually negative cases "
+ continue! write(msg, *) "#  Actually negative cases "
  call print_score_to_latent_line(msg)
  do icat = 1, num_cat
          do i = 1, catn(icat)
-              write(msg, *) icat, neg_val_by_cat(icat, i)
+              continue! write(msg, *) icat, neg_val_by_cat(icat, i)
               call print_score_to_latent_line(msg)
          enddo
  enddo
- write(msg, *) " "
+ continue! write(msg, *) " "
  call print_score_to_latent_line(msg)
- write(msg, *) "#  Actually positive cases "
+ continue! write(msg, *) "#  Actually positive cases "
  call print_score_to_latent_line(msg)
  do icat = 1, num_cat
          do i = 1, cats(icat)
-              write(msg, *) icat, pos_val_by_cat(icat, i)
+              continue! write(msg, *) icat, pos_val_by_cat(icat, i)
               call print_score_to_latent_line(msg)
          enddo
  enddo
- write(msg, *) "# END OF CATEGORY BY TEST RESULT DATA"
+ continue! write(msg, *) "# END OF CATEGORY BY TEST RESULT DATA"
  call print_score_to_latent_line(msg)
 
 
@@ -217,22 +217,22 @@ end function bnd_val
 
 
  ! Print header for file with test results value to beta relationship
- write(msg, *) "# EST. OF RELATIONSHIP BETWEEN TEST VALUE RESULTS AND LATENT SPACE"
+ continue! write(msg, *) "# EST. OF RELATIONSHIP BETWEEN TEST VALUE RESULTS AND LATENT SPACE"
  call print_score_to_latent_line(msg)
- write(msg, *) "Trth  MEAN          MEDIAN         E[v]          E[v^2]      E[Ln Beta]   ln[M-beta]   SE ln[M-beta]&
-               &  SE E[ln-beta]"
+ continue! write(msg, *) "Trth  MEAN          MEDIAN         E[v]          E[v^2]      E[Ln Beta]   ln[M-beta]   SE ln[M-beta]&
+ continue!               &  SE E[ln-beta]"
  call print_score_to_latent_line(msg)
 
 ! And the FPF/TPF file
- write(msg, *) "# EST. OF RELATIONSHIP BETWEEN TEST VALUE RESULTS AND FPF and TPF values"
+ continue! write(msg, *) "# EST. OF RELATIONSHIP BETWEEN TEST VALUE RESULTS AND FPF and TPF values"
  call print_score_to_FPF_TPF_line(msg)
 
  ! Print warning message because the estimates, especially the CIs can be seriously affected for large or small values.
- write(msg, *) "WARNING: ESTIMATES FOR VERY LARGE AND VERY SMALL VALUES ARE UNRELIABLE, ESPECIALLY CONFIDENCE INTERVALS"
+ continue! write(msg, *) "WARNING: ESTIMATES FOR VERY LARGE AND VERY SMALL VALUES ARE UNRELIABLE, ESPECIALLY CONFIDENCE INTERVALS"
  call print_score_to_FPF_TPF_line(msg)
 
- write(msg, *) "Trth  MEAN          MEDIAN       FPF LBOUND    FPF          FPF UBOUND    TPF LBOUND     TPF    &
-               &       TPF UBOUND "
+ continue! write(msg, *) "Trth  MEAN          MEDIAN       FPF LBOUND    FPF          FPF UBOUND    TPF LBOUND     TPF    &
+ continue!               &       TPF UBOUND "
  call print_score_to_FPF_TPF_line(msg)
 
  ! contruct the test result value to latent variable relationship
@@ -498,10 +498,10 @@ end function bnd_val
    call compute_se_EV_logbeta(d_a_par, c_par, current_lbound, current_ubound, first_lbound, last_ubound, e_val_vc, e_val_vc2, &
                                  curr_cat, num_cat, cov, rho, d_vc_d_th1, se_Ev_log_beta)
 
-   Write(msg, "(a3,8(2x,e12.6))") cat_type, bnd_val(data_mean,99), bnd_val(data_median,99),&
-                                  bnd_val(e_val_vc,99), bnd_val(e_val_vc2,99), &
-                                  bnd_val(e_val_logbeta,99), bnd_val(logbeta_vc(d_a_par, c_par, median_vc),99), &
-                                  bnd_val(se_log_beta_median,99), bnd_val(se_Ev_log_beta,99)
+   continue! Write(msg, "(a3,8(2x,e12.6))") cat_type, bnd_val(data_mean,99), bnd_val(data_median,99),&
+   continue!                                bnd_val(e_val_vc,99), bnd_val(e_val_vc2,99), &
+   continue!                                bnd_val(e_val_logbeta,99), bnd_val(logbeta_vc(d_a_par, c_par, median_vc),99), &
+   continue!                                bnd_val(se_log_beta_median,99), bnd_val(se_Ev_log_beta,99)
    call print_score_to_latent_line(msg)
 
 
@@ -509,9 +509,9 @@ end function bnd_val
                                    cov, rho, d_vc_d_th1, PF, lbound_PF, ubound_PF)
 
 
-   Write(msg, "(a3,9(2x,e12.6))") cat_type, bnd_val(data_mean,99),bnd_val(data_median,99),&
-                                  bnd_val(lbound_PF(1),10),bnd_val(PF(1),10), bnd_val(ubound_PF(1),10), &
-                                  bnd_val(lbound_PF(2),10),bnd_val(PF(2),10), bnd_val(ubound_PF(2),10)
+   continue! Write(msg, "(a3,9(2x,e12.6))") cat_type, bnd_val(data_mean,99),bnd_val(data_median,99),&
+   continue!                                bnd_val(lbound_PF(1),10),bnd_val(PF(1),10), bnd_val(ubound_PF(1),10), &
+   continue!                                bnd_val(lbound_PF(2),10),bnd_val(PF(2),10), bnd_val(ubound_PF(2),10)
    call print_score_to_FPF_TPF_line(msg)
 
 

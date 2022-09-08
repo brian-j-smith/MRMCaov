@@ -168,15 +168,15 @@ if(  ( any(catn_in < 0) .or. any(cats_in < 0) ) .or.  & ! negative # of cases
      )then
     ierror = bad_input
     if(idebug == 1) then
-        write(msg,*) "Categorical data given to cvbmroc is unacceptable"
+        continue! write(msg,*) "Categorical data given to cvbmroc is unacceptable"
         call DisplayState(msg)
-        write (msg,*) "CATEGORICAL DATA USED IN THE MLE, total cat = ", num_categ
+        continue! write (msg,*) "CATEGORICAL DATA USED IN THE MLE, total cat = ", num_categ
         call DisplayState(msg)
         do i = 1, num_categ
-           write (msg,*) catn_in(i), cats_in(i)
+           continue! write (msg,*) catn_in(i), cats_in(i)
            call DisplayState(msg)
         enddo
-        write (msg,*) "END OF CATEGORICAL DATA"
+        continue! write (msg,*) "END OF CATEGORICAL DATA"
         call DisplayState(msg)
     endif
     ! Mathematically it should be undetermined, but we put an impossible value
@@ -251,10 +251,10 @@ initial_est_OK: if(ierror == fit_OK) then
              if(idebug == 1 ) then
                  if( any(cutoffs(2:num_cat-1) .speq. cutoffs(1:num_cat-2))  ) then
                          call DisplayState( ' WARNING:: initialize_cutoffs: Some cutoffs almost identical')
-                         write(msg,"('          for a & b equal to::',2(1x,d14.6))") a_par, b_par
+                         continue! write(msg,"('          for a & b equal to::',2(1x,d14.6))") a_par, b_par
                          call DisplayState(msg)
                          do i = 1, num_cat-1
-                                        write(msg,"(i3,1(1x,e22.15))") i, cutoffs(i)
+                                        continue! write(msg,"(i3,1(1x,e22.15))") i, cutoffs(i)
                                         call DisplayState(msg)
                         enddo
                   endif
@@ -271,7 +271,7 @@ initial_est_OK: if(ierror == fit_OK) then
                  pts_error(j) = fit_failed ! this specific value failed
                  pts_OK_mask(j) = .false.
                  if(idebug == 1) then
-                    write(msg,*) "WARNING: Optimization for initial estimate ", j , " failed "
+                    continue! write(msg,*) "WARNING: Optimization for initial estimate ", j , " failed "
                     call DisplayState(msg)
                     call DisplayState(err_msg)
                  endif
@@ -279,7 +279,7 @@ initial_est_OK: if(ierror == fit_OK) then
     endif initial_est_cutoffs
     ! Log the current estimate, starting with the value of the initial estimates
     if(idebug == 1) then
-       write(msg, *) "For initial estimates:", a_par_array(j), b_par_array(j)
+       continue! write(msg, *) "For initial estimates:", a_par_array(j), b_par_array(j)
        call DisplayState(msg)
     endif
 
@@ -291,14 +291,14 @@ initial_est_OK: if(ierror == fit_OK) then
 
     if(idebug == 1) then
        if( pts_OK_mask(j) ) then ! check if the fit worked for  this point
-           write(msg, *) "Values of a, b, and Log Likelihood at Local Maximum"
+           continue! write(msg, *) "Values of a, b, and Log Likelihood at Local Maximum"
            call DisplayState(msg)
-           write(msg, *)  a_par, b_par, log_like
+           continue! write(msg, *)  a_par, b_par, log_like
            call DisplayState(msg)
        else
-           write(msg, *) "  NO FIT WAS PRODUCED because"
+           continue! write(msg, *) "  NO FIT WAS PRODUCED because"
            call DisplayState(msg)
-           write(msg, *) " ", err_msg(1:76)
+           continue! write(msg, *) " ", err_msg(1:76)
            call DisplayState(msg)
        endif
     endif
@@ -333,13 +333,13 @@ initial_est_OK: if(ierror == fit_OK) then
            b_min    = maxval(b_par_array(1:num_init_pts),pts_OK_mask)
 
            if(idebug == 1) then
-                write(msg,*) "ATTENTION: Log Likelihood might display multiple Maxima "
+                continue! write(msg,*) "ATTENTION: Log Likelihood might display multiple Maxima "
                 call DisplayState(msg)
-                write(msg,*) " Maximal final estimate ", a_max, b_max
+                continue! write(msg,*) " Maximal final estimate ", a_max, b_max
                 call DisplayState(msg)
-                write(msg,*) " Minimal final estimate ", a_min, b_min
+                continue! write(msg,*) " Minimal final estimate ", a_min, b_min
                 call DisplayState(msg)
-                write(msg,*) "ATTENTION: largest value of LL will be selected"
+                continue! write(msg,*) "ATTENTION: largest value of LL will be selected"
                 call DisplayState(msg)
            endif
       endif
@@ -357,14 +357,14 @@ initial_est_OK: if(ierror == fit_OK) then
 
       ! Log the chosen value
       if(idebug == 1) then
-           write(msg, *) "Final value of a, b, and Log Likelihood"
+           continue! write(msg, *) "Final value of a, b, and Log Likelihood"
            call DisplayState(msg)
-           write(msg, *)  a_par, b_par, log_like
+           continue! write(msg, *)  a_par, b_par, log_like
            call DisplayState(msg)
-           write(msg, *) "Final value of cutoffs:"
+           continue! write(msg, *) "Final value of cutoffs:"
            call DisplayState(msg)
            do j = 1, num_cat -1
-                write(msg, *)  j, cutoffs(j)
+                continue! write(msg, *)  j, cutoffs(j)
                 call DisplayState(msg)
            enddo
       endif
@@ -387,7 +387,7 @@ cutoffs_out = -666.0_double
 ! defined in the initialization phase.
 
 if(idebug == 1) then
-           write(msg, *) ierror, fit_undetermined
+           continue! write(msg, *) ierror, fit_undetermined
            call DisplayState(msg)
 endif
 
@@ -550,13 +550,13 @@ integer:: ierror
 
 ! Write to file debug information -- Nov 2009
  if(idebug==1) then
-      write(msg,"(' ')")
+      continue! write(msg,"(' ')")
       call DisplayState(msg)
-      write(msg,"('CUTOFFS ARE RECONSTRUCTED (EXACTLY) FROM THE TRUTH-RUNS')")
+      continue! write(msg,"('CUTOFFS ARE RECONSTRUCTED (EXACTLY) FROM THE TRUTH-RUNS')")
       call DisplayState(msg)
-      write(msg,"('Orig  c.psed   #orig+ /    #orig- /      FPF             TPF  ')")
+      continue! write(msg,"('Orig  c.psed   #orig+ /    #orig- /      FPF             TPF  ')")
       call DisplayState(msg)
-      write(msg,"('cat   cat      #c.psed+    #c.psed-  ')")
+      continue! write(msg,"('cat   cat      #c.psed+    #c.psed-  ')")
       call DisplayState(msg)
  endif
 
@@ -654,9 +654,9 @@ non_collapsed_categories: do icat = 1, num_cat_orig - 1
  if(idebug==1) then
       call fpf_CVBM(a_par, b_par,  cutoffs_orig(icat) , fpf, one_minus)
       call tpf_CVBM(a_par, b_par,  cutoffs_orig(icat) , tpf, one_minus)
-      write(msg,"(1x,I3,4x,I3,4x,I3,'/',I3,4x,I3,'/',I3,4x,2(f14.10,2x) )") icat, new_cat_index(icat), &
-                catn_orig(icat), catn(new_cat_index(icat)), cats_orig(icat), cats(new_cat_index(icat)), &
-                tpf, fpf
+      continue! write(msg,"(1x,I3,4x,I3,4x,I3,'/',I3,4x,I3,'/',I3,4x,2(f14.10,2x) )") icat, new_cat_index(icat), &
+      continue!           catn_orig(icat), catn(new_cat_index(icat)), cats_orig(icat), cats(new_cat_index(icat)), &
+      continue!           tpf, fpf
       call DisplayState(msg)
  endif
 
@@ -723,9 +723,9 @@ call m1tom2(num_param,xxdum,cov) ! Copy from packed upper triangular to full mat
 ! If asked, report on the inversion of the full hessian
 if(idebug == 1 .and. inversion_error /= 0) then
   if(inversion_error < 0) then
-      write(msg,*) "WARNING:: FAILED to invert Full Hessian to obtain covariance matrix"
+      continue! write(msg,*) "WARNING:: FAILED to invert Full Hessian to obtain covariance matrix"
   elseif(inversion_error > 0) then
-      write(msg,*)"WARNING:: unstable inversion of Hessian  SINV error flag:",inversion_error
+      continue! write(msg,*)"WARNING:: unstable inversion of Hessian  SINV error flag:",inversion_error
   endif
   call DisplayState(msg)
 endif
@@ -745,11 +745,11 @@ if(inversion_error /=0 ) then
       ierror  = failed_variance ! We could not compute variances
       if(idebug == 1) call DisplayState(err_msg)
    else
-      write(err_msg,*) "Variances computed with Pseudo-inverse of Hessian matrix"
+      continue! write(err_msg,*) "Variances computed with Pseudo-inverse of Hessian matrix"
       ierror  = pseudo_inv_variance ! we used a pseudoinverse, we should flag it
    endif
 else ! The message is returned by proproc containing info about the computation of the variances
-   write(err_msg,*) "Variances computed inverting the negative Hessian"
+   continue! write(err_msg,*) "Variances computed inverting the negative Hessian"
    if(idebug == 1) call DisplayState(err_msg)
    ierror = hessian_variance ! Simply inverting the - Hessian produced numerically stable variances
 endif
@@ -769,7 +769,7 @@ if(idebug == 1 .and. (ierror == hessian_variance .or. ierror == pseudo_inv_varia
     do i=1, num_param
       do j=1, num_param
          if( abs(identity(i,j)) > 1.0d-10)  then
-             write(msg,"('    ', 2(1x,i6),1x, g22.15)")i,j, identity(i,j)
+             continue! write(msg,"('    ', 2(1x,i6),1x, g22.15)")i,j, identity(i,j)
              call DisplayState(msg)
          endif
       enddo
@@ -912,7 +912,7 @@ optimize: do  iter = 1 ,  max_iter
        if (idebug == 1) then
           call DisplayState(err_msg)
           ! LP April 2007 fixed to prevent crashing while printing
-          write(err_msg,"(I2,' TOMS611 call:: a & b =', 2(1x,e16.8))") iter, a_par, b_par
+          continue! write(err_msg,"(I2,' TOMS611 call:: a & b =', 2(1x,e16.8))") iter, a_par, b_par
           call DisplayState(err_msg)
        endif
        ! Restart from the original initial values, but change a a little, for even attempts increasing,
@@ -961,12 +961,12 @@ elseif(.not.test_parameters(a_par, b_par) ) then
 elseif (.not.check_cutoff_order()) then
         if(idebug == 1) then
            call DisplayState("ERROR:: compute_MLE -> OPTIMZER RETURNED CUTOFFS WITH WRONG ORDER")
-           write(msg,*) " i     cutoff    fpf          tpf  "
+           continue! write(msg,*) " i     cutoff    fpf          tpf  "
            call DisplayState(msg)
            do i=1,num_cat-1
                   call fpf_CVBM( a_par, b_par, cutoffs(i), fpf)
                   call tpf_CVBM( a_par, b_par, cutoffs(i), tpf)
-                  write(err_msg,"(i2,3(1x,e22.15))") i, cutoffs(i), fpf,tpf
+                  continue! write(err_msg,"(i2,3(1x,e22.15))") i, cutoffs(i), fpf,tpf
                   call DisplayState(msg)
            enddo
         endif
@@ -1310,9 +1310,9 @@ do icat = 1, num_cat - 1
    if(.NOT. check_number( grad(icat+2)) .AND. (grad(icat+2) .spne. 0.0_double) ) then
      if(pass_idebug ==1) then
         call DisplayState("ERROR DLIKE_CVBM:: OVERFLOW IN DERIVATIVES OF CUTOFFS ")
-        write(msg,*)  icat, param_vec(2+icat), grad(icat+2)
+        continue! write(msg,*)  icat, param_vec(2+icat), grad(icat+2)
         call DisplayState(msg)
-        write(msg,*)   cats(icat), cats(icat+1), catn(icat),catn(icat+1)
+        continue! write(msg,*)   cats(icat), cats(icat+1), catn(icat),catn(icat+1)
         call DisplayState(msg)
      endif
 
@@ -1393,7 +1393,7 @@ uip(1) = nf ! variable for the TOMS611
 ! it can made complex again if needed.
 if( .not.test_parameters(a_par, b_par) ) then
       if(pass_idebug  == 1) then
-          write(msg,"('a & b unacceptable:',2(2x,f14.8) )") a_par, b_par    ; call DisplayState(msg)
+          continue! write(msg,"('a & b unacceptable:',2(2x,f14.8) )") a_par, b_par    ; call DisplayState(msg)
       endif
       log_like   =  huge( a_par )
       nf = 0
@@ -1479,32 +1479,32 @@ log_like = - ( dot_product(catn(1:num_cat),log(p_val(1:num_cat))) + dot_product(
 ! if it did, reject the step made by the calling program (here set for the TOMS611 optimizer)
 if( .not. check_number(log_like)) then
      debugging_info:  if(pass_idebug  == 1)  then
-       write(msg,*) "value of a & b ", a_par, b_par    ; call DisplayState(msg)
-       write(msg,*) "WARNING:: OVERFLOW OR UNDERFLOW IN LIKE_CVBM ", log_like ; call DisplayState(msg)
+       continue! write(msg,*) "value of a & b ", a_par, b_par    ; call DisplayState(msg)
+       continue! write(msg,*) "WARNING:: OVERFLOW OR UNDERFLOW IN LIKE_CVBM ", log_like ; call DisplayState(msg)
        ! write out the values of the cutoffs
-       write(msg,*) " CAT CUTOFF_VALUE "        ; call DisplayState(msg)
+       continue! write(msg,*) " CAT CUTOFF_VALUE "        ; call DisplayState(msg)
        do icat=1,num_cat-1
-             write(msg,*) icat, param_vec(2+icat) ; call DisplayState(msg)
+             continue! write(msg,*) icat, param_vec(2+icat) ; call DisplayState(msg)
        enddo
        ! Add the values of TPFs and FPFs
-       write(msg,*) " CUTOFF_VALUE FPF's TPF's and their complements to 1 " ; call DisplayState(msg)
+       continue! write(msg,*) " CUTOFF_VALUE FPF's TPF's and their complements to 1 " ; call DisplayState(msg)
        do icat=1,num_cat-1
           call fpf_CVBM(a_par, b_par, param_vec(2+icat), fpf, one_minus_fpf)
           call tpf_CVBM(a_par, b_par, param_vec(2+icat), tpf, one_minus_tpf)
-          write(msg,*) icat, fpf, tpf  ; call DisplayState(msg)
-          write(msg,*) icat, one_minus_fpf, one_minus_tpf ; call DisplayState(msg)
+          continue! write(msg,*) icat, fpf, tpf  ; call DisplayState(msg)
+          continue! write(msg,*) icat, one_minus_fpf, one_minus_tpf ; call DisplayState(msg)
        enddo
        ! Print pieces of the likelihood function
-       write(msg,*) "CAT TRUTH       #CASES     P(OR Q)     CATN(I)*LOG(P) "  ; call DisplayState(msg)
+       continue! write(msg,*) "CAT TRUTH       #CASES     P(OR Q)     CATN(I)*LOG(P) "  ; call DisplayState(msg)
        do icat=1,num_cat
             if(catn(icat) /= 0 ) then
-                     write(msg,"(2x,i2,' ACT-NEG ',i3, 2(1x,d14.6))")icat, catn(icat), p_val(icat),&
-                                                                catn(icat) * LOG( p_val(icat))
+                     continue! write(msg,"(2x,i2,' ACT-NEG ',i3, 2(1x,d14.6))")icat, catn(icat), p_val(icat),&
+                     continue!                                            catn(icat) * LOG( p_val(icat))
                      call DisplayState(msg)
             endif
             if(cats(icat) /= 0) then
-                     write(msg,"( 2x,i2,' ACT-POS ',i3,2(1x,d14.6))")icat,cats(icat), q_val(icat), &
-                                                              cats(icat) * LOG( q_val(icat))
+                     continue! write(msg,"( 2x,i2,' ACT-POS ',i3,2(1x,d14.6))")icat,cats(icat), q_val(icat), &
+                     continue!                                          cats(icat) * LOG( q_val(icat))
                      call DisplayState(msg)
             endif
        enddo
@@ -1621,7 +1621,7 @@ real(kind=double), intent(in):: a_par_in, b_par_in
  cat_pos = num_abnormal_cases
 
 if(idebug==1) then
-      write (msg, "('INITIAL EST. CUTOFFS for a =', d12.6,'b =', d12.6)")  a_par_in, b_par_in
+      continue! write (msg, "('INITIAL EST. CUTOFFS for a =', d12.6,'b =', d12.6)")  a_par_in, b_par_in
       call DisplayState(msg)
 endif
 
@@ -1649,7 +1649,7 @@ endif
                                              ! the first cutoff. Normally it works (in fact this in itself is used
                                              ! very rarely and typically for very small areas and noisy data)
           if(idebug==1) then
-                   write (msg,*) "bracketing failed!"
+                   continue! write (msg,*) "bracketing failed!"
                    call DisplayState(msg)
                    call DisplayState(err_msg) ! Display error message from boundary setting routine
           endif
@@ -1662,7 +1662,7 @@ endif
 ! with the same error code and error message
     if(ierror /= 0) then
           if(idebug==1) then
-            write (msg,*) "Initialize_cuttoffs:: Cutoff", j, "could not be bracketed"
+            continue! write (msg,*) "Initialize_cuttoffs:: Cutoff", j, "could not be bracketed"
             call DisplayState(msg)
             call DisplayState(err_msg) ! Display error message from boundary setting routine
           endif
@@ -1675,7 +1675,7 @@ endif
     previous_bound = cutoffs(j_cut) + 10*max_err*incr ! Use this optimal value as upper bound for the next cutoff, but add some to
     ! prevent possible ovelapping of cutoffs, which makes the following optimization algorithm very unstable - march 11th 2010
     if(idebug==1) then
-            write (msg,*) "Cutoff", j, " = ", cutoffs(j_cut)
+            continue! write (msg,*) "Cutoff", j, " = ", cutoffs(j_cut)
             call DisplayState(msg)
     endif
     j_cut = j_cut + incr
@@ -1765,7 +1765,7 @@ end subroutine initialize_cutoffs
 
 ! Check whether a point with larger Log likelihood was found.
  if(iter > max_iter .or. ierror /= 0) then
-      write(err_msg,"('set_next_bound:: middle_bound not found, param:',2(1x,f6.3))") a_par, b_par
+      continue! write(err_msg,"('set_next_bound:: middle_bound not found, param:',2(1x,f6.3))") a_par, b_par
       ierror = 1
       return
  else
@@ -1782,7 +1782,7 @@ end subroutine initialize_cutoffs
                   ! to take care of situations with very large b values.
        call two_cat_ll(a_par, b_par, cut_neg, cut_pos, num_neg, num_pos, bracketing_bound, ll, ierror)
        if(ierror /= 0) then
-             write(err_msg,"('set_next_bound:: D(LL) lost meaning, param:',2(1x,f6.3))") a_par, b_par
+             continue! write(err_msg,"('set_next_bound:: D(LL) lost meaning, param:',2(1x,f6.3))") a_par, b_par
              ierror = 1
              return
        endif
@@ -1802,7 +1802,7 @@ end subroutine initialize_cutoffs
 
 ! verify that convergence was obtained
  if(iter > max_iter) then
-       write(err_msg,"('set_next_bound:: not found, param:',2(1x,f6.3))") a_par, b_par
+       continue! write(err_msg,"('set_next_bound:: not found, param:',2(1x,f6.3))") a_par, b_par
        ierror = 1
        return
  endif
@@ -1963,20 +1963,20 @@ call empirical_operating_points_cat( num_cat, mn , catn, cumul_fraction(act_neg,
 call empirical_operating_points_cat( num_cat, ms , cats, cumul_fraction(act_pos,1:num_cat+1))
 
 if(idebug == 1) then
-      write (msg,*) "NUMBER OF CATEGORIES ", num_cat
+      continue! write (msg,*) "NUMBER OF CATEGORIES ", num_cat
       call DisplayState(msg)
       do i = 1, num_cat + 1
-         write (msg,*) cumul_fraction(act_neg,i), cumul_fraction(act_pos,i)
+         continue! write (msg,*) cumul_fraction(act_neg,i), cumul_fraction(act_pos,i)
          call DisplayState(msg)
       enddo
 
-      write (msg,*) "CATEGORICAL DATA USED IN THE MLE, total cat = ", num_cat
+      continue! write (msg,*) "CATEGORICAL DATA USED IN THE MLE, total cat = ", num_cat
       call DisplayState(msg)
       do i = 1, num_cat
-         write (msg,*) catn(i), cats(i)
+         continue! write (msg,*) catn(i), cats(i)
          call DisplayState(msg)
       enddo
-      write (msg,*) "END OF CATEGORICAL DATA"
+      continue! write (msg,*) "END OF CATEGORICAL DATA"
       call DisplayState(msg)
 
 endif
@@ -1999,9 +1999,9 @@ case(fit_perfect, fit_undetermined, fit_perverse, fit_degenerate, bad_input)
      a_par_array(1)  = a_par
      b_par_array (1) = b_par
      if (idebug==1) then
-       write (msg,*) "Data cannot be fit, error = ", ierror
+       continue! write (msg,*) "Data cannot be fit, error = ", ierror
        call DisplayState(msg)
-       write (msg,*) "a , b = ", a_par_array(1), b_par_array(1)
+       continue! write (msg,*) "a , b = ", a_par_array(1), b_par_array(1)
        call DisplayState(msg)
      endif
      return
@@ -2029,11 +2029,11 @@ call auc_CVBM(a_par,b_par, a_z, ierror)
 
 ! Write out details of fit is required to do so
 if(idebug == 1) then
-   write(msg,*) 'CONVENTIONAL BINORMAL MODEL L-SQUARES PARAM. INITIAL ESTIMATE'
+   continue! write(msg,*) 'CONVENTIONAL BINORMAL MODEL L-SQUARES PARAM. INITIAL ESTIMATE'
    call DisplayState(msg)
-   write (msg,"( 7x,'A',13x,'B',13x,'AZ')")
+   continue! write (msg,"( 7x,'A',13x,'B',13x,'AZ')")
    call DisplayState(msg)
-   write(msg,"( 3(2x,f12.6))") a_par,b_par, a_z
+   continue! write(msg,"( 3(2x,f12.6))") a_par,b_par, a_z
    call DisplayState(msg)
 endif
 
@@ -2064,10 +2064,10 @@ call compute_zdev_plus(a_z, deviate, ierror)
 
      if(idebug ==1 ) then
            call DisplayState('ASYMMETRIC FIXED B INITIAL ESTIMATES')
-            write (msg,"( 7x,'A',13x,'B',13x,'AZ')")
+            continue! write (msg,"( 7x,'A',13x,'B',13x,'AZ')")
             call DisplayState(msg)
             call auc_CVBM(a_par,b_par,a_z,ierror)
-            write(msg,"( 3(2x,f12.6))") a_par, b_par, a_z
+            continue! write(msg,"( 3(2x,f12.6))") a_par, b_par, a_z
             call DisplayState(msg)
             ierror = fit_OK ! We don't care if the computation of the area had some precision issues
      endif

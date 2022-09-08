@@ -57,7 +57,7 @@ module io
   implicit none
   character(len=line_length), intent(in):: err_msg
 
-      write(score_to_FPF_TPF_file,line_format ) err_msg
+      continue! write(score_to_FPF_TPF_file,line_format ) err_msg
 
   end subroutine print_score_to_FPF_TPF_line
   !---------------------------------------
@@ -69,7 +69,7 @@ module io
   implicit none
   character(len=line_length), intent(in):: err_msg
 
-      write(score_to_latent_file,line_format ) err_msg
+      continue! write(score_to_latent_file,line_format ) err_msg
 
   end subroutine print_score_to_latent_line
   !---------------------------------------
@@ -81,7 +81,7 @@ module io
   implicit none
   character(len=line_length), intent(in):: err_msg
 
-      write(AUC_SE_AUC_file,line_format ) err_msg
+      continue! write(AUC_SE_AUC_file,line_format ) err_msg
 
   end subroutine print_AUC_SE_AUC_line
   !---------------------------------------
@@ -92,7 +92,7 @@ module io
   implicit none
   character(len=line_length), intent(in):: err_msg
 
-      write(MLE_par_file,line_format ) err_msg
+      continue! write(MLE_par_file,line_format ) err_msg
 
   end subroutine print_MLE_par_line
   !---------------------------------------
@@ -104,7 +104,7 @@ module io
   implicit none
   character(len=line_length), intent(in):: err_msg
 
-      write(err_file,line_format ) err_msg
+      continue! write(err_file,line_format ) err_msg
 
   end subroutine print_fatal_error_line
   !---------------------------------------
@@ -116,7 +116,7 @@ module io
   implicit none
   character(len=line_length), intent(in):: err_msg
 
-      write(war_file,line_format) err_msg
+      continue! write(war_file,line_format) err_msg
 
   end subroutine print_warning_line
 
@@ -129,7 +129,7 @@ module io
   implicit none
   character(len=line_length), intent(in):: msg
 
-      write(log_file,line_format) msg
+      continue! write(log_file,line_format) msg
 
   end subroutine print_log_line
   !-----------------------------------------------------
@@ -141,7 +141,7 @@ module io
   implicit none
   character(len=line_length), intent(in):: msg
 
-      write(plot_file,line_format) msg
+      continue! write(plot_file,line_format) msg
 
   end subroutine print_plot_line
   !-----------------------------------------------------
@@ -153,7 +153,7 @@ module io
   implicit none
   character(len=line_length), intent(in):: msg
 
-      write(res_file,line_format) msg
+      continue! write(res_file,line_format) msg
 
   end subroutine print_res_line
   !-----------------------------------------------------

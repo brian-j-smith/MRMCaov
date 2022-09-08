@@ -543,8 +543,8 @@ SUBROUTINE LABROC4_Collapser(catn, cats, num_cat, debug_flag, new_cat_index)
 
 ! Start writing the data on entry in the collapser, if requested to do so
  if (debug_flag==1) then
-      write (debugUnit, *) '--------------------------------------------------'
-      write (debugUnit, *) 'Start LABROC4_Collapser ...'
+      continue! write (debugUnit, *) '--------------------------------------------------'
+      continue! write (debugUnit, *) 'Start LABROC4_Collapser ...'
  endif
 
  ! The data in the first category goes to the new first category, independently from
@@ -595,18 +595,18 @@ SUBROUTINE LABROC4_Collapser(catn, cats, num_cat, debug_flag, new_cat_index)
 
   if (debug_flag==1) then
 
-      write (debugUnit, *) '--------------------------------------------------'
-      write (debugUnit, *) 'Number of categories', num_cat
-      write (debugUnit, *) 'Indices of categories after collapsing,'
-      write (debugUnit, *) 'categories with the same index are collapsed'
-      write (debugUnit, *) '--------------------------------------------------'
-      write (debugUnit, *) ' Input   # neg.    # pos.   New Cat.     '
-      write (debugUnit, *) ' cat.      cases     cases    index '
+      continue! write (debugUnit, *) '--------------------------------------------------'
+      continue! write (debugUnit, *) 'Number of categories', num_cat
+      continue! write (debugUnit, *) 'Indices of categories after collapsing,'
+      continue! write (debugUnit, *) 'categories with the same index are collapsed'
+      continue! write (debugUnit, *) '--------------------------------------------------'
+      continue! write (debugUnit, *) ' Input   # neg.    # pos.   New Cat.     '
+      continue! write (debugUnit, *) ' cat.      cases     cases    index '
       do icat = 1, num_cat
-              write (debugUnit,"(4(i6,3x))") icat,  catn(icat), cats(icat), new_cat_index(icat)
+              continue! write (debugUnit,"(4(i6,3x))") icat,  catn(icat), cats(icat), new_cat_index(icat)
       enddo
 
-      write (debugUnit, *) '--------------------------------------------------'
+      continue! write (debugUnit, *) '--------------------------------------------------'
 
   endif
 
