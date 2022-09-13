@@ -60,7 +60,7 @@ unbiased <- function(abar = FALSE) {
 unbiased_default <- function(truth, rating, group, case) {
 
   n <- nlevels(group)
-  is_pos <- truth == levels(truth)[2]
+  is_pos <- is_reference(truth)
 
   V <- matrix(0, n, n)
   x <- list()
@@ -138,7 +138,7 @@ unbiased_balanced <- function(truth, rating, group, case) {
   rating_mat <- matrix(rating[sort_inds], m, n)
   truth <- truth[sort_inds[1:m]]
 
-  is_pos <- truth == levels(truth)[2]
+  is_pos <- is_reference(truth)
   rating_mat_pos <- rating_mat[is_pos, ]
   rating_mat_neg <- rating_mat[!is_pos, ]
   n_pos <- nrow(rating_mat_pos)

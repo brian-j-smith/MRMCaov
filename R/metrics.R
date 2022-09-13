@@ -48,8 +48,9 @@ NULL
 #'
 binary_sens <- function(truth, rating) {
   binary_metric(truth, rating, function(truth, rating) {
-    events <- truth == levels(truth)[2]
-    pos <- rating == levels(truth)[2]
+    value <- levels(truth)[2]
+    events <- is_reference(truth, value)
+    pos <- is_reference(rating, value)
     mean(pos[events])
   })
 }
@@ -59,8 +60,9 @@ binary_sens <- function(truth, rating) {
 #'
 binary_spec <- function(truth, rating) {
   binary_metric(truth, rating, function(truth, rating) {
-    nonevents <- truth != levels(truth)[2]
-    neg <- rating != levels(truth)[2]
+    value <- levels(truth)[2]
+    nonevents <- !is_reference(truth, value)
+    neg <- !is_reference(rating, value)
     mean(neg[nonevents])
   })
 }
@@ -68,11 +70,9 @@ binary_spec <- function(truth, rating) {
 
 binary_metric <- function(truth, rating, f) {
   truth <- as.factor(truth)
-  stopifnot(nlevels(truth) == 2)
   if (!is.factor(rating)) {
     rating <- factor(as.numeric(rating), levels = 0:1, labels = levels(truth))
   }
-  stopifnot(nlevels(rating) == 2)
   f(truth, rating)
 }
 

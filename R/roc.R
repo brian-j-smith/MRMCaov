@@ -131,7 +131,7 @@ roc_curves.stmc <- function(x, ...) {
 
 
 binormal_curve <- function(data) {
-  is_pos <- data$truth == levels(data$truth)[2]
+  is_pos <- is_reference(data$truth)
   pred_pos <- as.double(data$rating[is_pos])
   pred_neg <- as.double(data$rating[!is_pos])
   roc <- .Fortran(
@@ -149,7 +149,7 @@ binormal_curve <- function(data) {
 
 
 binormalLR_curve <- function(data) {
-  is_pos <- data$truth == levels(data$truth)[2]
+  is_pos <- is_reference(data$truth)
   pred_pos <- as.double(data$rating[is_pos])
   pred_neg <- as.double(data$rating[!is_pos])
   roc <- .Fortran(
@@ -180,7 +180,7 @@ binormalLR_curve <- function(data) {
 
 
 empirical_curve <- function(data) {
-  pos <- as.numeric(data$truth == levels(data$truth)[2])
+  pos <- as.numeric(is_reference(data$truth))
   counts <- rowsum(data.frame(FPR = 1 - pos, TPR = pos), data$rating)
   roc <- lapply(counts, function(x) c(rev(cumsum(rev(x))) / sum(x), 0))
   structure(

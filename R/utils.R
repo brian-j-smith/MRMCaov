@@ -128,6 +128,12 @@ is_one_reader.vcov_comps <- function(x) {
 }
 
 
+is_reference <- function(x, value = levels(x)[2]) {
+  if (nlevels(x) != 2) stop("True case statuses must have two levels.")
+  x == value
+}
+
+
 levels.mrmc <- function(x) {
   structure(x$aov$xlevels, names = c("test", "reader"))
 }

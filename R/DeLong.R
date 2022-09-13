@@ -39,16 +39,16 @@ DeLong <- function() {
         stop("balanced design required for DeLong covariance method")
       }
 
-      truths <- data$truth
-      ratings <- data$rating
-      groups <- interaction(data$test, data$reader)
+      truth <- data$truth
+      rating <- data$rating
+      group <- interaction(data$test, data$reader)
 
-      varcomps <- lapply(levels(groups), function(group) {
-        indices <- groups == group
-        truths <- truths[indices]
-        ratings <- ratings[indices]
-        varcomp <- varcomp_Sen(truths, ratings)
-        auc <- empirical_auc(truths, ratings)
+      varcomps <- lapply(levels(group), function(level) {
+        keep <- group == level
+        truth <- truth[keep]
+        rating <- rating[keep]
+        varcomp <- varcomp_Sen(truth, rating)
+        auc <- empirical_auc(truth, rating)
         list(
           varcomp10 = varcomp$v10 - auc, varcomp01 = varcomp$v01 - auc,
           auc = auc
@@ -65,7 +65,7 @@ DeLong <- function() {
 
       structure(
         s10_mat / n_pos + s01_mat / n_neg,
-        dimnames = list(levels(groups), levels(groups)),
+        dimnames = list(levels(group), levels(group)),
         class = c("cov_DeLong", "cov_matrix")
       )
     },
@@ -74,16 +74,16 @@ DeLong <- function() {
 }
 
 
-varcomp_Sen <- function(truths, ratings) {
-  is_pos <- truths == levels(truths)[2]
-  ratings_pos <- ratings[is_pos]
-  ratings_neg <- ratings[!is_pos]
+varcomp_Sen <- function(truth, rating) {
+  is_pos <- is_reference(truth)
+  rating_pos <- rating[is_pos]
+  rating_neg <- rating[!is_pos]
 
   indices <- expand.grid(
-    pos = seq_along(ratings_pos), neg = seq_along(ratings_neg)
+    pos = seq_along(rating_pos), neg = seq_along(rating_neg)
   )
 
-  psi_all <- psi(ratings_pos[indices$pos], ratings_neg[indices$neg])
+  psi_all <- psi(rating_pos[indices$pos], rating_neg[indices$neg])
 
   v10 <- tapply(psi_all, indices$pos, mean)
   v01 <- tapply(psi_all, indices$neg, mean)
