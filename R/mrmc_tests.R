@@ -6,10 +6,12 @@ mrmc_tests <- function(data, cov, design) {
   mapply(function(test) {
     is_test <- tests == test
     structure(
-      list(design = design,
-           aov = aov_mrmc(formula, data = subset(data, is_test)),
-           cov = cov[is_test, is_test],
-           data = data),
+      list(
+        design = design,
+        aov = aov_mrmc(formula, data = subset(data, is_test)),
+        cov = cov[is_test, is_test],
+        data = data
+      ),
       class = "mrmc_tests"
     )
   }, levels(tests), SIMPLIFY = FALSE)

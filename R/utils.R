@@ -162,12 +162,14 @@ meansq.mrmc_tests <- function(x, ...) {
 preprocess <- function(data) {
   metric_name <- as.character(attr(data, "metric_call"))[1]
   level <- switch(metric_name,
-                  "binary_sens" = 2,
-                  "binary_spec" = 1)
+    "binary_sens" = 2,
+    "binary_spec" = 1
+  )
   if (!is.null(level)) {
     keep <- data$truth == levels(data$truth)[level]
-    droplevels(data[keep, , drop = FALSE],
-               except = which(names(data) == "truth"))
+    droplevels(
+      data[keep, , drop = FALSE], except = which(names(data) == "truth")
+    )
   } else data
 }
 
@@ -208,8 +210,9 @@ vcov_comps <- function(object, ...) {
 }
 
 
-vcov_comps.mrmc <- function(object, design = object$design, test = NULL,
-                            reader = NULL, ...) {
+vcov_comps.mrmc <- function(
+  object, design = object$design, test = NULL, reader = NULL, ...
+) {
   data <- object$data
 
   tests <- data[[2]]
@@ -223,9 +226,11 @@ vcov_comps.mrmc <- function(object, design = object$design, test = NULL,
   if (!is.null(reader)) is_group <- is_group & (readers == reader)
   in_group <- as.logical(is_group %o% is_group)
 
-  cov <- c(mean(object$cov[!same_test & same_reader & in_group]),
-           mean(object$cov[same_test & !same_reader & in_group]),
-           mean(object$cov[!same_test & !same_reader & in_group]))
+  cov <- c(
+    mean(object$cov[!same_test & same_reader & in_group]),
+    mean(object$cov[same_test & !same_reader & in_group]),
+    mean(object$cov[!same_test & !same_reader & in_group])
+  )
 
   if (design == 2 || is_one_reader(object)) {
     cov[2:3] <- 0
@@ -236,12 +241,14 @@ vcov_comps.mrmc <- function(object, design = object$design, test = NULL,
   }
 
   structure(
-    list(vars = object$vars,
-         n = dim(object),
-         n_mat = dim_mat(object),
-         MS = meansq(object),
-         var = mean(diag(object$cov[is_group, is_group])),
-         cov = cov),
+    list(
+      vars = object$vars,
+      n = dim(object),
+      n_mat = dim_mat(object),
+      MS = meansq(object),
+      var = mean(diag(object$cov[is_group, is_group])),
+      cov = cov
+    ),
     class ="vcov_comps"
   )
 }
@@ -257,11 +264,13 @@ vcov_comps.mrmc_tests <- function(object, design = object$design, ...) {
   }
 
   structure(
-    list(vars = object$vars,
-         n = dim(object),
-         MS = meansq(object),
-         var = mean(diag(object$cov)),
-         cov = c(0, cov2, 0)),
+    list(
+      vars = object$vars,
+      n = dim(object),
+      MS = meansq(object),
+      var = mean(diag(object$cov)),
+      cov = c(0, cov2, 0)
+    ),
     class = "vcov_comps"
   )
 
@@ -277,10 +286,14 @@ summary.vcov_comps <- function(object, ...) {
   if (is_one_reader(object)) {
     est <- numeric()
   } else if ("T:R" %in% names(MS)) {
-    est <- c((MS[["R"]] - MS[["T:R"]]) / n[["test"]] - cov[1] + cov[3],
-             MS[["T:R"]] - var_error + cov[1] + (cov[2] - cov[3]))
-    names(est) <- c(object$vars["reader"],
-                    paste0(object$vars[c("test", "reader")], collapse = ":"))
+    est <- c(
+      (MS[["R"]] - MS[["T:R"]]) / n[["test"]] - cov[1] + cov[3],
+      MS[["T:R"]] - var_error + cov[1] + (cov[2] - cov[3])
+    )
+    names(est) <- c(
+      object$vars["reader"],
+      paste0(object$vars[c("test", "reader")], collapse = ":")
+    )
   } else {
     est <- MS[["R"]] - var_error + cov[2]
     names(est) <- object$vars["reader"]

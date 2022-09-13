@@ -41,8 +41,10 @@ srmc <- function(
   dep_methodarg(missing(method))
 
   object <- eval(substitute(
-    mrmc(response = response, test = test, reader = fixed(reader), case = case,
-         data = data, cov = cov)
+    mrmc(
+      response = response, test = test, reader = fixed(reader), case = case,
+      data = data, cov = cov
+    )
   ))
   object$call <- match.call()
   object

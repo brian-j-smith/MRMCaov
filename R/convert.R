@@ -279,8 +279,8 @@ OR_to_RMH <- function(...) {
 
 #' @rdname OR_to_RMH
 #'
-OR_to_RMH.default <- function(...,
-  AUC1, AUC2, var_R, var_TR, corr1, corr2, corr3, var_error = NULL, n0, n1,
+OR_to_RMH.default <- function(
+  ..., AUC1, AUC2, var_R, var_TR, corr1, corr2, corr3, var_error = NULL, n0, n1,
   b_method = c("unspecified", "mean_to_sigma", "specified"),
   mean_sig_input = NULL, b_input = NULL, b_le_1 = TRUE
 ) {

@@ -81,8 +81,10 @@ plot_roc_points <- function(x, coord_fixed = TRUE, emp_points = NULL, ...) {
 
   p <- ggplot(x_df, do.call(aes_, aes_args)) +
     geom_path() +
-    labs(x = "False Positive Rate", y = "True Positive Rate",
-         color = tail(names(x[["Group"]]), 1))
+    labs(
+      x = "False Positive Rate", y = "True Positive Rate",
+      color = tail(names(x[["Group"]]), 1)
+    )
 
   if (coord_fixed) p <- p + coord_fixed()
   if (!is.null(emp_points)) {

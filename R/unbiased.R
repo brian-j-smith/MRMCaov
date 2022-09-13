@@ -14,8 +14,10 @@ unbiased <- function(abar = FALSE) {
       metric_call <- attr(data, "metric_call")
       metric_name <- as.character(metric_call)[1]
       if (!(metric_name %in% c("empirical_auc", "trapezoidal_auc"))) {
-        stop("response metric must be 'empirical_auc' or 'trapezoidal_auc' for",
-             " for unbiased covariance method")
+        stop(
+          "response metric must be 'empirical_auc' or 'trapezoidal_auc' for",
+          " for unbiased covariance method"
+        )
       }
 
       partial <- as.list(metric_call)$partial
@@ -33,16 +35,18 @@ unbiased <- function(abar = FALSE) {
       class(covmat) <- c("cov_unbiased", "cov_matrix")
 
       if (abar) {
-        group_levels <- expand.grid(test = levels(data$test),
-                                    reader = levels(data$reader))
+        group_levels <- expand.grid(
+          test = levels(data$test), reader = levels(data$reader)
+        )
         same_test <- outer(group_levels$test, group_levels$test, "==")
         same_reader <- outer(group_levels$reader, group_levels$reader, "==")
         abar_sigma2 <- sapply(a, function(x) mean(x[same_test & same_reader]))
         abar_cov1 <- sapply(a, function(x) mean(x[!same_test & same_reader]))
         abar_cov2 <- sapply(a, function(x) mean(x[same_test & !same_reader]))
         abar_cov3 <- sapply(a, function(x) mean(x[!(same_test | same_reader)]))
-        attr(covmat, "abar") <- cbind(abar_sigma2, abar_cov1, abar_cov2,
-                                      abar_cov3)
+        attr(covmat, "abar") <- cbind(
+          abar_sigma2, abar_cov1, abar_cov2, abar_cov3
+        )
       }
 
       covmat
@@ -115,9 +119,11 @@ get_cov <- function(x, y) {
 
   (
     (1 - delta) * (x$sum_scores * y$sum_scores) +
-    delta * (sum(x$sum_scores_pos * y$sum_scores_pos) +
-             sum(x$sum_scores_neg * y$sum_scores_neg) -
-             sum(x$scores * y$scores))
+    delta * (
+      sum(x$sum_scores_pos * y$sum_scores_pos) +
+      sum(x$sum_scores_neg * y$sum_scores_neg) -
+      sum(x$scores * y$scores)
+    )
   ) / nxny
 
 }
@@ -153,9 +159,11 @@ unbiased_balanced <- function(truth, rating, group, case) {
   sum_scores <- rbind(colSums(scores))
   (
     (1 - delta) * (t(sum_scores) %*% sum_scores) +
-    delta * (t(sum_scores_pos) %*% sum_scores_pos +
-             t(sum_scores_neg) %*% sum_scores_neg -
-             t(scores) %*% scores)
+    delta * (
+      t(sum_scores_pos) %*% sum_scores_pos +
+      t(sum_scores_neg) %*% sum_scores_neg -
+      t(scores) %*% scores
+    )
   ) / (n_neg * n_pos)^2
 
 }

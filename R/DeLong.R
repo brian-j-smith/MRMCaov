@@ -24,8 +24,10 @@ DeLong <- function() {
       metric_call <- attr(data, "metric_call")
       metric_name <- as.character(metric_call)[1]
       if (!(metric_name %in% c("empirical_auc", "trapezoidal_auc"))) {
-        stop("response metric must be 'empirical_auc' or 'trapezoidal_auc' for",
-             " DeLong covariance method")
+        stop(
+          "response metric must be 'empirical_auc' or 'trapezoidal_auc' for",
+          " DeLong covariance method"
+        )
       }
 
       partial <- as.list(metric_call)$partial
@@ -47,8 +49,10 @@ DeLong <- function() {
         ratings <- ratings[indices]
         varcomp <- varcomp_Sen(truths, ratings)
         auc <- empirical_auc(truths, ratings)
-        list(varcomp10 = varcomp$v10 - auc, varcomp01 = varcomp$v01 - auc,
-             auc = auc)
+        list(
+          varcomp10 = varcomp$v10 - auc, varcomp01 = varcomp$v01 - auc,
+          auc = auc
+        )
       })
 
       varcomp10_mat <- sapply(varcomps, getElement, name = "varcomp10")
@@ -75,8 +79,9 @@ varcomp_Sen <- function(truths, ratings) {
   ratings_pos <- ratings[is_pos]
   ratings_neg <- ratings[!is_pos]
 
-  indices <- expand.grid(pos = seq_along(ratings_pos),
-                         neg = seq_along(ratings_neg))
+  indices <- expand.grid(
+    pos = seq_along(ratings_pos), neg = seq_along(ratings_neg)
+  )
 
   psi_all <- psi(ratings_pos[indices$pos], ratings_neg[indices$neg])
 

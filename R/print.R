@@ -27,10 +27,12 @@ print.roc_curve <- function(x, n = 11, ...) {
 
 print.binormal_curve <- function(x, ...) {
   params <- parameters(x)
-  cat("Binormal Curve\n",
-      "Parameters:",
-      paste(names(params), format(c(params)), sep = " = ", collapse = ", "),
-      "\n", sep = "")
+  cat(
+    "Binormal Curve\n",
+    "Parameters:",
+    paste(names(params), format(c(params)), sep = " = ", collapse = ", "), "\n",
+    sep = ""
+  )
   NextMethod()
 }
 
@@ -40,11 +42,14 @@ print.binormalLR_curve <- function(x, ...) {
   format_params <- function(x) {
     paste(names(x), format(c(x)), sep = " = ", collapse = ", ")
   }
-  cat("Binormal Likelihood Ratio Curve\n",
-      "Parameters\n",
-      "  Metz and Pan: ", format_params(params$Metz), "\n",
-      "  Bi-Chi-Squared: ", format_params(params$bichisquared), "\n",
-      "  Binormal: ", format_params(params$binormal), "\n", sep = "")
+  cat(
+    "Binormal Likelihood Ratio Curve\n",
+    "Parameters\n",
+    "  Metz and Pan: ", format_params(params$Metz), "\n",
+    "  Bi-Chi-Squared: ", format_params(params$bichisquared), "\n",
+    "  Binormal: ", format_params(params$binormal), "\n",
+    sep = ""
+  )
   NextMethod()
 }
 
@@ -64,9 +69,9 @@ print.roc_curves <- function(x, n_curves = 5, n = 11, ...) {
   vsep <- strrep("-", 0.75 * getOption("width"))
   for (i in seq_len(n_curves)) {
     if (i != 1) cat(vsep, "\n")
-    cat(paste0(names(x$Group), ": ",
-               as.character(x$Group[i, ]),
-               collapse = "\n"), "\n")
+    cat(paste0(
+      names(x$Group), ": ",  as.character(x$Group[i, ]), collapse = "\n"
+    ), "\n")
     print(x$Curve[[i]], n = n, ...)
   }
   if (n_more) cat("... with", n_more, "more curves\n")
@@ -121,19 +126,24 @@ print.summary.mrmc <- function(x, ...) {
 .print.summary.mrmc_frrc <- function(x, ...) {
   is_one_reader <- is.null(x$reader_test_diffs)
 
-  cat(if (is_one_reader) "Single" else "Multi",
-      "-Reader Multi-Case Analysis of Variance\n",
-      "Data: ", x$data_name, "\n",
-      "Factor types: Fixed Readers and Random Cases\n",
-      "Covariance method: ", x$cov_method, "\n\n",
-      sep = "")
+  cat(
+    if (is_one_reader) "Single" else "Multi",
+    "-Reader Multi-Case Analysis of Variance\n",
+    "Data: ", x$data_name, "\n",
+    "Factor types: Fixed Readers and Random Cases\n",
+    "Covariance method: ", x$cov_method, "\n\n",
+    sep = ""
+  )
 
   .print.summary.mrmc(x)
 
   if (!is_one_reader) {
-    header("\n\nReader-specific ", 100 * x$conf.level, "% CIs and tests for ",
-           x$vars["metric"], " pairwise differences (each analysis based only on",
-           " data for the specified reader):\n\n", sep = "")
+    header(
+      "\n\nReader-specific ", 100 * x$conf.level, "% CIs and tests for ",
+      x$vars["metric"], " pairwise differences (each analysis based only on",
+      " data for the specified reader):\n\n",
+      sep = ""
+    )
     print(x$reader_test_diffs)
   }
 
@@ -147,45 +157,53 @@ print.summary.mrmc <- function(x, ...) {
 
 
 .print.summary.mrmc_rrfc <- function(x, ...) {
-  cat("Multi-Reader Multi-Case Analysis of Variance\n",
-      "Data: ", x$data_name, "\n",
-      "Factor types: Random Readers and Fixed Cases\n",
-      sep = "")
+  cat(
+    "Multi-Reader Multi-Case Analysis of Variance\n",
+    "Data: ", x$data_name, "\n",
+    "Factor types: Random Readers and Fixed Cases\n",
+    sep = ""
+  )
 
   .print.summary.mrmc(x)
 }
 
 
 .print.summary.mrmc_rrrc <- function(x, ...) {
-  cat("Multi-Reader Multi-Case Analysis of Variance\n",
-      "Data: ", x$data_name, "\n",
-      "Factor types: Random Readers and Random Cases\n",
-      "Covariance method: ", x$cov_method, "\n\n",
-      sep = "")
+  cat(
+    "Multi-Reader Multi-Case Analysis of Variance\n",
+    "Data: ", x$data_name, "\n",
+    "Factor types: Random Readers and Random Cases\n",
+    "Covariance method: ", x$cov_method, "\n\n",
+    sep = ""
+  )
 
   .print.summary.mrmc(x)
 }
 
 
 .print.summary.mrmc_lme <- function(x, ...) {
-  cat("Multi-Reader Multi-Case Linear Mixed Effects Analysis\n",
-      "Data: ", x$data_name, "\n",
-      "Factor types: Random Readers and Random Cases\n",
-      "Covariance method: ", x$cov_method, "\n\n",
-      sep = "")
+  cat(
+    "Multi-Reader Multi-Case Linear Mixed Effects Analysis\n",
+    "Data: ", x$data_name, "\n",
+    "Factor types: Random Readers and Random Cases\n",
+    "Covariance method: ", x$cov_method, "\n\n",
+    sep = ""
+  )
 
   .print.summary.mrmc(x)
 }
 
 
 .print.summary.mrmc <- function(x, ...) {
-  cat("Experimental design:",
-      switch(abs(x$design),
-             paste0("factorial", if (x$design < 0) " (partially paired)"),
-             paste("cases nested within", x$vars["reader"]),
-             paste("cases nested within", x$vars["test"]),
-             paste(x$vars["reader"], "nested within", x$vars["test"])),
-      "\n")
+  cat(
+    "Experimental design:",
+    switch(abs(x$design),
+      paste0("factorial", if (x$design < 0) " (partially paired)"),
+      paste("cases nested within", x$vars["reader"]),
+      paste("cases nested within", x$vars["test"]),
+      paste(x$vars["reader"], "nested within", x$vars["test"])
+    ), "\n"
+  )
 
   cat("\nObuchowski-Rockette variance component and covariance estimates:\n\n")
   if (is.null(x$vcov_comps)) {
@@ -202,14 +220,20 @@ print.summary.mrmc <- function(x, ...) {
   }
 
   if (!is.null(x$test_diffs)) {
-    header("\n\n", 100 * x$conf.level, "% CIs and tests for ", test_metric,
-           " pairwise differences:\n\n", sep = "")
+    header(
+      "\n\n", 100 * x$conf.level, "% CIs and tests for ", test_metric,
+      " pairwise differences:\n\n",
+      sep = ""
+    )
     print(x$test_diffs)
   }
 
   if (!is.null(x$test_means)) {
-    header("\n\n", 100 * x$conf.level, "% ", test_metric, " CIs (each analysis",
-           " based only on data for the specified treatment):\n\n", sep = "")
+    header(
+      "\n\n", 100 * x$conf.level, "% ", test_metric, " CIs (each analysis",
+      " based only on data for the specified treatment):\n\n",
+      sep = ""
+    )
     print(x$test_means)
   }
 

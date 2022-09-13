@@ -56,8 +56,9 @@ roc_curves <- function(...) {
 
 #' @rdname roc_curves
 #'
-roc_curves.default <- function(truth, rating, groups = list(),
-                               method = "empirical", ...) {
+roc_curves.default <- function(
+  truth, rating, groups = list(), method = "empirical", ...
+) {
   choices <- c("binormal", "binormalLR", "empirical", "proproc", "trapezoidal")
   method <- match.arg(method, choices)
 
@@ -110,9 +111,11 @@ roc_curves.mrmc <- function(x, ...) {
     roc_method <- "empirical"
   }
   vars <- x$vars[c("reader", "test")]
-  roc_curves(x$mrmc_data$truth, x$mrmc_data$rating,
-             groups = structure(x$mrmc_data[names(vars)], names = vars),
-             method = roc_method)
+  roc_curves(
+    x$mrmc_data$truth, x$mrmc_data$rating,
+    groups = structure(x$mrmc_data[names(vars)], names = vars),
+    method = roc_method
+  )
 }
 
 
@@ -131,10 +134,10 @@ binormal_curve <- function(data) {
   is_pos <- data$truth == levels(data$truth)[2]
   pred_pos <- as.double(data$rating[is_pos])
   pred_neg <- as.double(data$rating[!is_pos])
-  roc <- .Fortran("cvbmroc",
-                  length(pred_neg), length(pred_pos), pred_neg, pred_pos,
-                  a = double(1), b = double(1),
-                  auc = double(1), auc_var = double(1))
+  roc <- .Fortran(
+    "cvbmroc", length(pred_neg), length(pred_pos), pred_neg, pred_pos,
+    a = double(1), b = double(1), auc = double(1), auc_var = double(1)
+  )
   structure(
     list(
       params = tibble(a = roc$a, b = roc$b),
@@ -149,16 +152,17 @@ binormalLR_curve <- function(data) {
   is_pos <- data$truth == levels(data$truth)[2]
   pred_pos <- as.double(data$rating[is_pos])
   pred_neg <- as.double(data$rating[!is_pos])
-  roc <- .Fortran("pbmroc",
-                  length(pred_neg), length(pred_pos), pred_neg, pred_pos,
-                  d_a = double(1), c = double(1),
-                  auc = double(1), auc_var = double(1))
+  roc <- .Fortran(
+    "pbmroc", length(pred_neg), length(pred_pos), pred_neg, pred_pos,
+    d_a = double(1), c = double(1), auc = double(1), auc_var = double(1)
+  )
   structure(
     list(
       params = tibble(
         Metz = tibble(
           d_a = roc$d_a,
-          c = roc$c),
+          c = roc$c
+        ),
         bichisquared = tibble(
           lambda = ((1 - roc$c) / (1 + roc$c))^2,
           theta = (roc$d_a * (1 + roc$c) / roc$c)^2 * (1 + roc$c^2) / 16
@@ -235,39 +239,46 @@ points.roc_curve <- function(x, metric = c("specificity", "sensitivity"),
                              values = seq(0, 1, length = 101), ...) {
   metric <- match.arg(metric)
   switch(metric,
-         specificity = {
-           input_name <- "FPR"
-           input <- sort(1 - values)
-           output_name <- "TPR"
-           output_fun <- function(x, input) sensitivity(x, 1 - input)
-         },
-         sensitivity = {
-           input_name <- "TPR"
-           input <- sort(values)
-           output_name <- "FPR"
-           output_fun <- function(x, input) 1 - specificity(x, input)
-         })
+    "specificity" = {
+      input_name <- "FPR"
+      input <- sort(1 - values)
+      output_name <- "TPR"
+      output_fun <- function(x, input) sensitivity(x, 1 - input)
+    },
+    "sensitivity" = {
+      input_name <- "TPR"
+      input <- sort(values)
+      output_name <- "FPR"
+      output_fun <- function(x, input) 1 - specificity(x, input)
+    }
+  )
 
   output <- output_fun(x, input)
   new_pts <- tibble(input, output)
   names(new_pts) = c(input_name, output_name)
 
-  structure(new_pts[c("FPR", "TPR")], metric = metric,
-            class = c("roc_points", class(new_pts)))
+  structure(
+    new_pts[c("FPR", "TPR")], metric = metric,
+    class = c("roc_points", class(new_pts))
+  )
 }
 
 
 #' @rdname roc_curves
 #'
-points.roc_curves <- function(x, metric = c("specificity", "sensitivity"),
-                              values = seq(0, 1, length = 101), ...) {
+points.roc_curves <- function(
+  x, metric = c("specificity", "sensitivity"), values = seq(0, 1, length = 101),
+  ...
+) {
   metric <- match.arg(metric)
   new_pts_list <- lapply(x$Curve, function(curve) {
     points(curve, metric = metric, values = values, ...)
   })
   new_pts <- curves2tibble(new_pts_list, x$Group)
-  structure(new_pts, metric = metric,
-            class = c("roc_points", class(new_pts)))
+  structure(
+    new_pts, metric = metric,
+    class = c("roc_points", class(new_pts))
+  )
 }
 
 
@@ -284,22 +295,23 @@ points.empirical_curve <- function(
   new_pts <- if (is.numeric(values)) {
 
     switch(metric,
-           "specificity" = {
-             input_name <- "FPR"
-             output_name <- "TPR"
-             output_fun <- function(x, input, ...) {
-               sensitivity(x, 1 - input, ...)
-             }
-             sort_metric <- function(x) sort(1 - x)
-           },
-           sensitivity = {
-             input_name <- "TPR"
-             output_name <- "FPR"
-             output_fun <- function(x, input, ...) {
-               1 - specificity(x, input, ...)
-             }
-             sort_metric <- function(x) sort(x)
-           })
+      "specificity" = {
+        input_name <- "FPR"
+        output_name <- "TPR"
+        output_fun <- function(x, input, ...) {
+          sensitivity(x, 1 - input, ...)
+        }
+        sort_metric <- function(x) sort(1 - x)
+      },
+      "sensitivity" = {
+        input_name <- "TPR"
+        output_name <- "FPR"
+        output_fun <- function(x, input, ...) {
+          1 - specificity(x, input, ...)
+        }
+        sort_metric <- function(x) sort(x)
+      }
+    )
 
     input <- sort_metric(values)
     output <- output_fun(x, input, ties = ties)
@@ -333,16 +345,17 @@ points.empirical_curves <- function(
   new_pts_list <- if (is.null(values) && which == "curves") {
 
     switch(metric,
-           specificity = {
-             input_name <- "FPR"
-             pts_fun <- function(x, input, ...) {
-               points(x, values = 1 - input, ...)
-             }
-           },
-           sensitivity = {
-             input_name <- "TPR"
-             pts_fun <- function(x, input, ...) points(x, values = input, ...)
-           })
+      "specificity" = {
+        input_name <- "FPR"
+        pts_fun <- function(x, input, ...) {
+          points(x, values = 1 - input, ...)
+        }
+      },
+      "sensitivity" = {
+        input_name <- "TPR"
+        pts_fun <- function(x, input, ...) points(x, values = input, ...)
+      }
+    )
     input_list <- parameters(x)[[input_name]]
     input_dups_list <- lapply(input_list, function(input) {
       input[duplicated(input)]
@@ -359,8 +372,10 @@ points.empirical_curves <- function(
   } else {
 
     lapply(x$Curve, function(curve) {
-      points(curve, metric = metric, values = values, which = which,
-             ties = ties, ...)
+      points(
+        curve, metric = metric, values = values, which = which, ties = ties,
+        ...
+      )
     })
 
   }
@@ -385,14 +400,14 @@ mean.roc_curves <- function(x, ...) {
   pts <- points(x, which = "curves", ...)
   metric <- attr(pts, "metric")
   switch(metric,
-         specificity = {
-           input_name <- "FPR"
-           output_name <- "TPR"
-         },
-         sensitivity = {
-           input_name <- "TPR"
-           output_name <- "FPR"
-         })
+    "specificity" = {
+      input_name <- "FPR"
+      output_name <- "TPR"
+    },
+    "sensitivity" = {
+      input_name <- "TPR"
+      output_name <- "FPR"
+    })
   output_list <- split(pts[[output_name]], pts[["Group"]])
   output <- rowMeans(do.call(cbind, output_list))
   input <- head(pts[[input_name]], n = length(output))
@@ -427,24 +442,27 @@ auc <- function(x, ...) {
 }
 
 
-auc.binormal_curve <- function(x, partial = FALSE, min = 0, max = 1,
-                               normalize = FALSE, ...) {
+auc.binormal_curve <- function(
+  x, partial = FALSE, min = 0, max = 1, normalize = FALSE, ...
+) {
   params <- parameters(x)
   if (isFALSE(partial)) {
     pnorm(params$a / sqrt(1 + params$b^2))
   } else {
     partial <- partial_auc_params(partial, min, max)
     normalize <- if (normalize) max - min else 1
-    .Fortran("cvbmrocpartial",
-             params$a, params$b,
-             partial$min, partial$max, partial$flag,
-             est = double(1), err = integer(1))$est / normalize
+    .Fortran(
+      "cvbmrocpartial", params$a, params$b,
+      partial$min, partial$max, partial$flag,
+      est = double(1), err = integer(1)
+    )$est / normalize
   }
 }
 
 
-auc.binormalLR_curve <- function(x, partial = FALSE, min = 0, max = 1,
-                                 normalize = FALSE, ...) {
+auc.binormalLR_curve <- function(
+  x, partial = FALSE, min = 0, max = 1, normalize = FALSE, ...
+) {
   params <- parameters(x)$Metz
   if (isFALSE(partial)) {
     rho <- -1 * (1 - params$c^2) / (1 + params$c^2)
@@ -454,10 +472,11 @@ auc.binormalLR_curve <- function(x, partial = FALSE, min = 0, max = 1,
   } else {
     partial <- partial_auc_params(partial, min, max)
     normalize <- if (normalize) max - min else 1
-    .Fortran("pbmrocpartial",
-             params$d_a, params$c,
-             partial$min, partial$max, partial$flag,
-             est = double(1), err = integer(1))$est / normalize
+    .Fortran(
+      "pbmrocpartial", params$d_a, params$c,
+      partial$min, partial$max, partial$flag,
+      est = double(1), err = integer(1)
+    )$est / normalize
   }
 }
 
@@ -533,9 +552,10 @@ sensitivity.binormal_curve <- function(x, specificity, ...) {
   params <- parameters(x)
   sapply(specificity, function(spec) {
     fpf <- 1.0 - spec
-    .Fortran("cvbmrocfpf2tpf",
-             params$a, params$b,
-             fpf = fpf, tpf = double(1), double(1))$tpf
+    .Fortran(
+      "cvbmrocfpf2tpf", params$a, params$b,
+      fpf = fpf, tpf = double(1), double(1)
+    )$tpf
   })
 }
 
@@ -544,9 +564,10 @@ sensitivity.binormalLR_curve <- function(x, specificity, ...) {
   params <- parameters(x)$Metz
   sapply(specificity, function(spec) {
     fpf <- 1.0 - spec
-    .Fortran("pbmrocfpf2tpf",
-             params$d_a, params$c,
-             fpf = fpf, tpf = double(1), double(1))$tpf
+    .Fortran(
+      "pbmrocfpf2tpf", params$d_a, params$c,
+      fpf = fpf, tpf = double(1), double(1)
+    )$tpf
   })
 }
 
@@ -565,9 +586,10 @@ specificity <- function(x, ...) {
 specificity.binormal_curve <- function(x, sensitivity, ...) {
   params <- parameters(x)
   sapply(sensitivity, function(sens) {
-    1 - .Fortran("cvbmroctpf2fpf",
-                 params$a, params$b,
-                 tpf = as.double(sens), fpf = as.double(1), double(1))$fpf
+    1 - .Fortran(
+      "cvbmroctpf2fpf", params$a, params$b,
+      tpf = as.double(sens), fpf = as.double(1), double(1)
+    )$fpf
   })
 }
 
@@ -575,9 +597,10 @@ specificity.binormal_curve <- function(x, sensitivity, ...) {
 specificity.binormalLR_curve <- function(x, sensitivity, ...) {
   params <- parameters(x)$Metz
   sapply(sensitivity, function(sens) {
-    1 - .Fortran("pbmroctpf2fpf",
-                 params$d_a, params$c,
-                 tpf = as.double(sens), fpf = as.double(1), double(1))$fpf
+    1 - .Fortran(
+      "pbmroctpf2fpf", params$d_a, params$c,
+      tpf = as.double(sens), fpf = as.double(1), double(1)
+    )$fpf
   })
 }
 

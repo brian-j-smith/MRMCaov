@@ -38,23 +38,27 @@ get_lme_args <- function(formula, object, data) {
     comps_cov[3] * (!same_reader & !same_test) +
     comps_var * (same_reader & same_test)
 
-  list(data = lme_data,
-       y = y,
-       X = X,
-       Z = Z,
-       R = R,
-       var = comps_var,
-       cov = comps_cov,
-       inits = comps$MS[2:3])
+  list(
+    data = lme_data,
+    y = y,
+    X = X,
+    Z = Z,
+    R = R,
+    var = comps_var,
+    cov = comps_cov,
+    inits = comps$MS[2:3]
+  )
 
 }
 
 
 get_lme_params <- function(inits, f, grad, y, X, Z, R, ...) {
-  res <- optim(inits, fn = f, gr = grad,
-               y = y, X = X, Z = Z, R = R,
-               method = "L-BFGS-B",
-               lower = 0)
+  res <- optim(
+    inits, fn = f, gr = grad,
+    y = y, X = X, Z = Z, R = R,
+    method = "L-BFGS-B",
+    lower = 0
+  )
 
   n <- c(ncol(Z) - nrow(Z), nrow(Z))
   V_hat <- get_lme_V(Z, get_lme_G(res$par, n), R)

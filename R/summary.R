@@ -63,24 +63,29 @@ summary.aov_mrmc <- function(object, ...) {
 }
 
 
-new_summary_mrmc <- function(object, conf.level, vcov_comps = NULL,
-                             test_equality = NULL, test_diffs = NULL,
-                             test_means = NULL, reader_means = NULL,
-                             reader_test_diffs = NULL) {
+new_summary_mrmc <- function(
+  object, conf.level, vcov_comps = NULL, test_equality = NULL,
+  test_diffs = NULL, test_means = NULL, reader_means = NULL,
+  reader_test_diffs = NULL
+) {
   cov_method <- class(object$cov)[1]
   structure(
-    list(data_name = as.character(object$call$data),
-         cov_method = substring(cov_method,
-                                4 * startsWith(cov_method, "cov_") + 1),
-         design = object$design,
-         vars = object$vars,
-         conf.level = conf.level,
-         vcov_comps = vcov_comps,
-         test_equality = test_equality,
-         test_diffs = test_diffs,
-         test_means = test_means,
-         reader_test_diffs = reader_test_diffs,
-         reader_means = reader_means),
+    list(
+      data_name = as.character(object$call$data),
+      cov_method = substring(
+        cov_method,
+        4 * startsWith(cov_method, "cov_") + 1
+      ),
+      design = object$design,
+      vars = object$vars,
+      conf.level = conf.level,
+      vcov_comps = vcov_comps,
+      test_equality = test_equality,
+      test_diffs = test_diffs,
+      test_means = test_means,
+      reader_test_diffs = reader_test_diffs,
+      reader_means = reader_means
+    ),
     class = "summary.mrmc"
   )
 }
@@ -118,8 +123,9 @@ new_summary_mrmc <- function(object, conf.level, vcov_comps = NULL,
   )
   test_equality$`p-value` <- with(test_equality, 1 - pf(F, df1, df2))
 
-  test_means_list <- lapply(object$mrmc_tests, summary.mrmc_tests_rrrc,
-                            conf.level = conf.level)
+  test_means_list <- lapply(
+    object$mrmc_tests, summary.mrmc_tests_rrrc, conf.level = conf.level
+  )
   test_means <- do.call(rbind, test_means_list)
   rownames(test_means) <- names(test_means_list)
 
@@ -137,12 +143,14 @@ new_summary_mrmc <- function(object, conf.level, vcov_comps = NULL,
   test_diffs$t <- with(test_diffs, Estimate / StdErr)
   test_diffs$`p-value` <- with(test_diffs, 2 * (1 - pt(abs(t), df)))
 
-  res <- new_summary_mrmc(object,
-                          conf.level = conf.level,
-                          vcov_comps = summary(comps),
-                          test_equality = test_equality,
-                          test_diffs = test_diffs,
-                          test_means = test_means)
+  res <- new_summary_mrmc(
+    object,
+    conf.level = conf.level,
+    vcov_comps = summary(comps),
+    test_equality = test_equality,
+    test_diffs = test_diffs,
+    test_means = test_means
+  )
   structure(res, class = c("summary.mrmc_rrrc", class(res)))
 }
 
@@ -173,8 +181,9 @@ new_summary_mrmc <- function(object, conf.level, vcov_comps = NULL,
   )
   test_equality$`p-value` <- with(test_equality, 1 - pf(F, df1, df2))
 
-  test_means_list <- lapply(object$mrmc_tests, summary.mrmc_tests_rrrc,
-                            conf.level = conf.level)
+  test_means_list <- lapply(
+    object$mrmc_tests, summary.mrmc_tests_rrrc, conf.level = conf.level
+  )
   test_means <- do.call(rbind, test_means_list)
   rownames(test_means) <- names(test_means_list)
 
@@ -183,8 +192,9 @@ new_summary_mrmc <- function(object, conf.level, vcov_comps = NULL,
   test_diffs <- data.frame(
     Comparison = paste(test_levels[combs[, 1]], "-", test_levels[combs[, 2]]),
     Estimate = estimates[combs[, 1]] - estimates[combs[, 2]],
-    StdErr = sqrt((1 / n_readers[combs[, 1]] + 1 / n_readers[combs[, 2]]) *
-                    denominator),
+    StdErr = sqrt(
+      (1 / n_readers[combs[, 1]] + 1 / n_readers[combs[, 2]]) * denominator
+    ),
     df = test_equality$df2,
     row.names = NULL
   )
@@ -194,12 +204,14 @@ new_summary_mrmc <- function(object, conf.level, vcov_comps = NULL,
   test_diffs$t <- with(test_diffs, Estimate / StdErr)
   test_diffs$`p-value` <- with(test_diffs, 2 * (1 - pt(abs(t), df)))
 
-  res <- new_summary_mrmc(object,
-                          conf.level = conf.level,
-                          vcov_comps = summary(comps),
-                          test_equality = test_equality,
-                          test_diffs = test_diffs,
-                          test_means = test_means)
+  res <- new_summary_mrmc(
+    object,
+    conf.level = conf.level,
+    vcov_comps = summary(comps),
+    test_equality = test_equality,
+    test_diffs = test_diffs,
+    test_means = test_means
+  )
   structure(res, class = c("summary.mrmc_rrrc", class(res)))
 }
 
@@ -213,8 +225,9 @@ new_summary_mrmc <- function(object, conf.level, vcov_comps = NULL,
   test_levels <- levels(object)$test
   reader_levels <- levels(object)$reader
 
-  test_means_list <- lapply(object$mrmc_tests, summary.mrmc_tests_frrc,
-                            conf.level = conf.level)
+  test_means_list <- lapply(
+    object$mrmc_tests, summary.mrmc_tests_frrc, conf.level = conf.level
+  )
   test_means <- do.call(rbind, test_means_list)
   rownames(test_means) <- names(test_means_list)
 
@@ -263,14 +276,16 @@ new_summary_mrmc <- function(object, conf.level, vcov_comps = NULL,
     reader_means$StdErr %o% c(Lower = -1, Upper = 1)
   reader_means$CI <- trunc_ci(object, reader_means$CI)
 
-  res <- new_summary_mrmc(object,
-                          conf.level = conf.level,
-                          vcov_comps = summary(comps),
-                          test_equality = test_equality,
-                          test_diffs = test_diffs,
-                          test_means = test_means,
-                          reader_test_diffs = reader_test_diffs,
-                          reader_means = reader_means)
+  res <- new_summary_mrmc(
+    object,
+    conf.level = conf.level,
+    vcov_comps = summary(comps),
+    test_equality = test_equality,
+    test_diffs = test_diffs,
+    test_means = test_means,
+    reader_test_diffs = reader_test_diffs,
+    reader_means = reader_means
+  )
   structure(res, class = c("summary.mrmc_frrc", class(res)))
 }
 
@@ -294,9 +309,9 @@ reader_test_diffs <- function(object, conf.level) {
 
   df <- data.frame(
     Reader = reader_levels[reader_indices],
-    Comparison = paste(test_levels[combs_reader[, 1]],
-                       "-",
-                       test_levels[combs_reader[, 2]]),
+    Comparison = paste(
+      test_levels[combs_reader[, 1]], "-", test_levels[combs_reader[, 2]]
+    ),
     Estimate = estimates[cbind(reader_indices, combs_reader[, 1])] -
       estimates[cbind(reader_indices, combs_reader[, 2])],
     StdErr = stderrs
@@ -334,8 +349,9 @@ reader_test_diffs <- function(object, conf.level) {
   )
   test_equality$`p-value` <- with(test_equality, 1 - pchisq(X2, df))
 
-  test_means_list <- lapply(object$mrmc_tests, summary.mrmc_tests_frrc,
-                            conf.level = conf.level)
+  test_means_list <- lapply(
+    object$mrmc_tests, summary.mrmc_tests_frrc, conf.level = conf.level
+  )
   test_means <- do.call(rbind, test_means_list)
   rownames(test_means) <- names(test_means_list)
 
@@ -344,8 +360,9 @@ reader_test_diffs <- function(object, conf.level) {
   test_diffs <- data.frame(
     Comparison = paste(test_levels[combs[, 1]], "-", test_levels[combs[, 2]]),
     Estimate = estimates[combs[, 1]] - estimates[combs[, 2]],
-    StdErr = sqrt((1 / n_readers[combs[, 1]] + 1 / n_readers[combs[, 2]]) *
-                    denominator),
+    StdErr = sqrt(
+      (1 / n_readers[combs[, 1]] + 1 / n_readers[combs[, 2]]) * denominator
+    ),
     check.names = FALSE
   )
   test_diffs$CI <- with(test_diffs, {
@@ -360,12 +377,14 @@ reader_test_diffs <- function(object, conf.level) {
     reader_means$StdErr %o% c(Lower = -1, Upper = 1)
   reader_means$CI <- trunc_ci(object, reader_means$CI)
 
-  res <- new_summary_mrmc(object,
-                          conf.level = conf.level,
-                          vcov_comps = summary(comps),
-                          test_equality = test_equality,
-                          test_diffs = test_diffs,
-                          reader_means = reader_means)
+  res <- new_summary_mrmc(
+    object,
+    conf.level = conf.level,
+    vcov_comps = summary(comps),
+    test_equality = test_equality,
+    test_diffs = test_diffs,
+    reader_means = reader_means
+  )
   structure(res, class = c("summary.mrmc_frrc", class(res)))
 }
 
@@ -386,8 +405,9 @@ reader_test_diffs <- function(object, conf.level) {
   )
   test_equality$`p-value` <- with(test_equality, 1 - pf(F, df1, df2))
 
-  test_means_list <- lapply(object$mrmc_tests, summary.mrmc_tests_rrfc,
-                            conf.level = conf.level)
+  test_means_list <- lapply(
+    object$mrmc_tests, summary.mrmc_tests_rrfc, conf.level = conf.level
+  )
   test_means <- do.call(rbind, test_means_list)
   rownames(test_means) <- names(test_means_list)
 
@@ -405,11 +425,13 @@ reader_test_diffs <- function(object, conf.level) {
   test_diffs$t <- with(test_diffs, Estimate / StdErr)
   test_diffs$`p-value` <- with(test_diffs, 2 * (1 - pt(abs(t), df)))
 
-  res <- new_summary_mrmc(object,
-                          conf.level = conf.level,
-                          test_equality = test_equality,
-                          test_diffs = test_diffs,
-                          test_means = test_means)
+  res <- new_summary_mrmc(
+    object,
+    conf.level = conf.level,
+    test_equality = test_equality,
+    test_diffs = test_diffs,
+    test_means = test_means
+  )
   structure(res, class = c("summary.mrmc_rrfc", class(res)))
 }
 
@@ -433,8 +455,9 @@ reader_test_diffs <- function(object, conf.level) {
   )
   test_equality$`p-value` <- with(test_equality, 1 - pf(F, df1, df2))
 
-  test_means_list <- lapply(object$mrmc_tests, summary.mrmc_tests_rrfc,
-                            conf.level = conf.level)
+  test_means_list <- lapply(
+    object$mrmc_tests, summary.mrmc_tests_rrfc, conf.level = conf.level
+  )
   test_means <- do.call(rbind, test_means_list)
   rownames(test_means) <- names(test_means_list)
 
@@ -444,8 +467,9 @@ reader_test_diffs <- function(object, conf.level) {
     Comparison = paste(test_levels[combs[, 1]], "-", test_levels[combs[, 2]]),
     Estimate = estimates[combs[, 1]] - estimates[combs[, 2]],
     df = n_reader - n_test,
-    StdErr = sqrt((1 / n_readers[combs[, 1]] + 1 / n_readers[combs[, 2]]) *
-                    MS[["R"]]),
+    StdErr = sqrt(
+      (1 / n_readers[combs[, 1]] + 1 / n_readers[combs[, 2]]) * MS[["R"]]
+    ),
     check.names = FALSE
   )
   test_diffs$CI <- with(test_diffs, {
@@ -454,11 +478,13 @@ reader_test_diffs <- function(object, conf.level) {
   test_diffs$t <- with(test_diffs, Estimate / StdErr)
   test_diffs$`p-value` <- with(test_diffs, 2 * (1 - pt(abs(t), df)))
 
-  res <- new_summary_mrmc(object,
-                          conf.level = conf.level,
-                          test_equality = test_equality,
-                          test_diffs = test_diffs,
-                          test_means = test_means)
+  res <- new_summary_mrmc(
+    object,
+    conf.level = conf.level,
+    test_equality = test_equality,
+    test_diffs = test_diffs,
+    test_means = test_means
+  )
   structure(res, class = c("summary.mrmc_frrc", class(res)))
 }
 
@@ -500,9 +526,11 @@ reader_test_diffs <- function(object, conf.level) {
   test_diffs$t <- with(test_diffs, Estimate / StdErr)
   test_diffs$`p-value` <- with(test_diffs, 2 * (1 - pt(abs(t), df)))
 
-  res <- new_summary_mrmc(object,
-                          conf.level = conf.level,
-                          vcov_comps = summary(vcov_comps(object)),
-                          test_diffs = test_diffs)
+  res <- new_summary_mrmc(
+    object,
+    conf.level = conf.level,
+    vcov_comps = summary(vcov_comps(object)),
+    test_diffs = test_diffs
+  )
   structure(res, class = c("summary.mrmc_lme", class(res)))
 }

@@ -125,8 +125,10 @@ mrmc_lme <- function(
 
   response <- formula[[2]]
   object <- eval(substitute(
-    new_mrmc(response, test, reader, case, data, cov = cov, design = design,
-             types = "random")
+    new_mrmc(
+      response, test, reader, case, data, cov = cov, design = design,
+      types = "random"
+    )
   ))
 
   args <- get_lme_args(formula, object, data)
@@ -152,8 +154,9 @@ mrmc_lme <- function(
 }
 
 
-new_mrmc <- function(response, test, reader, case, data, cov, design,
-                     types = c("random", "fixed")) {
+new_mrmc <- function(
+  response, test, reader, case, data, cov, design, types = c("random", "fixed")
+) {
 
   terms <- eval(substitute(
     mrmc_terms(response, test, reader, case, types = types)
@@ -198,15 +201,17 @@ new_mrmc <- function(response, test, reader, case, data, cov, design,
   aovfit <- aov_mrmc(update(formula(aov_data), . ~ .^2), aov_data)
 
   structure(
-    list(design = design,
-         vars = c(terms$labels, metric = terms$metric),
-         fixed = terms$fixed,
-         aov = aovfit,
-         data = aov_data,
-         num_obs = num_obs,
-         cov = covmat,
-         mrmc_data = mrmc_data,
-         levels = levels(mrmc_data$truth)),
+    list(
+      design = design,
+      vars = c(terms$labels, metric = terms$metric),
+      fixed = terms$fixed,
+      aov = aovfit,
+      data = aov_data,
+      num_obs = num_obs,
+      cov = covmat,
+      mrmc_data = mrmc_data,
+      levels = levels(mrmc_data$truth)
+    ),
     class = "mrmc"
   )
 
