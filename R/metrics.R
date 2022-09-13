@@ -31,6 +31,9 @@
 #' iso-utility line (Abbey, 2013), sensitivity (sens) at a given specificity,
 #' and specificity (spec) at a given sensitivity.
 #'
+#' @return
+#' Returns a numeric value.
+#'
 #' @seealso \code{\link{mrmc}}, \code{\link{srmc}}, \code{\link{stmc}}
 #'
 #' @references

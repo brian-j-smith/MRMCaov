@@ -1,5 +1,8 @@
 #' Summary Estimates and Statistical Tests
 #'
+#' Summary estimates and statistical tests from single and multi-reader
+#' multi-case analyses.
+#'
 #' @name summary
 #' @rdname summary-methods
 #'
@@ -7,7 +10,35 @@
 #' @param conf.level confidence level for confidence intervals.
 #' @param ... additional arguments affecting the summary.
 #'
-#' @seealso \code{\link{mrmc}}, \code{\link{stmc}}
+#' @return
+#' The respective method functions return \code{summary.mrmc} and
+#' \code{summary.stmc} class objects.
+#'
+#' Object \code{summary.mrmc} is a list of the following elements.
+#' \describe{
+#'   \item{data_name}{character name of the original data frame supplied for the
+#'     analysis.}
+#'   \item{cov_method}{character name of the covariance method.}
+#'   \item{design}{experimental study design: 1 = factorial, 2 = cases nested
+#'     within readers, 3 = cases nested within tests.}
+#'   \item{vars}{character names of the analysis factors and reader performance
+#'     metric.}
+#'   \item{conf.level}{numeric confidence interval level.}
+#'   \item{vcov_comps}{data frame of estimated variances, covariances, and
+#'     correlations.}
+#'   \item{test_equality}{data frame of the ANOVA global test of equality.}
+#'   \item{test_diffs}{data frame of pairwise test differences.}
+#'   \item{test_means}{data frame of estimated test means.}
+#'   \item{reader_test_diffs}{data frame of (fixed) reader-specific pairwise
+#'     test differences.}
+#'   \item{reader_means}{data frame of (fixed) reader-specific test means.}
+#' }
+#'
+#' Object \code{summary.stmc} is a numeric vector of the estimated reader
+#' performance mean, standard error, lower confidence limit, and upper
+#' confidence limit.
+#'
+#' @seealso \code{\link{mrmc}}, \code{\link{srmc}}, \code{\link{stmc}}
 #'
 summary.mrmc <- function(object, conf.level = 0.95, ...) {
   f <- ifelse(object$design == 4, .summary_nested, .summary)

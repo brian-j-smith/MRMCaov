@@ -25,6 +25,25 @@
 #' \code{fixed(<variable name>)}, where \code{<variable name>} is the name of
 #' the reader or case variable.
 #'
+#' @return
+#' Returns an \code{mrmc} class object with the following elements.
+#' \describe{
+#'   \item{\code{design}}{experimental study design: 1 = factorial, 2 = cases
+#'     nested within readers, 3 = cases nested within tests.}
+#'   \item{\code{vars}}{character names of the analysis factors and reader
+#'     performance metric.}
+#'   \item{\code{fixed}}{logicals indicating whether the reader and case factors
+#'     are treated as fixed in the analysis.}
+#'   \item{\code{aov}}{results from an ordinary analysis of variance.}
+#'   \item{\code{data}}{data frame of computed reader performance metrics for
+#'     the analysis of variance.}
+#'   \item{\code{num_obs}}{number of case observations for each of the computed
+#'     metrics.}
+#'   \item{\code{cov}}{reader performance covariance matrix.}
+#'   \item{\code{mrmc_data}}{data frame of case-specific reader ratings.}
+#'   \item{\code{levels}}{character levels of the true case statuses.}
+#' }
+#'
 #' @seealso \code{\link{metrics}}, \code{\link{cov_methods}},
 #' \code{\link{parameters}}, \code{\link{plot}}, \code{\link{roc_curves}},
 #' \code{\link{summary}}

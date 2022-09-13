@@ -9,6 +9,9 @@
 #' @param n_curves number of ROC curves to print.
 #' @param ... arguments passed to other methods.
 #'
+#' @return
+#' Returns the printed object \code{x}.
+#'
 #' @examples
 #' curves <- with(VanDyke,
 #'   roc_curves(truth, rating, groups = list(Test = treatment, Reader = reader))

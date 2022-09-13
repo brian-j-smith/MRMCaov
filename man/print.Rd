@@ -18,6 +18,9 @@
 
 \item{n_curves}{number of ROC curves to print.}
 }
+\value{
+Returns the printed object \code{x}.
+}
 \description{
 Print ROC objects from the \pkg{MRMCaov} package.
 }

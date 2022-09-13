@@ -9,7 +9,7 @@
 \alias{plot.roc_points}
 \alias{plot.mrmc}
 \alias{plot.stmc}
-\title{Performance Plots}
+\title{ROC Plots}
 \usage{
 \method{plot}{roc_curve}(x, n = 100, emp_points = FALSE, ...)
 
@@ -40,8 +40,11 @@ on parametric curves.}
 \item{coord_fixed}{logical indicating whether to fix the scales of x and y
 axes.}
 }
+\value{
+Returns a \link[ggplot2]{ggplot} object.
+}
 \description{
-Performance Plots
+Plots of ROC curves.
 }
 \examples{
 curves <- with(VanDyke,

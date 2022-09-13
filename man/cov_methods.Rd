@@ -5,8 +5,7 @@
 \alias{DeLong}
 \alias{jackknife}
 \alias{unbiased}
-\title{Reader performance metric covariance estimation methods to be used with
-package-supplied multi-case statistical analysis functions.}
+\title{Covariance Methods}
 \usage{
 DeLong()
 
@@ -16,6 +15,10 @@ unbiased(abar = FALSE)
 }
 \arguments{
 \item{abar}{logical indicating whether to compute mean covariance components.}
+}
+\value{
+Returns a function of class \code{cov_method} specifying a covariance
+method for \code{\link{mrmc}}, \code{\link{srmc}}, or \code{\link{stmc}}.
 }
 \description{
 Reader performance metric covariance estimation methods to be used with

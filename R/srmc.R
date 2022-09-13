@@ -15,6 +15,9 @@
 #' @param method deprecated argument that will be removed in a future package
 #'   version; use \code{cov} instead.
 #'
+#' @return
+#' Returns an \code{\link{mrmc}} class object.
+#'
 #' @seealso \code{\link{metrics}}, \code{\link{cov_methods}},
 #' \code{\link{parameters}}, \code{\link{plot}}, \code{\link{roc_curves}},
 #' \code{\link{summary}}

@@ -13,6 +13,15 @@
 #' @param method deprecated argument that will be removed in a future package
 #'   version; use \code{cov} instead.
 #'
+#' @return
+#' Returns a \code{stmc} class object with the following elements.
+#' \describe{
+#'   \item{\code{metric}}{character name of the performance metric.}
+#'   \item{\code{est}}{estimated mean.}
+#'   \item{\code{se}}{estimated standard error.}
+#'   \item{\code{stmc_data}}{data frame of case-specific ratings.}
+#' }
+#'
 #' @seealso \code{\link{metrics}}, \code{\link{cov_methods}},
 #' \code{\link{parameters}}, \code{\link{plot}}, \code{\link{roc_curves}},
 #' \code{\link{summary}}

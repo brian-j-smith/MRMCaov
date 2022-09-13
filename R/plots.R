@@ -1,4 +1,6 @@
-#' Performance Plots
+#' ROC Plots
+#'
+#' Plots of ROC curves.
 #'
 #' @name plot
 #' @rdname plot-methods
@@ -12,6 +14,9 @@
 #' @param coord_fixed logical indicating whether to fix the scales of x and y
 #'   axes.
 #' @param ... arguments passed to other methods.
+#'
+#' @return
+#' Returns a \link[ggplot2]{ggplot} object.
 #'
 #' @seealso \code{\link{roc_curves}}
 #'

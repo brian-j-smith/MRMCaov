@@ -22,6 +22,15 @@ metric covariances.}
 \item{method}{deprecated argument that will be removed in a future package
 version; use \code{cov} instead.}
 }
+\value{
+Returns a \code{stmc} class object with the following elements.
+\describe{
+  \item{\code{metric}}{character name of the performance metric.}
+  \item{\code{est}}{estimated mean.}
+  \item{\code{se}}{estimated standard error.}
+  \item{\code{stmc_data}}{data frame of case-specific ratings.}
+}
+}
 \description{
 Estimation of ROC performance metrics for a single test of multiple cases.
 }

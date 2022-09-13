@@ -108,6 +108,9 @@ utility of the ROC curve.}
 \item{sens, spec}{numeric sensitivity/specificity at which to calculate
 specificity/sensitivity.}
 }
+\value{
+Returns a numeric value.
+}
 \description{
 Estimated performance metrics from ROC curves.
 }

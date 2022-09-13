@@ -24,6 +24,9 @@ metric covariances.}
 \item{method}{deprecated argument that will be removed in a future package
 version; use \code{cov} instead.}
 }
+\value{
+Returns an \code{\link{mrmc}} class object.
+}
 \description{
 Estimation and comparison of ROC performance metrics for single-reader
 multi-case studies.

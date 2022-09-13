@@ -1,8 +1,14 @@
+#' Covariance Methods
+#'
 #' Reader performance metric covariance estimation methods to be used with
 #' package-supplied multi-case statistical analysis functions.
 #'
 #' @name cov_methods
 #' @rdname cov_methods
+#'
+#' @return
+#' Returns a function of class \code{cov_method} specifying a covariance
+#' method for \code{\link{mrmc}}, \code{\link{srmc}}, or \code{\link{stmc}}.
 #'
 #' @seealso \code{\link{mrmc}}, \code{\link{srmc}}, \code{\link{stmc}}
 #'

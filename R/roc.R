@@ -1,7 +1,7 @@
 #' ROC Performance Curves
 #'
-#' Calculation of TPR and FPR pairs for values of a numeric rating of a
-#' true binary response.
+#' Calculation of ROC curve true positive rate (TPR) and false positive rate
+#' (FPR) pairs for values of a numeric rating of a true binary response.
 #'
 #' @rdname roc_curves
 #'
@@ -26,6 +26,14 @@
 #' @param ties function determining empirical roc points returned in cases of
 #'   ties.
 #' @param ... arguments passed from the \code{mean()} method to \code{points()}.
+#'
+#' @return
+#' Function \code{roc_curves} returns an \code{roc_curve} class object of a
+#' single estimated ROC curve or an \code{roc_curves} class object of grouped
+#' ROC curves.  Function \code{parameters} extracts the parameters that define
+#' the curves, \code{points} returns a data frame of points on individual
+#' curves, and \code{means} returns points on averaged curves (Chen and
+#' Samuelson, 2014).
 #'
 #' @seealso \code{\link{plot}}
 #'
