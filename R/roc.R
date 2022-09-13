@@ -168,16 +168,11 @@ binormalLR_curve <- function(data) {
 
 
 empirical_curve <- function(data) {
-  roc <- pROC::roc(data$truth, data$rating, auc = FALSE, quiet = TRUE,
-                   direction = "<")
+  pos <- as.numeric(data$truth == levels(data$truth)[2])
+  counts <- rowsum(data.frame(FPR = 1 - pos, TPR = pos), data$rating)
+  roc <- lapply(counts, function(x) c(rev(cumsum(rev(x))) / sum(x), 0))
   structure(
-    list(
-      params = tibble(
-        FPR = 1 - roc$specificities,
-        TPR = roc$sensitivities
-      ),
-      data = data
-    ),
+    list(params = as_tibble(roc), data = data),
     class = c("empirical_curve", "roc_curve")
   )
 }
@@ -459,18 +454,33 @@ auc.binormalLR_curve <- function(x, partial = FALSE, min = 0, max = 1,
 }
 
 
-auc.empirical_curve <- function(x, partial = FALSE, min = 0, max = 1,
-                                normalize = FALSE, ...) {
-  data <- x$data
-  args <- list(pROC::roc(data$truth, data$rating, quiet = TRUE,
-                         direction = "<"))
+auc.empirical_curve <- function(
+  x, partial = FALSE, min = 0, max = 1, normalize = FALSE, ...
+) {
+  x_coords <- rev(x$params$FPR)
+  y_coords <- rev(x$params$TPR)
   if (!isFALSE(partial)) {
     partial <- match.arg(partial, c("sensitivity", "specificity"))
-    args$partial.auc <- c(min, max)
-    args$partial.auc.focus <- partial
-    args$partial.auc.correct <- normalize
+    switch(partial,
+      "sensitivity" = {
+        spec <- 1 - x_coords
+        x_coords <- y_coords
+        y_coords <- spec
+        bounds <- data.frame(x = c(min, max))
+        bounds$y <- specificity(x, bounds$x)
+      },
+      "specificity" = {
+        bounds <- c(max, min)
+        bounds <- data.frame(x = 1 - bounds, y = sensitivity(x, bounds))
+      }
+    )
+    keep <- x_coords > bounds$x[1] & x_coords < bounds$x[2]
+    x_coords <- c(bounds$x[1], x_coords[keep], bounds$x[2])
+    y_coords <- c(bounds$y[1], y_coords[keep], bounds$y[2])
   }
-  as.numeric(do.call(pROC::auc, args))
+  res <- sum(diff(x_coords) * (y_coords[-length(y_coords)] + y_coords[-1]) / 2)
+  if (normalize) res <- res / diff(range(x_coords))
+  res
 }
 
 

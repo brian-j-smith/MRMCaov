@@ -29,7 +29,7 @@ Description: Statistical tools for estimating and comparing the performances of
     paired study design; with random or fixed readers or cases; and covariances
     estimated with the DeLong method, jackknifing, or an unbiased method.
 Depends: R (>= 3.5.0)
-Imports: ggplot2, methods, mvtnorm, pROC, tibble
+Imports: ggplot2, methods, mvtnorm, tibble
 Suggests: knitr
 NeedsCompilation: yes
 LazyData: true
