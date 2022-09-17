@@ -1,8 +1,8 @@
 Package: MRMCaov
 Type: Package
 Title: Multi-Reader Multi-Case Analysis of Variance
-Version: 0.2.1
-Date: 2022-05-13
+Version: 0.2.2
+Date: 2022-09-16
 Authors@R: c(person(c("Brian", "J"), "Smith",
                     email = "brian-j-smith@uiowa.edu",
                     role = c("aut", "cre")),
@@ -16,24 +16,27 @@ Author: Brian J Smith [aut, cre],
   Stephen L Hillis [aut],
   Lorenzo L Pesce [ctb]
 Maintainer: Brian J Smith <brian-j-smith@uiowa.edu>
-Description: Statistical tools for estimating and comparing the performances of
-    diagnostic tests in multi-reader multi-case studies where true case
-    statuses (or ground truths) are known and one or more readers provide
-    test ratings for multiple cases.  Reader performance metrics are provided
-    for area under and expected utility of ROC curves, likelihood ratio of
-    positive or negative tests, and sensitivity and specificity.  ROC curves can
-    be estimated empirically or with binormal or binormal likelihood-ratio
-    models.  Statistical comparisons of diagnostic tests are based on the
-    ANOVA model of Obuchowski-Rockette and the unified framework of Hillis.  The
-    ANOVA can be conducted with data from a full factorial, nested, or partially
+Description: Tools for estimating and comparing the performances of diagnostic
+    tests in multi-reader multi-case studies where true case statuses (or ground
+    truths) are known and one or more readers provide test ratings for multiple
+    cases.  Reader performance metrics are provided for area under and expected
+    utility of ROC curves, likelihood ratio of positive or negative tests, and
+    sensitivity and specificity.  ROC curves can be estimated empirically or
+    with binormal or binormal likelihood-ratio models.  Statistical comparisons
+    of diagnostic tests are based on the ANOVA model of Obuchowski-Rockette and
+    the unified framework of Hillis (2005) <doi:10.1002/sim.2024>.  The ANOVA
+    can be conducted with data from a full factorial, nested, or partially
     paired study design; with random or fixed readers or cases; and covariances
-    estimated with the DeLong method, jackknifing, or an unbiased method.
+    estimated with the DeLong method, jackknifing, or an unbiased method.  Smith
+    and Hillis (2020) <doi:10.1117/12.2549075>.
 Depends: R (>= 3.5.0)
 Imports: ggplot2, methods, mvtnorm, tibble
 Suggests: knitr
 NeedsCompilation: yes
 LazyData: true
 License: GPL-3
+URL: https://github.com/brian-j-smith/MRMCaov
+BugReports: https://github.com/brian-j-smith/MRMCaov/issues
 RoxygenNote: 7.2.1
 VignetteBuilder: knitr
 Encoding: UTF-8

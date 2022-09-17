@@ -25,13 +25,13 @@ To install the package, do the following:
 5. Install the packages below with the given command submitted at the R console, if they have not been installed previously.
 
 ```{r eval = FALSE}
-install.packages(c("ggplot2", "mvtnorm", "pROC", "tibble"))
+install.packages(c("ggplot2", "mvtnorm", "tibble"))
 ```
 
 | Operating System      | Package Archive File |
 |-----------------------|----------------------|
-| Microsoft Windows: | [MRMCaov_0.2.1.zip](https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.1/MRMCaov_0.2.1.zip) |
-| Linux: | [MRMCaov_0.2.1.tar.gz](https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.1/MRMCaov_0.2.1.tar.gz) |
+| Microsoft Windows: | [MRMCaov_0.2.2.zip](https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.2/MRMCaov_0.2.2.zip) |
+| Linux: | [MRMCaov_0.2.2.tar.gz](https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.2/MRMCaov_0.2.2.tar.gz) |
 
 
 ## Citing the Software

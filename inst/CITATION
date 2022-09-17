@@ -23,6 +23,6 @@ bibentry(bibtype = "InProceedings",
          month = "16 March",
          year = "2020",
          pages = "113160K",
-         doi = "10.117/12.2549075",
+         doi = "10.1117/12.2549075",
          url = "https://pubmed.ncbi.nlm.nih.gov/32351258",
          key = "MRMCaov-SPIE2020")

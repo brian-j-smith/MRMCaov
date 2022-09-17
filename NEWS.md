@@ -2,6 +2,10 @@
 
 ## Version Updates
 
+## 0.2.2
+* Add Kundel dataset.
+* Check for and report partially paired factorial designs.
+
 ## 0.2.1
 * Order tests and readers lexically in results from `mrmc()`.
 * Rename `bichisquare` column to `bichisquared` in `binormalLR_curve`.

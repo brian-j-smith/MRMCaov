@@ -47,13 +47,13 @@ To install the package, do the following:
 <!-- end list -->
 
 ``` r
-install.packages(c("ggplot2", "mvtnorm", "pROC", "tibble"))
+install.packages(c("ggplot2", "mvtnorm", "tibble"))
 ```
 
 | Operating System   | Package Archive File                                                                                            |
 | ------------------ | --------------------------------------------------------------------------------------------------------------- |
-| Microsoft Windows: | [MRMCaov\_0.2.1.zip](https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.1/MRMCaov_0.2.1.zip)       |
-| Linux:             | [MRMCaov\_0.2.1.tar.gz](https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.1/MRMCaov_0.2.1.tar.gz) |
+| Microsoft Windows: | [MRMCaov\_0.2.2.zip](https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.2/MRMCaov_0.2.2.zip)       |
+| Linux:             | [MRMCaov\_0.2.2.tar.gz](https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.2/MRMCaov_0.2.2.tar.gz) |
 
 ## Citing the Software
 
@@ -68,7 +68,7 @@ To cite MRMCaov in publications, please use the following two
 references, including the R package URL.
 
   Smith BJ, Hillis SL, Pesce LL (2022). _MCMCaov: Multi-Reader
-  Multi-Case Analysis of Variance_. R package version 0.2.1,
+  Multi-Case Analysis of Variance_. R package version 0.2.2,
   <https://github.com/brian-j-smith/MRMCaov>.
 
   Smith BJ, Hillis SL (2020). "Multi-reader multi-case analysis of
@@ -76,7 +76,7 @@ references, including the R package URL.
   modalities." In Samuelson F, Taylor-Phillips S (eds.), _Proceedings
   of SPIE 11316, Medical Imaging 2020: Image Perception, Observer
   Performance, and Technology Assessment_, 113160K.
-  doi:10.117/12.2549075 <https://doi.org/10.117/12.2549075>,
+  doi:10.1117/12.2549075 <https://doi.org/10.1117/12.2549075>,
   <https://pubmed.ncbi.nlm.nih.gov/32351258>.
 
 To see these entries in BibTeX format, use 'print(<citation>,
@@ -93,7 +93,7 @@ toBibtex(citation("MRMCaov"))
       author = {Brian J Smith and Stephen L Hillis and Lorenzo L Pesce},
       title = {{MCMCaov}: Multi-Reader Multi-Case Analysis of Variance},
       year = {2022},
-      note = {R package version 0.2.1},
+      note = {R package version 0.2.2},
       url = {https://github.com/brian-j-smith/MRMCaov},
     }
     
@@ -105,6 +105,6 @@ toBibtex(citation("MRMCaov"))
       month = {16 March},
       year = {2020},
       pages = {113160K},
-      doi = {10.117/12.2549075},
+      doi = {10.1117/12.2549075},
       url = {https://pubmed.ncbi.nlm.nih.gov/32351258},
     }
