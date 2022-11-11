@@ -20,10 +20,6 @@
 
  contains
 
-! NOTE1:Pretty much all of these routines are either stolen from Lapack or BLAS
-! at some point we should just link Lapack and BLAS and get rid of all
-! this garbage
-
 !---------------------------------------------------------------
 SUBROUTINE median(x_in, n, xmed)
 !---------------------------------------------------------------
@@ -579,236 +575,39 @@ end subroutine pseudoinverse
 !------------------------------------------------------
 
 
-!---------------------------------------------------
-!------------------------------------------------------
-SUBRoutINE SINV(A,N,EPS,IER)
-!---------------------------------------------------
-! INVERT A GIVEN SYMMETRIC POSITIVE DEFINITE MATRIX
-!
-!     USAGE
-! CALL SINV(A,N,EPS,IER)
-!
-!     DESCRIPTION OF PARAMETERS
-implicit none
-
-real(kind=double),intent(INout),dimension(*):: A
-!  UPPER TRIANGULAR PART OF THE GIVEN SYMMETRIC POSITIVE
-!   DEFINITE N BY N COEFFICIENT MATRIX.  ON RETURN A
-!   CONTAINS THE RESULTANT UPPER TRIANGULAR MATRIX.
-integer, intent(IN):: N !THE NUMBER OF ROW (COLUMNS) IN MATRIX A
-real(kind=double),intent(IN):: EPS
-!   AN INPUT CONSTANT WHICH IS USED AS RELATIVE TOLERANCE
-!   FOR TEST ON LOSS OF SIGNIFICANCE.
-integer,intent(out):: IER
-!   RESULTING ERROR PARAMETER CODED AS FOLLOWS:
-!   IER=0  - NO ERROR
-!   IER=-1 - NO RESULT BECAUSE OF WRONG INPUT PARAMETER N OR
-!BECAUSE SOME RADICAND IS NONPOSITIVE (MATRIX A
-!IS NOT POSITIVE DEFINITE, POSSIBLY DUE TO LOSS
-!OF SIGNIFICANCE)
-!   IER=K  - WARNING WHICH INDICATES LOSS OF SIGNIFICANCE.
-!THE RADICAND FORMED AT FACTORIZATION STEP K+1
-!WAS STILL POSITIVE BUT NO LONGER GREATER THAN
-!ABS(EPS*A(K+1,K+1)).
-!
-!     REMARKS
-! THE UPPER TRIANGULAR PART OF GIVEN MATRIX IS ASSUMED TO BE
-! STORED COLUMNWISE IN N*(N+1)/2 SUCCESSIVE STORAGE LOCATIONS.  IN
-! THE SAME STORAGE LOCATIONS THE RESULTING UPPER TRIANGULAR MATRIX
-! IS STORED COLUMNWISE TOO.
-! THE PROCEDURE GIVES RESULTS IF N IS GREATER THAN 0 AND ALL
-! CALCULATED RADICANDS ARE POSITIVE.
-!
-!     SUBRoutINES AND FUNCTION SUBPROGRAMS REQUIRED.
-! MFSD
-!
-!     METHOD
-! SOLUTION IS DONE USING THE FACTORIZATION BY SUBRoutINE MFSD.
-!
-
-!     FACTORIZE GIVEN MATRIX BY MEANS OF SUBRoutINE MFSD
-!
-!     A=TRANSPOSE(T)*T
-!
-
- integer:: ipiv, ind, i, kend, lanf, j,k, min, lhor,lver,l
- real(kind=double):: din, work
-
-CALL MFSD(A,N,EPS,IER)
-
-IF(IER < 0) RETURN
-
-!
-!     INVERT UPPER TRIANGULAR MATRIX T
-!     PREPARE INVERSION-LOOP
-!
-IPIV=N*(N+1)/2 ! This is a division with intergers, handle with care
-IND=IPIV
-
-INVERSION1: DO I=1,N
-  DIN=1.0_double/A(IPIV)
-  A(IPIV)=DIN
-  MIN=N
-  KEND=I-1
-  LANF=N-KEND
-  IF( KEND > 0) then
-     J=IND
-     ROW_LOOP1: DO  K=1,KEND
-  WORK=0.0_double
-  MIN=MIN-1
-  LHOR=IPIV
-  LVER=J
-  DO  L=LANF,MIN
-     LVER=LVER+1
-     LHOR=LHOR+L
-     WORK=WORK+ A(LVER)*A(LHOR)
-  ENDDO
-  A(J)=-WORK*DIN
-  J=J-MIN
-     ENDDO ROW_LOOP1
-  ENDIF
-  IPIV=IPIV-MIN
-  IND=IND-1
-ENDDO INVERSION1
-
-!     CALCULATE INVERSE(A) BY MEANS OF INVERSE(T)
-!     INVERSE(A)=INVERSE(T)*TRANSPOSE(INVERSE(T))
-!     INITIALIZE MULTIPLICATION LOOP
-!
-INVERSION2:  DO I=1,N
-    IPIV=IPIV+I
-    J=IPIV
-!  INITIALIZE ROW-LOOP
-    ROW_LOOP2:DO K=I,N
-WORK=0.0_double
-LHOR=J
-DO L=K,N
-  LVER=LHOR+K-I
-  WORK=WORK+A(LHOR)*A(LVER)
-  LHOR=LHOR+L
-ENDDO
-A(J)=WORK
-J=J+K
-    ENDDO ROW_LOOP2
- ENDDO INVERSION2
-
-!---------------------------------------------------------------
-END  SUBRoutINE SINV
 !---------------------------------------------------------------
 !---------------------------------------------------------------
+subroutine sinv(A, n, eps, ier)
+!---------------------------------------------------------------
+! Invert a symmetric positive definite matrix.
+!
+! Usage
+!
+!   call sinv(A, n, eps, ier)
+!
+! Parameters
+!
+real(kind = double), intent(inout), dimension(*) :: A
+! Upper triangular part of the given symmetric positive definite n by n
+! coefficient matrix.  On return, A contain the resultant upper trangule of the
+! inverse.
+integer, intent(in) :: n
+! The number of rows (columns) in matrix A.
+real(kind = double), intent(in) :: eps
+! Unused.
+integer, intent(out) :: ier
+! ier = 0:  No error.
+! ier < 0:  The i-th argumnt had an illegal value.
+! ier > 0:  The (i, i) element of the upper Cholesky factorization is zero, and
+!           the inverse could not be computed.
 
+call dpptrf('U', n, A, ier)
+call dpptri('U', n, A, ier)
 
 !---------------------------------------------------------------
-!---------------------------------------------------------------
-SUBRoutINE MFSD(A,N,EPS,IER)
-!---------------------------------------------------------------
-!  FACTOR A GIVEN SYMMETRIC POSITIVE DEFINITE MATRIX
-! ORIGIN: UKNOWN SO FAR
-
-! NOTE1/WARNING: LP -> The description of this subroutine is not accurate
-!  it has been hacked without reporting the hacking
-!
-implicit none
-!     DESCRIPTION & DEWFINITION OF DUMMY ARGUMENTS
-  integer,Intent(IN):: N !THE NUMBER OF ROW (COLUMNS) IN MATRIX A
-  real(kind=double),INTENT(IN):: EPS ! INPUT CONSTANT USED AS
-!    RELATIVE TOLERANCE TEST ON LOSS OF SIGNIFICANCE.
-  real(kind=double),intent(INout),dimension(*):: A
-!   AS INPUT AN UPPER TRIANGULAR MATRIX
-!   DEFINITE N BY N COEFFICIENT MATRIX.
-!   ON RETURN A CONTAINS THE RESULTANT UPPER TRIANGULAR MATRIX.
-   integer,intent(out)::IER  ! ERROR PARAMETER CODED AS FOLLOWS:
-!   IER=0  - NO ERROR
-!   IER=-1 - NO RESULT BECAUSE OF WRONG INPUT PARAMETER N OR
-!BECAUSE SOME RADICAND IS NONPOSITIVE (MATRIX A
-!IS NOT POSITIVE DEFINITE, POSSIBLY DUE TO LOSS
-!OF SIGNIFICANCE)
-!   IER=K  - WARNING WHICH INDICATES LOSS OF SIGNIFICANCE.
-!THE RADICAND FORMED AT FACTORIZATION STEP K+1
-!WAS STILL POSITIVE BUT NO LONGER GREATER THAN
-!ABS(EPS*A(K+1,K+1)).
-!
-!     REMARKS
-! THE UPPER TRIANGULAR PART OF GIVEN MATRIX IS ASSUMED TO BE
-! STORED COLUMNWISE IN N*(N+1)/2 SUCCESSIVE STORAGE LOCATIONS.  IN
-! THE SAME STORAGE LOCATIONS THE RESULTING UPPER TRIANGULAR MATRIX
-! IS STORED COLUMNWISE TOO.
-! THE PROCEDURE GIVES RESULTS IF N IS GREATER THAN 0 AND ALL
-! CALCULATED RADICANDS ARE POSITIVE.
-! THE PRODUCT OF RETURNED DIAGONAL TERMS IS EQUAL TO THE SQUARE
-! ROOT OF THE DETERMINANT OF THE GIVEN MATRIX.
-!
-!     SUBRoutINES AND FUNCTION SUBPROGRAMS REQUIRED
-! NONE
-!
-!     METHOD
-! SOLUTION IS DONE USING THE SQUARE-ROOT METHOD OF CHOLESKY.
-! THE GIVEN MATRIX IS REPRESENTED AS THE PRODUCT OF 2 TRIANGULAR
-! MATRICES, WHERE THE LEFT HAND FACTOR IS THE TRANSPOSE OF THE
-! RETURNED RIGHT HAND FACTOR.
-!
-real (kind=double):: dpiv ! = 1.0e0_double
-integer:: kpiv,k,ind,i,l,lanf,lind
-real(kind=double):: tol,dsum
-
-
-!
-!     TEST IF INPUT PARAMETER N IS meaningful
-!
-IF(N-1 < 0) THEN
-  IER = -1
-  RETURN
-ENDIF
-
-!  initialize the error message
-IER=0
-!     INITIALIZE DIAGONAL-LOOP
-KPIV=0
-DIAGONAL_LOOP: DO K=1,N
-    KPIV=KPIV+K
-    IND=KPIV
-!   CALCULATE TOLERANCE
-    TOL=ABS(EPS*A(KPIV))
-!   START FACTORIZATION-LOOP OVER K-TH ROW
-    KROW_FACTORIZATION_LOOP: DO I=K,N
-DSUM=0.0_double
-IF(k /= 1) then
-   DO  L=1,k-1
-LANF = KPIV - L
-LIND = IND - L
-DSUM = DSUM + A(LANF) * A(LIND)
-   ENDDO
-ENDIF
-!     TRANSFORM ELEMENT A(IND)
-DSUM = A(IND) - DSUM
-I_equal_K: IF(I == K) THEN
-!     TEST FOR NEGATIVE PIVOT ELEMENT AND FOR LOSS OF SIGNIFICANCE.
-   IF(  DSUM   <= TOL ) then
-IF(DSUM <= 0.0_double ) THEN
-   IER=-1; RETURN
-ENDIF
-IF (IER <= 0) THEN
-  IER = k-1
-ENDIF
-    ENDIF
-!  COMPUTE PIVOT ELEMENT
-   DPIV=SQRT(DSUM)
-   A(KPIV)=DPIV
-   DPIV=1.0_double/DPIV
-!   CYCLE KROW_FACTORIZATION_LOOP
-ELSE I_equal_k ! Condition of not diagonal
-!     CALCULATE TERMS IN ROW
-   A(IND) = DSUM * DPIV
-ENDIF I_equal_k
-IND=IND+I
-  ENDDO KROW_FACTORIZATION_LOOP
-ENDDO DIAGONAL_LOOP
-
-!---------------------------------------------------------------
-END SUBRoutINE MFSD
+end subroutine sinv
 !---------------------------------------------------------------
 !---------------------------------------------------------------
-
 
 
 end module l_algebra
