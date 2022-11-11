@@ -1043,6 +1043,6 @@ RMH_to_OR.data.frame <- function(params, ...) {
 }
 
 
-multnorm <- function(x1, x2, x) {
-  mvtnorm::pmvnorm(upper = c(x1, x2), corr = matrix(c(1, x, x, 1), 2))[1]
+multnorm <- function(x, y, rho) {
+  pmvnorm(upper = c(x, y), corr = rho + diag(1 - rho, 2))[1]
 }
