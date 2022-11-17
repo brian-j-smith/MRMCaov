@@ -64,7 +64,6 @@ print.empirical_curve <- function(x, ...) {
 #'
 print.roc_curves <- function(x, n_curves = 5, n = 11, ...) {
   cat("ROC Curves\n\n")
-  n_more <- nrow(x) - n_curves
   n_curves <- min(n_curves, nrow(x))
   vsep <- strrep("-", 0.75 * getOption("width"))
   for (i in seq_len(n_curves)) {
@@ -74,6 +73,7 @@ print.roc_curves <- function(x, n_curves = 5, n = 11, ...) {
     ), "\n")
     print(x$Curve[[i]], n = n, ...)
   }
+  n_more <- nrow(x) - n_curves
   if (n_more) cat("... with", n_more, "more curves\n")
   invisible(x)
 }
