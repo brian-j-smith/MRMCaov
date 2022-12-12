@@ -1,3 +1,26 @@
+roc_counts <- function(truth, rating, collapse = FALSE, prior_count = 0) {
+  events <- as.numeric(is_reference(truth))
+  res <- rowsum(data.frame(events = events, nonevents = 1 - events), rating)
+  res$cutoffs <- sort(unique(rating))
+
+  if (prior_count) {
+    prior <- 0.5 * prior_count / nrow(res)
+    res$events <- res$events + prior
+    res$nonevents <- res$nonevents + prior
+  } else if (collapse) {
+    res$events <- cumsum(res$events)
+    res$nonevents <- cumsum(res$nonevents)
+    drop <- (duplicated(res$events) & duplicated(res$events, fromLast = TRUE)) |
+      (duplicated(res$nonevents) & duplicated(res$nonevents, fromLast = TRUE))
+    res <- res[!drop, ]
+    res$events <- c(res$events[1], diff(res$events))
+    res$nonevents <- c(res$nonevents[1], diff(res$nonevents))
+  }
+
+  res
+}
+
+
 #' ROC Performance Curves
 #'
 #' Calculation of ROC curve true positive rate (TPR) and false positive rate
@@ -72,14 +95,14 @@ roc_curves.default <- function(
   data <- tibble(truth = as.factor(truth), rating = rating)
   if (length(groups)) {
     curves <- by(data, groups, function(split) {
-      roc_curve(split)
+      roc_curve(split, ...)
     }, simplify = FALSE)
     groups <- expand.grid(dimnames(curves))
     keep <- !is.null(curves)
     curves <- tibble(Group = groups[keep, , drop = FALSE], Curve = curves[keep])
     new_roc_curves(curves, method = method)
   } else {
-    roc_curve(data)
+    roc_curve(data, ...)
   }
 }
 
@@ -130,17 +153,11 @@ roc_curves.stmc <- function(x, ...) {
 }
 
 
-binormal_curve <- function(data) {
-  is_pos <- is_reference(data$truth)
-  pred_pos <- as.double(data$rating[is_pos])
-  pred_neg <- as.double(data$rating[!is_pos])
-  roc <- .Fortran(
-    "cvbmroc", length(pred_neg), length(pred_pos), pred_neg, pred_pos,
-    a = double(1), b = double(1), auc = double(1), auc_var = double(1)
-  )
+binormal_curve <- function(data, ...) {
+  params <- binormal_params(data$truth, data$rating, ...)
   structure(
     list(
-      params = tibble(a = roc$a, b = roc$b),
+      params = tibble(a = params$a, b = params$b),
       data = data
     ),
     class = c("binormal_curve", "roc_curve")
@@ -148,28 +165,23 @@ binormal_curve <- function(data) {
 }
 
 
-binormalLR_curve <- function(data) {
-  is_pos <- is_reference(data$truth)
-  pred_pos <- as.double(data$rating[is_pos])
-  pred_neg <- as.double(data$rating[!is_pos])
-  roc <- .Fortran(
-    "pbmroc", length(pred_neg), length(pred_pos), pred_neg, pred_pos,
-    d_a = double(1), c = double(1), auc = double(1), auc_var = double(1)
-  )
+binormalLR_curve <- function(data, ...) {
+  params <- binormalLR_params(data$truth, data$rating, ...)
   structure(
     list(
       params = tibble(
         Metz = tibble(
-          d_a = roc$d_a,
-          c = roc$c
+          d_a = params$d_a,
+          c = params$c
         ),
         bichisquared = tibble(
-          lambda = ((1 - roc$c) / (1 + roc$c))^2,
-          theta = (roc$d_a * (1 + roc$c) / roc$c)^2 * (1 + roc$c^2) / 16
+          lambda = ((1 - params$c) / (1 + params$c))^2,
+          theta = (params$d_a * (1 + params$c) / (4 * params$c))^2 *
+            (1 + params$c^2)
         ),
         binormal = tibble(
-          a = roc$d_a * sqrt(1 + roc$c^2) / (1 - roc$c),
-          b = (1 + roc$c) / (1 - roc$c)
+          a = params$d_a * sqrt(1 + params$c^2) / (1 - params$c),
+          b = (1 + params$c) / (1 - params$c)
         )
       ),
       data = data
@@ -179,12 +191,17 @@ binormalLR_curve <- function(data) {
 }
 
 
-empirical_curve <- function(data) {
-  pos <- as.numeric(is_reference(data$truth))
-  counts <- rowsum(data.frame(FPR = 1 - pos, TPR = pos), data$rating)
-  roc <- lapply(counts, function(x) c(rev(cumsum(rev(x))) / sum(x), 0))
+empirical_curve <- function(data, prior_count = 0, ...) {
+  counts <- roc_counts(data$truth, data$rating, prior_count = prior_count)
+  f <- function(x) c(rev(cumsum(rev(x))) / sum(x), 0)
   structure(
-    list(params = as_tibble(roc), data = data),
+    list(
+      params = tibble(
+        FPR = f(counts$nonevents),
+        TPR = f(counts$events)
+      ),
+      data = data
+    ),
     class = c("empirical_curve", "roc_curve")
   )
 }
@@ -447,16 +464,26 @@ auc.binormal_curve <- function(
 ) {
   params <- parameters(x)
   if (isFALSE(partial)) {
-    pnorm(params$a / sqrt(1 + params$b^2))
+    .auc.binormal(params$a, params$b)
   } else {
-    partial <- partial_auc_params(partial, min, max)
+    partial <- match.arg(partial, c("sensitivity", "specificity"))
     normalize <- if (normalize) max - min else 1
-    .Fortran(
-      "cvbmrocpartial", params$a, params$b,
-      partial$min, partial$max, partial$flag,
-      est = double(1), err = integer(1)
-    )$est / normalize
+    if (partial == "sensitivity") {
+      params <- list(a = params$a / params$b, b = 1 / params$b)
+    }
+    x <- qnorm(1 - c(max, min))
+    rho <- -params$b / sqrt(1 + params$b^2)
+    R <- rho + diag(1 - rho, 2)
+    y <- -rho * params$a / params$b
+    auc1 <- c(pmvnorm(upper = c(x[1], y), corr = R))
+    auc2 <- c(pmvnorm(upper = c(x[2], y), corr = R))
+    (auc2 - auc1) / normalize
   }
+}
+
+
+.auc.binormal <- function(a, b) {
+  pnorm(a / sqrt(1 + b^2))
 }
 
 
@@ -464,20 +491,58 @@ auc.binormalLR_curve <- function(
   x, partial = FALSE, min = 0, max = 1, normalize = FALSE, ...
 ) {
   params <- parameters(x)$Metz
-  if (isFALSE(partial)) {
-    rho <- -1 * (1 - params$c^2) / (1 + params$c^2)
-    rho <- rbind(c(1, rho), c(rho, 1))
-    pnorm(params$d_a / sqrt(2)) +
-      2 * as.numeric(pmvnorm(upper = c(-params$d_a / sqrt(2), 0), corr = rho))
+  d_a <- params$d_a
+  c <- params$c
+
+  if (has_binormal_equiv(x)) {
+    call <- match.call()
+    call[[1]] <- quote(auc)
+    call$x <- as.binormal_curve(x)
+    eval.parent(call)
+  } else if (isFALSE(partial)) {
+    .auc.binormalLR(d_a, c)
   } else {
-    partial <- partial_auc_params(partial, min, max)
+    partial <- match.arg(partial, c("sensitivity", "specificity"))
     normalize <- if (normalize) max - min else 1
-    .Fortran(
-      "pbmrocpartial", params$d_a, params$c,
-      partial$min, partial$max, partial$flag,
-      est = double(1), err = integer(1)
-    )$est / normalize
+    if (partial == "sensitivity") {
+      c <- -c
+    }
+
+    y <- numeric(2)
+    y[1] <- d_a / sqrt(2)
+    y[2] <- y[1] * (1 + c^2) / (2 * c)
+    rho <- -(1 + c) / sqrt(2 * (1 + c^2))
+    R <- rho + (1 - rho) * diag(2)
+
+    cutoffs <- numeric(2)
+    cutoffs[1] <- binormalLR_cutoff(1 - max, d_a, c)
+    cutoffs[2] <- binormalLR_cutoff(1 - min, d_a, c, init = cutoffs[1])
+
+    x <- binormalLR_z1_fpr(cutoffs, d_a, c)
+    xp <- binormalLR_z2_fpr(cutoffs, d_a, c)
+
+    cdf <- function(x, y) pmvnorm(upper = c(x, y), corr = R)
+    F1 <- cdf(x[2], y[1])
+    F2 <- cdf(x[1], y[1])
+    F3 <- cdf(x[2], y[2])
+    F4 <- cdf(x[1], y[2])
+    F5 <- cdf(xp[2], -y[2])
+    F6 <- cdf(xp[1], -y[2])
+    F7 <- cdf(xp[2], -y[1])
+    F8 <- cdf(xp[1], -y[1])
+
+    res <- c((F1 + F3 + F5 + F7) - (F2 + F4 + F6 + F8))
+    if (c > 0) res <- res - max + min
+    res / normalize
   }
+}
+
+
+.auc.binormalLR <- function(d_a, c) {
+  z <- d_a / sqrt(2)
+  rho <- -(1 - c^2) / (1 + c^2)
+  R <- rho + (1 - rho) * diag(2)
+  c(pnorm(z) + 2 * pmvnorm(upper = c(-z, 0), corr = R))
 }
 
 
@@ -511,18 +576,6 @@ auc.empirical_curve <- function(
 }
 
 
-partial_auc_params <- function(metric, min, max) {
-  metric <- match.arg(metric, c("sensitivity", "specificity"))
-  min <- as.double(min)
-  max <- as.double(max)
-  if (metric == "specificity") {
-    list(min = 1 - max, max = 1 - min, flag = 1L)
-  } else {
-    list(min = min, max = max, flag = 2L)
-  }
-}
-
-
 roc_eu <- function(x, ...) {
   UseMethod("roc_eu")
 }
@@ -550,25 +603,33 @@ sensitivity <- function(x, ...) {
 
 sensitivity.binormal_curve <- function(x, specificity, ...) {
   params <- parameters(x)
-  sapply(specificity, function(spec) {
-    fpf <- 1.0 - spec
-    .Fortran(
-      "cvbmrocfpf2tpf", params$a, params$b,
-      fpf = fpf, tpf = double(1), double(1)
-    )$tpf
-  })
+  ifelse(specificity %in% c(0, 1),
+    1 - specificity,
+    pnorm(params$a + params$b * qnorm(1.0 - specificity))
+  )
 }
 
 
 sensitivity.binormalLR_curve <- function(x, specificity, ...) {
-  params <- parameters(x)$Metz
-  sapply(specificity, function(spec) {
-    fpf <- 1.0 - spec
-    .Fortran(
-      "pbmrocfpf2tpf", params$d_a, params$c,
-      fpf = fpf, tpf = double(1), double(1)
-    )$tpf
-  })
+  if (has_binormal_equiv(x)) {
+    call <- match.call()
+    call[[1]] <- quote(sensitivity)
+    call$x <- as.binormal_curve(x)
+    eval.parent(call)
+  } else {
+    params <- parameters(x)$bichisquared
+    ncp <- c(params$theta, params$lambda * params$theta)
+    if (all(ncp <= 1e4)) {
+      f <- function(p) {
+        pchisq(qchisq(p, 1, ncp[1]) / params$lambda, 1, ncp[2])
+      }
+      if (params$lambda < 1) f(1 - specificity) else 1 - f(specificity)
+    } else {
+      params <- parameters(x)$Metz
+      cutoff <- binormalLR_cutoff(1 - specificity, params$d_a, params$c)
+      binormalLR_tpr(cutoff, params$d_a, params$c)
+    }
+  }
 }
 
 
@@ -585,23 +646,33 @@ specificity <- function(x, ...) {
 
 specificity.binormal_curve <- function(x, sensitivity, ...) {
   params <- parameters(x)
-  sapply(sensitivity, function(sens) {
-    1 - .Fortran(
-      "cvbmroctpf2fpf", params$a, params$b,
-      tpf = as.double(sens), fpf = as.double(1), double(1)
-    )$fpf
-  })
+  ifelse(sensitivity %in% c(0, 1),
+    1 - sensitivity,
+    1 - pnorm((qnorm(sensitivity) - params$a) / params$b)
+  )
 }
 
 
 specificity.binormalLR_curve <- function(x, sensitivity, ...) {
-  params <- parameters(x)$Metz
-  sapply(sensitivity, function(sens) {
-    1 - .Fortran(
-      "pbmroctpf2fpf", params$d_a, params$c,
-      tpf = as.double(sens), fpf = as.double(1), double(1)
-    )$fpf
-  })
+  if (has_binormal_equiv(x)) {
+    call <- match.call()
+    call[[1]] <- quote(specificity)
+    call$x <- as.binormal_curve(x)
+    eval.parent(call)
+  } else {
+    params <- parameters(x)$bichisquared
+    ncp <- c(params$lambda * params$theta, params$theta)
+    if (all(ncp <= 1e4)) {
+      f <- function(p) {
+        pchisq(qchisq(p, 1, ncp[1]) * params$lambda, 1, ncp[2])
+      }
+      if (params$lambda < 1) 1  - f(sensitivity) else f(1 - sensitivity)
+    } else {
+      params <- parameters(x)$Metz
+      cutoff <- binormalLR_cutoff(1 - sensitivity, params$d_a, -params$c)
+      1 - binormalLR_fpr(cutoff, params$d_a, params$c)
+    }
+  }
 }
 
 

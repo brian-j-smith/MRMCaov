@@ -36,6 +36,17 @@ aov_mrmc <- function(fo, data) {
 }
 
 
+as.binormal_curve <- function(x, ...) {
+  if (inherits(x, "binormalLR_curve")) {
+    x$params <- x$params$binormal
+    class(x) <- c("binormal_curve", "roc_curve")
+  } else {
+    stopifnot(inherits(x, "binormal_curve"))
+  }
+  x
+}
+
+
 chol2det <- function(x, log = FALSE) {
   d <- diag(x)
   if (log) 2 * sum(log(d)) else prod(d)^2
@@ -97,6 +108,11 @@ get_cov_method <- function(x) {
 }
 
 
+has_binormal_equiv <- function(x) {
+  inherits(x, "binormalLR_curve") && is_approx(parameters(x)$Metz$c, 0)
+}
+
+
 header <- function(..., width = getOption("width")) {
   writeLines(strwrap(paste0(...), width = width))
 }
@@ -104,6 +120,11 @@ header <- function(..., width = getOption("width")) {
 
 interaction <- function(..., drop = TRUE, lex.order = TRUE) {
   base::interaction(..., drop = drop, lex.order = lex.order)
+}
+
+
+is_approx <- function(x, y) {
+  isTRUE(all.equal(x, y))
 }
 
 

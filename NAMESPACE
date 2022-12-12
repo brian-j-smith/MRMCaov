@@ -1,19 +1,14 @@
-useDynLib(MRMCaov, .registration = TRUE)
-
-
 import(ggplot2)
 import(methods)
-
 
 importFrom(graphics, plot, points)
 importFrom(methods, is)
 importFrom(mvtnorm, pmvnorm)
-importFrom(stats, anova, aov, approx, as.formula, coef, formula, model.frame,
-           model.matrix, optim, optimize, pnorm, pf, pt, reformulate, qnorm, qt,
-           reshape, terms, update, vcov)
+importFrom(stats, anova, aov, approx, as.formula, coef, dnorm, formula, lm,
+           model.frame, model.matrix, optim, optimize, pchisq, pnorm, pf, pt,
+           qchisq, qnorm, qt, reformulate, reshape, terms, update, vcov)
 importFrom(tibble, as_tibble, tibble)
 importFrom(utils, combn, head, str, tail)
-
 
 export(
   DeLong,
@@ -44,7 +39,6 @@ export(
   trapezoidal_spec,
   unbiased
 )
-
 
 S3method(mean, binormal_curves)
 S3method(mean, roc_curve)
