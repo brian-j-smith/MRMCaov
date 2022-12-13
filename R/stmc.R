@@ -10,8 +10,6 @@
 #' @param cov function, function call, or character string naming the
 #'   \code{\link[=cov_methods]{method}} to use in calculating performance
 #'   metric covariances.
-#' @param method deprecated argument that will be removed in a future package
-#'   version; use \code{cov} instead.
 #'
 #' @return
 #' Returns a \code{stmc} class object with the following elements.
@@ -32,7 +30,7 @@
 #' plot(est)
 #' summary(est)
 #'
-stmc <- function(response, case, data, cov = method, method = jackknife) {
+stmc <- function(response, case, data, cov = jackknife) {
 
   response_call <- substitute(response)
   metric <- as.character(response_call[[1]])
@@ -49,8 +47,6 @@ stmc <- function(response, case, data, cov = method, method = jackknife) {
   )
   response_call[c(2, 3)] <- c(quote(truth), quote(rating))
   attr(stmc_data, "metric_call") <- response_call
-
-  dep_methodarg(missing(method))
 
   structure(
     list(

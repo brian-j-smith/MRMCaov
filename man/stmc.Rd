@@ -4,7 +4,7 @@
 \alias{stmc}
 \title{Single-Test (Single-Reader) Multi-Case ROC Analysis}
 \usage{
-stmc(response, case, data, cov = method, method = jackknife)
+stmc(response, case, data, cov = jackknife)
 }
 \arguments{
 \item{response}{response metric expressed in terms of a package-supplied
@@ -18,9 +18,6 @@ performance \code{\link[=metrics]{metric}}.}
 \item{cov}{function, function call, or character string naming the
 \code{\link[=cov_methods]{method}} to use in calculating performance
 metric covariances.}
-
-\item{method}{deprecated argument that will be removed in a future package
-version; use \code{cov} instead.}
 }
 \value{
 Returns a \code{stmc} class object with the following elements.

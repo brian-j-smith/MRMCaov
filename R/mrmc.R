@@ -13,8 +13,6 @@
 #' @param cov function, function call, or character string naming the
 #'   \code{\link[=cov_methods]{method}} to use in calculating performance
 #'   metric covariances.
-#' @param method deprecated argument that will be removed in a future package
-#'   version; use \code{cov} instead.
 #' @param design one of the following study designs: 1 = factorial, 2 = cases
 #'   nested within readers, 3 = cases nested within tests, or \code{NULL} to
 #'   automatically set the design based on variable codings in data.
@@ -84,11 +82,8 @@
 #' }
 #'
 mrmc <- function(
-  response, test, reader, case, data, cov = method, method = jackknife,
-  design = NULL
+  response, test, reader, case, data, cov = jackknife, design = NULL
 ) {
-
-  dep_methodarg(missing(method))
 
   object <- eval(substitute(
     new_mrmc(response, test, reader, case, data, cov = cov, design = design)
@@ -114,14 +109,11 @@ mrmc <- function(
 
 
 mrmc_lme <- function(
-  formula, test, reader, case, data, cov = method, method = jackknife,
-  design = NULL
+  formula, test, reader, case, data, cov = jackknife, design = NULL
 ) {
 
   stopifnot(is(formula, "formula"))
   if (length(formula) != 3) stop("formula requires left and right terms")
-
-  dep_methodarg(missing(method))
 
   response <- formula[[2]]
   object <- eval(substitute(

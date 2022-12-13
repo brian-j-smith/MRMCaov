@@ -12,8 +12,6 @@
 #' @param cov function, function call, or character string naming the
 #'   \code{\link[=cov_methods]{method}} to use in calculating performance
 #'   metric covariances.
-#' @param method deprecated argument that will be removed in a future package
-#'   version; use \code{cov} instead.
 #'
 #' @return
 #' Returns an \code{\link{mrmc}} class object.
@@ -28,17 +26,13 @@
 #' plot(est)
 #' summary(est)
 #'
-srmc <- function(
-  response, test, case, data, cov = method, method = jackknife
-) {
+srmc <- function(response, test, case, data, cov = jackknife) {
 
   args <- c(substitute(response), substitute(test), substitute(case))
   data <- data[unique(unlist(mapply(all.vars, args)))]
   data <- cbind(data, reader = 1)
   names(data) <- make.unique(names(data), sep = "_")
   reader <- as.name(tail(names(data), 1))
-
-  dep_methodarg(missing(method))
 
   object <- eval(substitute(
     mrmc(
