@@ -7,12 +7,12 @@
 \format{
 A data frame with 800 rows and 5 variables:
 \describe{
-  \item{Reader}{reader identifier}
-  \item{Treatment}{treatment identifier}
-  \item{Case}{case identifier}
-  \item{Truth}{true case status (1 = abnormal, 0 = normal)}
-  \item{Rating}{ordinal reader ratings of case normal status (1 = definitely
-  abnormal, 5 = definitely normal)}
+  \item{reader}{reader identifier}
+  \item{treatment}{treatment identifier}
+  \item{case}{case identifier}
+  \item{truth}{true case status (1 = abnormal, 0 = normal)}
+  \item{rating}{ordinal reader ratings of abnormal case status (1 = definitely
+  normal, 5 = definitely abnormal)}
 }
 }
 \usage{
