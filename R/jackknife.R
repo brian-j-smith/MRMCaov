@@ -7,17 +7,35 @@
 jackknife <- function() {
   structure(
     function(data, ...) {
-      cases <- data$case
+      metric_call <- attr(data, "metric_call")
       groups <- interaction(data$test, data$reader)
-      df <- data[c("truth", "rating")]
 
-      metrics <- matrix(NA, nlevels(cases), nlevels(groups))
-      for (i in 1:nlevels(cases)) {
-        keep <- cases != levels(cases)[i]
-        metrics[i, ] <- by(df[keep, ], groups[keep], function(split) {
-          eval(attr(data, "metric_call"), split)
-        })
-      }
+      pb <- progress::progress_bar$new(
+        format = "jackknife [:bar] :percent | :eta",
+        total = nlevels(data$case) * nlevels(groups),
+        show_after = 1
+      )
+
+      select <- c("truth", "rating", "case")
+      metrics <- sapply(split(data[select], groups), function(x) {
+        case_splits <- split(x[-3], x[[3]])
+        lookup <- tibble(
+          case = names(case_splits),
+          index = match(case_splits, case_splits)
+        )
+        res <- numeric(nrow(lookup))
+        inds <- which(lookup$index == seq_along(res))
+        for (ind in inds) {
+          res[ind] <- eval(metric_call, x[x$case != lookup$case[ind], -3])
+          pb$tick()
+        }
+        inds <- -inds
+        res[inds] <- res[lookup$index[inds]]
+        pb$tick(length(res) - length(inds))
+        res
+      })
+
+      pb$terminate()
 
       n <- nrow(metrics)
       structure(

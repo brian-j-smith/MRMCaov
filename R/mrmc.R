@@ -163,13 +163,15 @@ new_mrmc <- function(
   ))
 
   response_call <- match.call(get(terms$metric), terms$response)
-  mrmc_data <- data.frame(
+  mrmc_data <- tibble(
     truth = factor(eval(response_call$truth, data)),
     rating = as.numeric(eval(response_call$rating, data)),
     test = factor(data[[terms$labels["test"]]]),
     reader = factor(data[[terms$labels["reader"]]]),
     case = factor(data[[terms$labels["case"]]])
   )
+  sort_order <- do.call(order, mrmc_data[c("test", "reader", "case", "rating")])
+  mrmc_data <- mrmc_data[sort_order, ]
   response_call[c(2, 3)] <- c(quote(truth), quote(rating))
   attr(mrmc_data, "metric_call") <- response_call
 

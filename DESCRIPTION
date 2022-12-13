@@ -30,7 +30,7 @@ Description: Tools for estimating and comparing the performances of diagnostic
     estimated with the DeLong method, jackknifing, or an unbiased method.  Smith
     and Hillis (2020) <doi:10.1117/12.2549075>.
 Depends: R (>= 3.5.0)
-Imports: ggplot2, methods, mvtnorm, tibble, trust
+Imports: ggplot2, methods, mvtnorm, progress, tibble, trust
 Suggests: knitr
 LazyData: true
 License: GPL-3
