@@ -81,6 +81,13 @@ binormalLR_params <- function(
 
     values <- sapply(res, function(x) x$optim$value)
     res <- res[[which.min(values)]]
+  } else {
+    warning(
+      "\nLikelihood ratio binormal curve fit has AUC = ", 
+      0.5 * (inits$a %in% c(-Inf, 0)) + 1 * (inits$a == Inf),
+      " due to lack of interior points.",
+      if (inits$a != 0) "\nConsider fitting an empirical curve instead."
+    )
   }
 
   res

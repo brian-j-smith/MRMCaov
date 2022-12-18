@@ -14,6 +14,13 @@ binormal_params <- function(
       res, counts$events, counts$nonevents, method = control$init_cutoffs
     )
     res <- binormal_mle(res, counts$events, counts$nonevents, control = control)
+  } else {
+    warning(
+      "\nBinormal curve fit has AUC = ",
+      -1 * (inits$a == -Inf) + 0.5 * (inits$a == 0) + 1 * (inits$a == Inf),
+      " due to lack of interior points.",
+      if (inits$a != 0) "\nConsider fitting an empirical curve instead."
+    )
   }
 
   res

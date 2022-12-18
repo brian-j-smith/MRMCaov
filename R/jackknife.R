@@ -26,7 +26,9 @@ jackknife <- function() {
         res <- numeric(nrow(lookup))
         inds <- which(lookup$index == seq_along(res))
         for (ind in inds) {
-          res[ind] <- eval(metric_call, x[x$case != lookup$case[ind], -3])
+          res[ind] <- suppressWarnings(
+            eval(metric_call, x[x$case != lookup$case[ind], -3])
+          )
           pb$tick()
         }
         inds <- -inds
