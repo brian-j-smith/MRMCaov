@@ -13,7 +13,7 @@
 
 <title>Using MRMCaov for R</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.19/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -208,8 +208,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -217,16 +217,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -376,7 +369,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Using MRMCaov for R</h1>
-<h3 class="subtitle">Package Version 0.2.2</h3>
+<h3 class="subtitle">Package Version 0.3.0</h3>
 
 </div>
 
@@ -710,17 +703,17 @@ class="math inline">\(\text{Cov}_3\)</span>.</li>
 #&gt; 
 #&gt;                  Df    Sum Sq   Mean Sq
 #&gt; treatment         1 0.0041142 0.0041142
-#&gt; reader            4 0.0104324 0.0026081
+#&gt; reader            4 0.0104325 0.0026081
 #&gt; treatment:reader  4 0.0037916 0.0009479
 #&gt; 
 #&gt; 
 #&gt; Obuchowski-Rockette error variance and covariance estimates:
 #&gt; 
 #&gt;           Estimate Correlation
-#&gt; Error 0.0010790449          NA
-#&gt; Cov1  0.0003125019   0.2896097
-#&gt; Cov2  0.0003116050   0.2887785
-#&gt; Cov3  0.0001937700   0.1795755</code></pre>
+#&gt; Error 0.0010790500          NA
+#&gt; Cov1  0.0003125013   0.2896078
+#&gt; Cov2  0.0003115986   0.2887713
+#&gt; Cov3  0.0001937688   0.1795735</code></pre>
 </details>
 <p>
 <p>MRMC statistical tests are performed with a call to
@@ -743,33 +736,33 @@ performances for each one.</p>
 #&gt; Obuchowski-Rockette variance component and covariance estimates:
 #&gt; 
 #&gt;                      Estimate Correlation
-#&gt; reader           0.0007113780          NA
-#&gt; treatment:reader 0.0002991817          NA
-#&gt; Error            0.0010790449          NA
-#&gt; Cov1             0.0003125019   0.2896097
-#&gt; Cov2             0.0003116050   0.2887785
-#&gt; Cov3             0.0001937700   0.1795755
+#&gt; reader           0.0007113799          NA
+#&gt; treatment:reader 0.0002991713          NA
+#&gt; Error            0.0010790500          NA
+#&gt; Cov1             0.0003125013   0.2896078
+#&gt; Cov2             0.0003115986   0.2887713
+#&gt; Cov3             0.0001937688   0.1795735
 #&gt; 
 #&gt; 
 #&gt; ANOVA global test of equal treatment binormal_auc:
-#&gt;         MS(T)      MS(T:R)        Cov2       Cov3 Denominator       F df1
-#&gt; 1 0.004114199 0.0009478898 0.000311605 0.00019377 0.001537064 2.67666   1
+#&gt;         MS(T)      MS(T:R)         Cov2         Cov3 Denominator        F df1
+#&gt; 1 0.004114188 0.0009478901 0.0003115986 0.0001937688 0.001537039 2.676697   1
 #&gt;        df2   p-value
-#&gt; 1 10.51789 0.1313682
+#&gt; 1 10.51753 0.1313668
 #&gt; 
 #&gt; 
 #&gt; 95% CIs and tests for treatment binormal_auc pairwise differences:
-#&gt;   Comparison    Estimate     StdErr       df    CI.Lower    CI.Upper        t
-#&gt; 1      1 - 2 -0.04056698 0.02479568 10.51789 -0.09544867  0.01431471 -1.63605
+#&gt;   Comparison    Estimate     StdErr       df    CI.Lower    CI.Upper         t
+#&gt; 1      1 - 2 -0.04056692 0.02479548 10.51753 -0.09544840  0.01431455 -1.636061
 #&gt;     p-value
-#&gt; 1 0.1313682
+#&gt; 1 0.1313668
 #&gt; 
 #&gt; 
 #&gt; 95% treatment binormal_auc CIs (each analysis based only on data for the
 #&gt; specified treatment):
 #&gt;    Estimate        MS(R)         Cov2     StdErr       df  CI.Lower  CI.Upper
-#&gt; 1 0.9109867 0.0027417481 0.0004612327 0.03177392 13.55902 0.8426298 0.9793435
-#&gt; 2 0.9515536 0.0008142512 0.0001619773 0.01802297 15.91435 0.9133299 0.9897774</code></pre>
+#&gt; 1 0.9109867 0.0027417526 0.0004612201 0.03177374 13.55866 0.8426301 0.9793433
+#&gt; 2 0.9515536 0.0008142524 0.0001619772 0.01802298 15.91432 0.9133299 0.9897774</code></pre>
 </details>
 <p>
 <p>ROC curves estimated by <code>mrmc()</code> can be displayed with
@@ -788,18 +781,18 @@ performances for each one.</p>
 </summary>
 <pre class="r"><code>print(parameters(est))
 #&gt; # A tibble: 10 × 3
-#&gt;    Group$reader $treatment        a     b
-#&gt;    &lt;fct&gt;        &lt;fct&gt;         &lt;dbl&gt; &lt;dbl&gt;
-#&gt;  1 1            1          1.70e  0 0.537
-#&gt;  2 2            1          1.40e  0 0.561
-#&gt;  3 3            1          1.74e  0 0.635
-#&gt;  4 4            1          1.93e  0 0.202
-#&gt;  5 5            1          1.06e  0 0.464
-#&gt;  6 1            2          1.85e  0 0.503
-#&gt;  7 2            2          1.66e  0 0.447
-#&gt;  8 3            2          1.62e  0 0.488
-#&gt;  9 4            2          1.80e308 1    
-#&gt; 10 5            2          1.73e  0 0.422</code></pre>
+#&gt;    Group$reader $treatment      a     b
+#&gt;    &lt;fct&gt;        &lt;fct&gt;       &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1 1            1            1.70 0.537
+#&gt;  2 2            1            1.40 0.561
+#&gt;  3 3            1            1.74 0.635
+#&gt;  4 4            1            1.93 0.202
+#&gt;  5 5            1            1.06 0.464
+#&gt;  6 1            2            1.85 0.503
+#&gt;  7 2            2            1.66 0.447
+#&gt;  8 3            2            1.62 0.488
+#&gt;  9 4            2          Inf    1    
+#&gt; 10 5            2            1.73 0.422</code></pre>
 </details>
 <p>
 </div>
@@ -1208,14 +1201,14 @@ est &lt;- mrmc(
 #&gt; Single reader 95% CIs:
 #&gt;    empirical_auc treatment reader       StdErr  CI.Lower  CI.Upper
 #&gt; 1      0.9196457         1      1 0.0301255164 0.8606008 0.9786907
-#&gt; 3      0.8587762         1      2 0.0363753335 0.7874818 0.9300705
-#&gt; 5      0.9038647         1      3 0.0282594118 0.8484773 0.9592522
-#&gt; 7      0.9731079         1      4 0.0173388332 0.9391244 1.0000000
-#&gt; 9      0.8297907         1      5 0.0417201720 0.7480206 0.9115607
-#&gt; 2      0.9478261         2      1 0.0221416887 0.9044292 0.9912230
-#&gt; 4      0.9053140         2      2 0.0298151099 0.8468775 0.9637506
-#&gt; 6      0.9217391         2      3 0.0297673065 0.8633963 0.9800820
-#&gt; 8      0.9993559         2      4 0.0007213348 0.9979421 1.0000000
+#&gt; 2      0.8587762         1      2 0.0363753335 0.7874818 0.9300705
+#&gt; 3      0.9038647         1      3 0.0282594118 0.8484773 0.9592522
+#&gt; 4      0.9731079         1      4 0.0173388332 0.9391244 1.0000000
+#&gt; 5      0.8297907         1      5 0.0417201720 0.7480206 0.9115607
+#&gt; 6      0.9478261         2      1 0.0221416887 0.9044292 0.9912230
+#&gt; 7      0.9053140         2      2 0.0298151099 0.8468775 0.9637506
+#&gt; 8      0.9217391         2      3 0.0297673065 0.8633963 0.9800820
+#&gt; 9      0.9993559         2      4 0.0007213348 0.9979421 1.0000000
 #&gt; 10     0.9299517         2      5 0.0262023046 0.8785961 0.9813073</code></pre>
 </details>
 <p>
@@ -1459,8 +1452,8 @@ est &lt;- srmc(binormal_auc(truth, rating), treatment, case, data = VanDyke1)</c
 #&gt; Obuchowski-Rockette error variance and covariance estimates:
 #&gt; 
 #&gt;           Estimate Correlation
-#&gt; Error 0.0008371427          NA
-#&gt; Cov1  0.0004275632   0.5107412
+#&gt; Error 0.0008371345          NA
+#&gt; Cov1  0.0004275594   0.5107416
 #&gt; Cov2  0.0000000000   0.0000000
 #&gt; Cov3  0.0000000000   0.0000000</code></pre>
 </details>
@@ -1497,23 +1490,21 @@ est &lt;- srmc(binormal_auc(truth, rating), treatment, case, data = VanDyke1)</c
 #&gt; Obuchowski-Rockette variance component and covariance estimates:
 #&gt; 
 #&gt;           Estimate Correlation
-#&gt; Error 0.0008371427          NA
-#&gt; Cov1  0.0004275632   0.5107412
+#&gt; Error 0.0008371345          NA
+#&gt; Cov1  0.0004275594   0.5107416
 #&gt; Cov2  0.0000000000   0.0000000
 #&gt; Cov3  0.0000000000   0.0000000
 #&gt; 
 #&gt; 
 #&gt; 95% CIs and tests for treatment binormal_auc pairwise differences:
-#&gt;   Comparison    Estimate     StdErr    CI.Lower    CI.Upper          z
-#&gt; 1      1 - 2 -0.01765762 0.02862095 -0.07375366  0.03843841 -0.6169475
-#&gt;     p-value
-#&gt; 1 0.5372694
+#&gt;   Comparison    Estimate    StdErr    CI.Lower    CI.Upper         z  p-value
+#&gt; 1      1 - 2 -0.01765763 0.0286208 -0.07375337  0.03843810 -0.616951 0.537267
 #&gt; 
 #&gt; 
 #&gt; Single reader 95% CIs:
 #&gt;   binormal_auc treatment reader     StdErr  CI.Lower  CI.Upper
-#&gt; 1    0.9331609         1      1 0.03348356 0.8675343 0.9987874
-#&gt; 2    0.9508185         2      1 0.02351885 0.9047224 0.9969146</code></pre>
+#&gt; 1    0.9331609         1      1 0.03348342 0.8675346 0.9987872
+#&gt; 2    0.9508186         2      1 0.02351871 0.9047228 0.9969144</code></pre>
 </details>
 <p>
 </div>
@@ -1578,7 +1569,7 @@ est &lt;- stmc(binormal_auc(truth, rating), case, data = VanDyke11)</code></pre>
 </summary>
 <pre class="r"><code>summary(est)
 #&gt; binormal_auc       StdErr     CI.Lower     CI.Upper 
-#&gt;   0.93316085   0.03348356   0.86753427   0.99878743</code></pre>
+#&gt;   0.93316094   0.03348342   0.86753465   0.99878723</code></pre>
 </details>
 <p>
 </div>
@@ -1669,18 +1660,18 @@ curves_binorm &lt;- with(VanDyke, {
 params_binorm &lt;- parameters(curves_binorm)
 print(params_binorm)
 #&gt; # A tibble: 10 × 3
-#&gt;    Group$Treatment $Reader        a     b
-#&gt;    &lt;fct&gt;           &lt;fct&gt;      &lt;dbl&gt; &lt;dbl&gt;
-#&gt;  1 1               1       1.70e  0 0.537
-#&gt;  2 2               1       1.85e  0 0.503
-#&gt;  3 1               2       1.40e  0 0.561
-#&gt;  4 2               2       1.66e  0 0.447
-#&gt;  5 1               3       1.74e  0 0.635
-#&gt;  6 2               3       1.62e  0 0.488
-#&gt;  7 1               4       1.93e  0 0.202
-#&gt;  8 2               4       1.80e308 1    
-#&gt;  9 1               5       1.06e  0 0.464
-#&gt; 10 2               5       1.73e  0 0.422
+#&gt;    Group$Treatment $Reader      a     b
+#&gt;    &lt;fct&gt;           &lt;fct&gt;    &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1 1               1         1.70 0.537
+#&gt;  2 2               1         1.85 0.503
+#&gt;  3 1               2         1.40 0.561
+#&gt;  4 2               2         1.66 0.447
+#&gt;  5 1               3         1.74 0.635
+#&gt;  6 2               3         1.62 0.488
+#&gt;  7 1               4         1.93 0.202
+#&gt;  8 2               4       Inf    1    
+#&gt;  9 1               5         1.06 0.464
+#&gt; 10 2               5         1.73 0.422
 plot(curves_binorm)</code></pre>
 <p><img src="using_files/figure-html/using_curves_binorm-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Estimates for different parameterizations of the binormal
@@ -1698,18 +1689,18 @@ curves_binormLR &lt;- with(VanDyke, {
 params_binormLR &lt;- parameters(curves_binormLR)
 print(params_binormLR)
 #&gt; # A tibble: 10 × 4
-#&gt;    Group$Treatment $Reader  Metz$d_a     $c bichisquared$la…¹   $theta binorma…²
-#&gt;    &lt;fct&gt;           &lt;fct&gt;       &lt;dbl&gt;  &lt;dbl&gt;             &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
-#&gt;  1 1               1       2.13      -0.298              3.42 1.71e+ 0   1.71e+0
-#&gt;  2 2               1       2.35      -0.321              3.79 1.70e+ 0   1.87e+0
-#&gt;  3 1               2       1.73      -0.281              3.17 1.32e+ 0   1.40e+0
-#&gt;  4 2               2       0.0000680 -0.791             73.3  3.28e-11   4.84e-5
-#&gt;  5 1               3       0.0000725 -0.746             47.0  5.96e-11   5.18e-5
-#&gt;  6 2               3       2.08      -0.330              3.94 1.23e+ 0   1.65e+0
-#&gt;  7 1               4       0.000701  -0.932            797.   3.10e-10   4.96e-4
-#&gt;  8 2               4       0          1                  0    0        NaN      
-#&gt;  9 1               5       0.896     -0.507              9.37 5.94e- 2   6.66e-1
-#&gt; 10 2               5       2.02      -0.553             12.1  2.17e- 1   1.49e+0
+#&gt;    Group$Treatment $Reader   Metz$d_a     $c bichisquared…¹     $theta binorma…²
+#&gt;    &lt;fct&gt;           &lt;fct&gt;        &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;
+#&gt;  1 1               1         2.13     -0.298           3.42   1.71e+ 0   1.71e+0
+#&gt;  2 2               1         2.35     -0.321           3.79   1.70e+ 0   1.87e+0
+#&gt;  3 1               2         1.73     -0.281           3.17   1.32e+ 0   1.40e+0
+#&gt;  4 2               2         0.00700  -0.791          73.3    3.48e- 7   4.99e-3
+#&gt;  5 1               3         0.0140   -0.746          47.0    2.22e- 6   9.99e-3
+#&gt;  6 2               3         2.08     -0.330           3.94   1.23e+ 0   1.65e+0
+#&gt;  7 1               4         0.000417 -0.932         797.     1.09e-10   2.95e-4
+#&gt;  8 2               4       Inf         0               1    Inf        Inf      
+#&gt;  9 1               5         0.895    -0.508           9.37   5.94e- 2   6.66e-1
+#&gt; 10 2               5         2.02     -0.553          12.1    2.18e- 1   1.49e+0
 #&gt; # … with 1 more variable: binormal$b &lt;dbl&gt;, and abbreviated variable names
 #&gt; #   ¹​bichisquared$lambda, ²​binormal$a
 plot(curves_binormLR)</code></pre>
