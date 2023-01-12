@@ -1,8 +1,8 @@
 Package: MRMCaov
 Type: Package
 Title: Multi-Reader Multi-Case Analysis of Variance
-Version: 0.2.2
-Date: 2022-09-16
+Version: 0.3.0
+Date: 2023-01-09
 Authors@R: c(person(c("Brian", "J"), "Smith",
                     email = "brian-j-smith@uiowa.edu",
                     role = c("aut", "cre")),
@@ -16,8 +16,8 @@ Author: Brian J Smith [aut, cre],
   Stephen L Hillis [aut],
   Lorenzo L Pesce [ctb]
 Maintainer: Brian J Smith <brian-j-smith@uiowa.edu>
-Description: Tools for estimating and comparing the performances of diagnostic
-    tests in multi-reader multi-case studies where true case statuses (or ground
+Description: Estimation and comparison of the performances of diagnostic tests
+    in multi-reader multi-case studies where true case statuses (or ground
     truths) are known and one or more readers provide test ratings for multiple
     cases.  Reader performance metrics are provided for area under and expected
     utility of ROC curves, likelihood ratio of positive or negative tests, and
@@ -36,6 +36,6 @@ LazyData: true
 License: GPL-3
 URL: https://github.com/brian-j-smith/MRMCaov
 BugReports: https://github.com/brian-j-smith/MRMCaov/issues
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Encoding: UTF-8

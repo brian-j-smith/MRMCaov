@@ -2,9 +2,12 @@
 
 ## Version Updates
 
-## 0.2.2
+## 0.3.0
+* CRAN release.
 * Add Kundel dataset.
 * Check for and report partially paired factorial designs.
+* Converted FORTRAN code for conventional and likelihood-ratio binormal ROC curves to R.
+* Remove deprecated argument `method` from `mrmc()`, `srmc()`, and `stmc()`.
 
 ## 0.2.1
 * Order tests and readers lexically in results from `mrmc()`.

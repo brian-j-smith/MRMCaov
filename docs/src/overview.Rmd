@@ -10,28 +10,17 @@
 * Inference for random or fixed readers and cases
 * Conversion of Obuchowski-Rockette to Roe, Metz & Hillis model parameters and vice versa
 * DeLong, jackknife, and unbiased covariance estimation
-* Compatibility with Microsoft Windows and Linux
+* Compatibility with Microsoft Windows, MacOS, and Linux
 
 ## Documentation: [User Guide](https://brian-j-smith.github.io/MRMCaov/using.html)
 
-## Download and Installation
+## Installation
 
-To install the package, do the following:
-
-1. Download the archive file for your operating system from the links provided in the table below.
-2. Run [RStudio](https://www.rstudio.com/products/rstudio/).
-3. Click on "Tools" from the RStudio menu and then select "Install Packages..." to bring up the "Install Packages" dialog box.
-4. From the dialog box, select "Package Archive File (.zip; .tar.gz)" as the source from which to install, and browse to and select the downloaded package archive file.
-5. Install the packages below with the given command submitted at the R console, if they have not been installed previously.
+Enter the following at the R console to install the package.
 
 ```{r eval = FALSE}
-install.packages(c("ggplot2", "mvtnorm", "tibble"))
+install.packages("MRMCaov")
 ```
-
-| Operating System      | Package Archive File |
-|-----------------------|----------------------|
-| Microsoft Windows: | [MRMCaov_0.2.2.zip](https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.2/MRMCaov_0.2.2.zip) |
-| Linux: | [MRMCaov_0.2.2.tar.gz](https://github.com/brian-j-smith/MRMCaov/releases/download/v0.2.2/MRMCaov_0.2.2.tar.gz) |
 
 
 ## Citing the Software
