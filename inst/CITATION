@@ -10,7 +10,7 @@ bibentry(bibtype = "Manual",
          title = "{MCMCaov}: Multi-Reader Multi-Case Analysis of Variance",
 	       year = year,
 	       note = note,
- 	       url = "https://github.com/brian-j-smith/MRMCaov",
+ 	       url = "https://cran.r-project.org/package=MRMCaov",
 	       key = "MRMCaov-package")
 
 bibentry(bibtype = "InProceedings",

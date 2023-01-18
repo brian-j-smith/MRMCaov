@@ -47,14 +47,13 @@ citation("MRMCaov")
 
     To cite MRMCaov in publications, please use the following two references, including the R package URL.
 
-      Smith BJ, Hillis SL, Pesce LL (2023). _MCMCaov: Multi-Reader Multi-Case Analysis of Variance_. R
-      package version 0.3.0, <https://github.com/brian-j-smith/MRMCaov>.
+      Smith BJ, Hillis SL, Pesce LL (2023). _MCMCaov: Multi-Reader Multi-Case Analysis of Variance_. R package version
+      0.3.0, <https://cran.r-project.org/package=MRMCaov>.
 
-      Smith BJ, Hillis SL (2020). "Multi-reader multi-case analysis of variance software for diagnostic
-      performance comparison of imaging modalities." In Samuelson F, Taylor-Phillips S (eds.),
-      _Proceedings of SPIE 11316, Medical Imaging 2020: Image Perception, Observer Performance, and
-      Technology Assessment_, 113160K. doi:10.1117/12.2549075 <https://doi.org/10.1117/12.2549075>,
-      <https://pubmed.ncbi.nlm.nih.gov/32351258>.
+      Smith BJ, Hillis SL (2020). "Multi-reader multi-case analysis of variance software for diagnostic performance
+      comparison of imaging modalities." In Samuelson F, Taylor-Phillips S (eds.), _Proceedings of SPIE 11316, Medical
+      Imaging 2020: Image Perception, Observer Performance, and Technology Assessment_, 113160K. doi:10.1117/12.2549075
+      <https://doi.org/10.1117/12.2549075>, <https://pubmed.ncbi.nlm.nih.gov/32351258>.
 
     To see these entries in BibTeX format, use 'print(<citation>, bibtex=TRUE)', 'toBibtex(.)', or set
     'options(citation.bibtex.max=999)'.
@@ -69,7 +68,7 @@ toBibtex(citation("MRMCaov"))
       title = {{MCMCaov}: Multi-Reader Multi-Case Analysis of Variance},
       year = {2023},
       note = {R package version 0.3.0},
-      url = {https://github.com/brian-j-smith/MRMCaov},
+      url = {https://cran.r-project.org/package=MRMCaov},
     }
 
     @InProceedings{MRMCaov-SPIE2020,
